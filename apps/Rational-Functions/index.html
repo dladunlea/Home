@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Exploring Rational Functions</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔢 Exploring Rational Functions</h1>
+        </div>
+
+        <div class="main-content">
+            <div class="graph-section">
+                <div class="equation-display">
+                    <h3>Factored Form</h3>
+                    <div id="equationDisplay" class="equation"></div>
+                </div>
+                
+                <canvas id="graphCanvas"></canvas>
+            </div>
+
+            <div class="controls-section">
+                <div class="instructions">
+                    Drag features on the graph to move them<br>
+                    Tap factors in the equation to delete them
+                </div>
+
+                <div class="controls">
+                    <h3>Add Features</h3>
+                    <button class="btn btn-success" id="addXInterceptBtn">+ Add X-Intercept</button>
+                    <button class="btn btn-danger" id="addAsymptoteBtn">+ Add Vertical Asymptote</button>
+                    <button class="btn btn-warning" id="addHoleBtn">+ Add Hole</button>
+                </div>
+
+                <div class="controls">
+                    <h3>Actions</h3>
+                    <button class="btn btn-secondary" id="resetZoomBtn">🔍 Reset Zoom</button>
+                    <button class="btn btn-danger" id="clearAllBtn">Clear All</button>
+                    <button class="btn btn-secondary" id="undoBtn">↶ Undo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

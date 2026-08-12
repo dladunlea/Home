@@ -1,0 +1,419 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    -webkit-overflow-scrolling: touch;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #333;
+    touch-action: none;
+}
+
+.container {
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.header h1 {
+    font-size: 1.5em;
+    margin: 0;
+    font-weight: 600;
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.graph-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    overflow: hidden;
+    min-width: 0;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.controls-section {
+    width: 280px;
+    padding: 16px;
+    background: #f8f9fa;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+    border-left: 2px solid #e0e0e0;
+}
+
+#graphCanvas {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: crosshair;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    touch-action: none;
+    width: 100%;
+    flex: 1;
+    display: block;
+}
+
+.equation-display {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-left: 4px solid #667eea;
+    flex-shrink: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    min-height: 80px;
+}
+
+.equation-display h3 {
+    color: #667eea;
+    margin-bottom: 10px;
+    font-size: 1em;
+    flex-shrink: 0;
+}
+
+.equation {
+    font-size: 1.1em;
+    font-family: 'Courier New', monospace;
+    line-height: 1.6;
+    color: #333;
+    min-width: max-content;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fraction {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.numerator, .denominator {
+    display: block;
+    padding: 4px 8px;
+}
+
+.numerator {
+    border-bottom: 2px solid #333;
+}
+
+.factor {
+    display: inline-block;
+    padding: 4px 10px;
+    margin: 2px;
+    background: #e3f2fd;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    min-height: 32px;
+    min-width: 44px;
+    text-align: center;
+    touch-action: manipulation;
+}
+
+.factor:active {
+    background: #bbdefb;
+    transform: scale(0.95);
+}
+
+.factor.hole {
+    background: #fff3e0;
+}
+
+.factor.hole:active {
+    background: #ffe0b2;
+}
+
+.factor.asymptote {
+    background: #ffcdd2;
+}
+
+.factor.asymptote:active {
+    background: #ef9a9a;
+}
+
+.factor.intercept {
+    background: #c8e6c9;
+}
+
+.factor.intercept:active {
+    background: #a5d6a7;
+}
+
+.factor .delete-x {
+    display: none;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #f44336;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    line-height: 24px;
+    text-align: center;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.factor:active .delete-x {
+    display: block;
+}
+
+/* For desktop hover */
+@media (hover: hover) {
+    .factor:hover {
+        background: #bbdefb;
+        transform: translateY(-2px);
+    }
+    
+    .factor.hole:hover {
+        background: #ffe0b2;
+    }
+    
+    .factor.asymptote:hover {
+        background: #ef9a9a;
+        transform: translateY(-2px);
+    }
+    
+    .factor.intercept:hover {
+        background: #a5d6a7;
+        transform: translateY(-2px);
+    }
+    
+    .factor:hover .delete-x {
+        display: block;
+    }
+}
+
+.controls {
+    margin-bottom: 20px;
+}
+
+.controls h3 {
+    color: #667eea;
+    margin-bottom: 12px;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+}
+
+.controls h3::before {
+    content: "▸";
+    margin-right: 6px;
+    font-size: 0.9em;
+}
+
+.btn {
+    width: 100%;
+    padding: 14px 16px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 48px;
+}
+
+.btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-success {
+    background: #4caf50;
+    color: white;
+}
+
+.btn-warning {
+    background: #ff9800;
+    color: white;
+}
+
+.btn-danger {
+    background: #f44336;
+    color: white;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.legend {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.legend h4 {
+    color: #667eea;
+    margin-bottom: 10px;
+    font-size: 0.95em;
+    font-weight: 600;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 0.9em;
+}
+
+.legend-symbol {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.instructions {
+    background: #e8eaf6;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
+.instructions strong {
+    color: #667eea;
+}
+
+/* Landscape orientation for iPads */
+@media (orientation: landscape) {
+    .main-content {
+        flex-direction: row;
+    }
+    
+    .controls-section {
+        width: 280px;
+        border-left: 2px solid #e0e0e0;
+        border-top: none;
+    }
+}
+
+/* Portrait orientation for iPads */
+@media (orientation: portrait) {
+    .main-content {
+        flex-direction: column;
+    }
+    
+    .graph-section {
+        flex: 0 0 60%;
+        min-height: 60%;
+    }
+    
+    .controls-section {
+        width: 100%;
+        flex: 1;
+        border-left: none;
+        border-top: 2px solid #e0e0e0;
+    }
+}
+
+/* Smaller iPads and phones */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 1.3em;
+    }
+    
+    .controls-section {
+        width: 100%;
+    }
+    
+    .btn {
+        padding: 12px 14px;
+        font-size: 0.95em;
+    }
+    
+    .equation {
+        font-size: 1em;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+    .header {
+        padding: 10px 12px;
+    }
+    
+    .header h1 {
+        font-size: 1.2em;
+    }
+    
+    .graph-section {
+        padding: 12px;
+    }
+    
+    .controls-section {
+        padding: 12px;
+    }
+}
+
+/* Prevent text selection on touch devices */
+.container {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Allow text selection only in equation */
+.equation {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+/* Smooth scrolling for controls */
+.controls-section {
+    scroll-behavior: smooth;
+}
