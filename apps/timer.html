@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classroom Timer</title>
+    <title>Study Timer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,12 +22,39 @@
             border-radius: 20px;
             text-align: center;
             backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            min-width: 400px;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 2em;
         }
         #display {
             font-size: 80px;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 30px 0;
             font-family: 'Courier New', monospace;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .presets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .preset-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .preset-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
         }
         .controls {
             margin: 20px 0;
@@ -42,19 +69,25 @@
             font-size: 18px;
             cursor: pointer;
             font-weight: bold;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         button:hover {
             transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        button:active {
+            transform: scale(0.98);
         }
         input {
-            padding: 10px;
+            padding: 12px;
             font-size: 18px;
-            border-radius: 5px;
-            border: none;
+            border-radius: 8px;
+            border: 2px solid white;
             width: 80px;
             text-align: center;
             margin: 5px;
+            background-color: rgba(255, 255, 255, 0.9);
         }
         .back-link {
             position: absolute;
@@ -63,6 +96,25 @@
             color: white;
             text-decoration: none;
             font-size: 18px;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        .back-link:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .status {
+            font-size: 18px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pulsing {
+            animation: pulse 1s infinite;
         }
     </style>
 </head>
@@ -70,44 +122,83 @@
     <a href="../webapps.html" class="back-link">← Back to Apps</a>
     
     <div class="timer-container">
-        <h1>⏱️ Classroom Timer</h1>
+        <h1>⏱️ Study Timer</h1>
         
+        <div class="status" id="status">Ready</div>
         <div id="display">05:00</div>
         
+        <div class="presets">
+            <button class="preset-btn" onclick="setPreset(5)">5 min<br>Quick Break</button>
+            <button class="preset-btn" onclick="setPreset(10)">10 min<br>Short Study</button>
+            <button class="preset-btn" onclick="setPreset(15)">15 min<br>Quiz Time</button>
+            <button class="preset-btn" onclick="setPreset(25)">25 min<br>Pomodoro</button>
+            <button class="preset-btn" onclick="setPreset(30)">30 min<br>Study Block</button>
+            <button class="preset-btn" onclick="setPreset(45)">45 min<br>Deep Work</button>
+        </div>
+        
         <div class="controls">
+            <label style="color: white;">Custom:</label>
             <input type="number" id="minutes" min="0" max="99" value="5" placeholder="Min">
             <input type="number" id="seconds" min="0" max="59" value="0" placeholder="Sec">
         </div>
         
         <div class="controls">
-            <button onclick="startTimer()">Start</button>
-            <button onclick="pauseTimer()">Pause</button>
-            <button onclick="resetTimer()">Reset</button>
+            <button onclick="startTimer()">▶️ Start</button>
+            <button onclick="pauseTimer()">⏸️ Pause</button>
+            <button onclick="resetTimer()">🔄 Reset</button>
         </div>
+        
+        <audio id="alarmSound" preload="auto">
+            <!-- Browser will use default notification sound -->
+        </audio>
     </div>
 
     <script>
-        let timeLeft = 300; // seconds
+        let timeLeft = 300;
         let timerInterval = null;
         let isRunning = false;
+        let originalTime = 300;
 
         function updateDisplay() {
             const mins = Math.floor(timeLeft / 60);
             const secs = timeLeft % 60;
-            document.getElementById('display').textContent = 
+            const display = document.getElementById('display');
+            display.textContent = 
                 `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            
+            // Update page title
+            document.title = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')} - Study Timer`;
+            
+            // Flash when time is running out
+            if (timeLeft <= 10 && timeLeft > 0 && isRunning) {
+                display.classList.add('pulsing');
+            } else {
+                display.classList.remove('pulsing');
+            }
+        }
+
+        function setPreset(minutes) {
+            pauseTimer();
+            document.getElementById('minutes').value = minutes;
+            document.getElementById('seconds').value = 0;
+            timeLeft = minutes * 60;
+            originalTime = timeLeft;
+            updateDisplay();
+            document.getElementById('status').textContent = 'Ready';
         }
 
         function startTimer() {
             if (!isRunning) {
-                if (timerInterval === null) {
-                    // Starting fresh - get values from inputs
+                if (timerInterval === null || timeLeft === 0) {
                     const minutes = parseInt(document.getElementById('minutes').value) || 0;
                     const seconds = parseInt(document.getElementById('seconds').value) || 0;
                     timeLeft = (minutes * 60) + seconds;
+                    originalTime = timeLeft;
                 }
                 
                 isRunning = true;
+                document.getElementById('status').textContent = 'Running...';
+                
                 timerInterval = setInterval(() => {
                     if (timeLeft > 0) {
                         timeLeft--;
@@ -116,7 +207,16 @@
                         clearInterval(timerInterval);
                         timerInterval = null;
                         isRunning = false;
-                        alert('Time\'s up!');
+                        document.getElementById('status').textContent = "Time's Up!";
+                        playAlarm();
+                        
+                        // Browser notification
+                        if ("Notification" in window && Notification.permission === "granted") {
+                            new Notification("Timer Complete!", {
+                                body: "Your study timer has finished!",
+                                icon: "⏱️"
+                            });
+                        }
                     }
                 }, 1000);
             }
@@ -125,6 +225,9 @@
         function pauseTimer() {
             clearInterval(timerInterval);
             isRunning = false;
+            if (timeLeft > 0) {
+                document.getElementById('status').textContent = 'Paused';
+            }
         }
 
         function resetTimer() {
@@ -134,7 +237,34 @@
             const minutes = parseInt(document.getElementById('minutes').value) || 0;
             const seconds = parseInt(document.getElementById('seconds').value) || 0;
             timeLeft = (minutes * 60) + seconds;
+            originalTime = timeLeft;
             updateDisplay();
+            document.getElementById('status').textContent = 'Ready';
+            document.title = 'Study Timer';
+        }
+
+        function playAlarm() {
+            // Play a simple beep using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        // Request notification permission
+        if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission();
         }
 
         updateDisplay();
