@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Yourself</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #fa709a;
+            margin-top: 0;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #fa709a;
+        }
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .tab.active {
+            background-color: #fa709a;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        textarea {
+            height: 150px;
+            resize: vertical;
+            font-family: monospace;
+        }
+        button {
+            background-color: #fa709a;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #e85d8a;
+        }
+        .question-display {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .question-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .answer-option {
+            background-color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 3px solid #ddd;
+            transition: all 0.3s;
+        }
+        .answer-option:hover {
+            border-color: #fa709a;
+            background-color: #fff5f8;
+        }
+        .answer-option.selected {
+            border-color: #fa709a;
+            background-color: #ffe6f0;
+        }
+        .answer-option.correct {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .answer-option.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .score-display {
+            text-align: center;
+            font-size: 28px;
+            color: #fa709a;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .instructions {
+            background-color: #e8f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <a href="../webapps.html" class="back-link">← Back to Apps</a>
+    
+    <div class="container">
+        <h1>✅ Quiz Yourself</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('create')">Create Quiz</button>
+            <button class="tab" onclick="showTab('take')">Take Quiz</button>
+        </div>
+
+        <!-- Create Tab -->
+        <div id="create" class="tab-content active">
+            <div class="instructions">
+                <strong>Format:</strong> Enter questions in this format:<br>
+                <code>Question text?</code><br>
+                <code>A) First answer</code><br>
+                <code>B) Second answer</code><br>
+                <code>C) Third answer</code><br>
+                <code>*D) Correct answer (put * before the correct one)</code><br>
+                <br>Leave a blank line between questions.
+            </div>
+            
+            <textarea id="quizInput" placeholder="What is 2 + 2?&#10;A) 3&#10;B) 5&#10;*C) 4&#10;D) 6&#10;&#10;What is the capital of France?&#10;A) London&#10;B) Berlin&#10;*C) Paris&#10;D) Madrid"></textarea>
+            
+            <button onclick="loadQuiz()">📥 Load Quiz</button>
+            <button onclick="clearQuiz()">🗑️ Clear</button>
+            
+            <p id="quizStatus" style="margin-top: 20px; color: #666;"></p>
+        </div>
+
+        <!-- Take Quiz Tab -->
+        <div id="take" class="tab-content">
+            <div class="score-display" id="scoreDisplay">Score: 0 / 0</div>
+            
+            <div class="question-display" id="questionDisplay" style="display: none;">
+                <div class="question-text" id="questionText"></div>
+                <div id="answersContainer"></div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="startQuiz()">▶️ Start Quiz</button>
+                <button onclick="nextQuestion()">Next Question ➡️</button>
+                <button onclick="showResults()">📊 Show Results</button>
+            </div>
+            
+            <div id="resultsDisplay" style="display: none; margin-top: 30px;">
+                <h2 style="text-align: center;">Quiz Complete!</h2>
+                <div id="finalScore" style="text-align: center; font-size: 36px; color: #fa709a; margin: 20px 0;"></div>
+                <div id="reviewAnswers"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let quiz = [];
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = [];
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function loadQuiz() {
+            const input = document.getElementById('quizInput').value.trim();
+            if (!input) {
+                alert('Please enter quiz questions!');
+                return;
+            }
+            
+            const questions = input.split('\n\n').filter(q => q.trim());
+            quiz = [];
+            
+            questions.forEach(questionBlock => {
+                const lines = questionBlock.split('\n').filter(l => l.trim());
+                if (lines.length < 2) return;
+                
+                const questionText = lines[0];
+                const answers = [];
+                let correctIndex = -1;
+                
+                for (let i = 1; i < lines.length; i++) {
+                    let line = lines[i].trim();
+                    let isCorrect = false;
+                    
+                    if (line.startsWith('*')) {
+                        isCorrect = true;
+                        line = line.substring(1).trim();
+                        correctIndex = answers.length;
+                    }
+                    
+                    // Remove letter prefix if present
+                    line = line.replace(/^[A-Z]\)\s*/, '');
+                    
+                    answers.push({
+                        text: line,
+                        correct: isCorrect
+                    });
+                }
+                
+                if (correctIndex >= 0) {
+                    quiz.push({
+                        question: questionText,
+                        answers: answers,
+                        correctIndex: correctIndex
+                    });
+                }
+            });
+            
+            if (quiz.length > 0) {
+                document.getElementById('quizStatus').textContent = 
+                    `✓ ${quiz.length} question${quiz.length !== 1 ? 's' : ''} loaded! Switch to "Take Quiz" to start.`;
+            } else {
+                alert('No valid questions found. Check your format!');
+            }
+        }
+
+        function clearQuiz() {
+            if (confirm('Clear the quiz?')) {
+                document.getElementById('quizInput').value = '';
+                quiz = [];
+                document.getElementById('quizStatus').textContent = '';
+            }
+        }
+
+        function startQuiz() {
+            if (quiz.length === 0) {
+                alert('Please create a quiz first in the Create Quiz tab!');
+                return;
+            }
+            
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = [];
+            document.getElementById('resultsDisplay').style.display = 'none';
+            document.getElementById('questionDisplay').style.display = 'block';
+            
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            if (currentQuestion >= quiz.length) {
+                showResults();
+                return;
+            }
+            
+            const q = quiz[currentQuestion];
+            document.getElementById('questionText').textContent = 
+                `Question ${currentQuestion + 1} of ${quiz.length}: ${q.question}`;
+            
+            const container = document.getElementById('answersContainer');
+            container.innerHTML = '';
+            
+            q.answers.forEach((answer, index) => {
+                const div = document.createElement('div');
+                div.className = 'answer-option';
+                div.textContent = answer.text;
+                div.onclick = () => selectAnswer(index);
+                container.appendChild(div);
+            });
+            
+            updateScore();
+        }
+
+        function selectAnswer(index) {
+            const q = quiz[currentQuestion];
+            userAnswers[currentQuestion] = index;
+            
+            const options = document.querySelectorAll('.answer-option');
+            options.forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            if (index === q.correctIndex) {
+                options[index].classList.add('correct');
+                score++;
+            } else {
+                options[index].classList.add('incorrect');
+                options[q.correctIndex].classList.add('correct');
+            }
+            
+            updateScore();
+            
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < quiz.length) {
+                    displayQuestion();
+                } else {
+                    setTimeout(showResults, 1000);
+                }
+            }, 1500);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quiz.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('scoreDisplay').textContent = 
+                `Score: ${score} / ${quiz.length}`;
+        }
+
+        function showResults() {
+            document.getElementById('questionDisplay').style.display = 'none';
+            document.getElementById('resultsDisplay').style.display = 'block';
+            
+            const percentage = quiz.length > 0 ? ((score / quiz.length) * 100).toFixed(1) : 0;
+            document.getElementById('finalScore').textContent = 
+                `${score} / ${quiz.length} (${percentage}%)`;
+            
+            const reviewDiv = document.getElementById('reviewAnswers');
+            reviewDiv.innerHTML = '<h3>Review:</h3>';
+            
+            quiz.forEach((q, index) => {
+                const userAnswer = userAnswers[index];
+                const correct = userAnswer === q.correctIndex;
+                
+                const div = document.createElement('div');
+                div.style.padding = '15px';
+                div.style.margin = '10px 0';
+                div.style.borderRadius = '8px';
+                div.style.backgroundColor = correct ? '#d4edda' : '#f8d7da';
+                
+                div.innerHTML = `
+                    <strong>Q${index + 1}: ${q.question}</strong><br>
+                    Your answer: ${userAnswer !== undefined ? q.answers[userAnswer].text : 'Not answered'}<br>
+                    ${!correct ? `Correct answer: ${q.answers[q.correctIndex].text}` : '✓ Correct!'}
+                `;
+                
+                reviewDiv.appendChild(div);
+            });
+        }
+
+        // Load sample quiz
+        document.getElementById('quizInput').value = 
+`What is 2 + 2?
+A) 3
+B) 5
+*C) 4
+D) 6
+
+What is the capital of France?
+A) London
+B) Berlin
+*C) Paris
+D) Madrid
+
+Which planet is known as the Red Planet?
+A) Venus
+B) Jupiter
+*C) Mars
+D) Saturn`;
+    </script>
+</body>
+</html>
