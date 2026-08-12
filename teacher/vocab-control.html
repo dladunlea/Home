@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #f5576c;
+            text-align: center;
+            margin-top: 0;
+        }
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .course-section {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-top: 5px solid #f5576c;
+        }
+        .course-section h2 {
+            color: #f5576c;
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+        .info-box {
+            background-color: #d1ecf1;
+            border: 2px solid #17a2b8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: #0c5460;
+            font-size: 14px;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: monospace;
+            resize: vertical;
+            margin: 15px 0;
+        }
+        button {
+            background-color: #f5576c;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px 5px 5px 0;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #e04560;
+        }
+        .secondary-btn {
+            background-color: #6c757d;
+        }
+        .secondary-btn:hover {
+            background-color: #5a6268;
+        }
+        .status-message {
+            background-color: #d4edda;
+            border: 2px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: #155724;
+            display: none;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #f5576c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .word-count {
+            color: #666;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="teacher-hub.html" class="back-link">← Back to Hub</a>
+        
+        <h1>📚 Vocabulary Control</h1>
+        
+        <div class="info-box">
+            <strong>Instructions:</strong> Enter vocabulary words in the format: <code>word : definition</code> (one per line).
+            Students will see these words in their Vocab Practice app for flashcards and matching games.
+        </div>
+
+        <div class="courses-grid">
+            <!-- Physics Vocabulary -->
+            <div class="course-section">
+                <h2>🧬 Physics Vocabulary</h2>
+                <textarea id="physicsVocab" placeholder="force : a push or pull on an object&#10;velocity : speed in a given direction&#10;acceleration : rate of change of velocity&#10;momentum : mass times velocity"></textarea>
+                <div class="word-count" id="physicsCount">0 words</div>
+                <button onclick="saveVocab('physics')">💾 Save Physics Vocab</button>
+                <button class="secondary-btn" onclick="loadVocab('physics')">📂 Load Saved</button>
+                <button class="secondary-btn" onclick="clearVocab('physics')">🗑️ Clear</button>
+                <div class="status-message" id="physicsStatus"></div>
+            </div>
+
+            <!-- Math Vocabulary -->
+            <div class="course-section">
+                <h2>📐 Math Vocabulary</h2>
+                <textarea id="mathVocab" placeholder="polynomial : an expression with multiple terms&#10;coefficient : number multiplying a variable&#10;exponent : power to which a number is raised&#10;asymptote : a line that a graph approaches but never touches"></textarea>
+                <div class="word-count" id="mathCount">0 words</div>
+                <button onclick="saveVocab('math')">💾 Save Math Vocab</button>
+                <button class="secondary-btn" onclick="loadVocab('math')">📂 Load Saved</button>
+                <button class="secondary-btn" onclick="clearVocab('math')">🗑️ Clear</button>
+                <div class="status-message" id="mathStatus"></div>
+            </div>
+
+            <!-- Music Vocabulary -->
+            <div class="course-section">
+                <h2>🎵 Music Vocabulary</h2>
+                <textarea id="musicVocab" placeholder="tempo : the speed of a musical piece&#10;dynamics : the volume of sound in music&#10;melody : a sequence of notes that is musically satisfying&#10;harmony : notes played simultaneously to support melody"></textarea>
+                <div class="word-count" id="musicCount">0 words</div>
+                <button onclick="saveVocab('music')">💾 Save Music Vocab</button>
+                <button class="secondary-btn" onclick="loadVocab('music')">📂 Load Saved</button>
+                <button class="secondary-btn" onclick="clearVocab('music')">🗑️ Clear</button>
+                <div class="status-message" id="musicStatus"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function countWords(text) {
+            const lines = text.split('\n').filter(line => {
+                const trimmed = line.trim();
+                return trimmed !== '' && trimmed.includes(':');
+            });
+            return lines.length;
+        }
+
+        function updateWordCount(subject) {
+            const textarea = document.getElementById(`${subject}Vocab`);
+            const count = countWords(textarea.value);
+            document.getElementById(`${subject}Count`).textContent = `${count} word${count !== 1 ? 's' : ''}`;
+        }
+
+        function saveVocab(subject) {
+            const textarea = document.getElementById(`${subject}Vocab`);
+            const content = textarea.value.trim();
+            
+            if (!content) {
+                alert('Please enter some vocabulary words first!');
+                return;
+            }
+
+            // Validate format
+            const lines = content.split('\n').filter(line => line.trim() !== '');
+            let hasError = false;
+            
+            lines.forEach((line, index) => {
+                if (!line.includes(':')) {
+                    alert(`Error on line ${index + 1}: Missing colon (:) separator.\nFormat should be: word : definition`);
+                    hasError = true;
+                }
+            });
+
+            if (hasError) return;
+
+            // Save to localStorage
+            localStorage.setItem(`teacherVocab_${subject}`, content);
+            
+            // Show success message
+            const statusDiv = document.getElementById(`${subject}Status`);
+            const wordCount = countWords(content);
+            statusDiv.textContent = `✓ Saved ${wordCount} word${wordCount !== 1 ? 's' : ''} successfully! Students can now see them.`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+
+            updateWordCount(subject);
+        }
+
+        function loadVocab(subject) {
+            const saved = localStorage.getItem(`teacherVocab_${subject}`);
+            
+            if (saved) {
+                document.getElementById(`${subject}Vocab`).value = saved;
+                updateWordCount(subject);
+                
+                const statusDiv = document.getElementById(`${subject}Status`);
+                statusDiv.textContent = '✓ Loaded saved vocabulary!';
+                statusDiv.style.display = 'block';
+                
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 2000);
+            } else {
+                alert(`No saved ${subject} vocabulary found.`);
+            }
+        }
+
+        function clearVocab(subject) {
+            if (confirm(`Clear all ${subject} vocabulary? This will also clear it from localStorage.`)) {
+                document.getElementById(`${subject}Vocab`).value = '';
+                localStorage.removeItem(`teacherVocab_${subject}`);
+                updateWordCount(subject);
+                
+                const statusDiv = document.getElementById(`${subject}Status`);
+                statusDiv.textContent = '✓ Vocabulary cleared!';
+                statusDiv.style.display = 'block';
+                
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        // Add input listeners to update word counts
+        ['physics', 'math', 'music'].forEach(subject => {
+            const textarea = document.getElementById(`${subject}Vocab`);
+            textarea.addEventListener('input', () => updateWordCount(subject));
+        });
+
+        // Load saved vocabulary on page load
+        window.addEventListener('load', () => {
+            ['physics', 'math', 'music'].forEach(subject => {
+                const saved = localStorage.getItem(`teacherVocab_${subject}`);
+                if (saved) {
+                    document.getElementById(`${subject}Vocab`).value = saved;
+                }
+                updateWordCount(subject);
+            });
+        });
+
+        // Load sample data for testing
+        document.getElementById('physicsVocab').value = 
+`force : a push or pull on an object
+velocity : speed in a given direction
+acceleration : rate of change of velocity
+momentum : mass times velocity
+energy : the ability to do work
+power : rate at which work is done`;
+
+        document.getElementById('mathVocab').value = 
+`polynomial : an expression with multiple terms
+coefficient : number multiplying a variable
+exponent : power to which a number is raised
+asymptote : a line that a graph approaches but never touches
+vertex : the turning point of a parabola
+intercept : where a graph crosses an axis`;
+
+        document.getElementById('musicVocab').value = 
+`tempo : the speed of a musical piece
+dynamics : the volume of sound in music
+melody : a sequence of notes that is musically satisfying
+harmony : notes played simultaneously to support melody
+rhythm : pattern of sounds and silences in time
+pitch : how high or low a sound is`;
+
+        // Update all counts
+        ['physics', 'math', 'music'].forEach(updateWordCount);
+    </script>
+</body>
+</html>
