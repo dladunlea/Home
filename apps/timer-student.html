@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Much Time Is Left?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            min-width: 500px;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        #display {
+            font-size: 120px;
+            font-weight: bold;
+            margin: 40px 0;
+            font-family: 'Courier New', monospace;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+        .status {
+            font-size: 24px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .animation-selector {
+            margin: 30px 0;
+        }
+        .animation-selector h3 {
+            margin-bottom: 15px;
+        }
+        .animation-options {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .animation-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 3px solid white;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        .animation-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        .animation-btn.selected {
+            background-color: white;
+            color: #667eea;
+        }
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            font-size: 80px;
+        }
+        .celebration.active {
+            display: flex;
+        }
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        .bounce {
+            animation: bounce 0.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <a href="javascript:history.back()" class="back-link">← Back</a>
+    
+    <div class="container">
+        <h1>⏱️ How Much Time Is Left?</h1>
+        
+        <div class="status" id="status">Waiting for teacher to start timer...</div>
+        <div id="display">--:--</div>
+        
+        <div class="animation-selector">
+            <h3>Choose Your Celebration Animation:</h3>
+            <div class="animation-options">
+                <button class="animation-btn selected" onclick="selectAnimation('confetti')">🎉 Confetti</button>
+                <button class="animation-btn" onclick="selectAnimation('star')">⭐ Star</button>
+                <button class="animation-btn" onclick="selectAnimation('fire')">🔥 Fire</button>
+                <button class="animation-btn" onclick="selectAnimation('trophy')">🏆 Trophy</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration">
+        <div id="celebrationEmoji" class="bounce">🎉</div>
+    </div>
+
+    <script>
+        let selectedAnimation = 'confetti';
+        const animations = {
+            'confetti': '🎉',
+            'star': '⭐',
+            'fire': '🔥',
+            'trophy': '🏆'
+        };
+
+        function selectAnimation(type) {
+            selectedAnimation = type;
+            document.querySelectorAll('.animation-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        function updateDisplay() {
+            // Check localStorage for teacher's timer
+            const timerData = localStorage.getItem('teacherTimer');
+            
+            if (timerData) {
+                const data = JSON.parse(timerData);
+                const now = Date.now();
+                const timeLeft = Math.max(0, data.endTime - now);
+                
+                if (timeLeft > 0) {
+                    const mins = Math.floor(timeLeft / 60000);
+                    const secs = Math.floor((timeLeft % 60000) / 1000);
+                    document.getElementById('display').textContent = 
+                        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                    document.getElementById('status').textContent = 'Timer Running...';
+                    document.getElementById('celebration').classList.remove('active');
+                } else {
+                    document.getElementById('display').textContent = '00:00';
+                    document.getElementById('status').textContent = "Time's Up!";
+                    showCelebration();
+                }
+            } else {
+                document.getElementById('display').textContent = '--:--';
+                document.getElementById('status').textContent = 'Waiting for teacher to start timer...';
+            }
+        }
+
+        function showCelebration() {
+            const celebration = document.getElementById('celebration');
+            const emoji = document.getElementById('celebrationEmoji');
+            emoji.textContent = animations[selectedAnimation];
+            celebration.classList.add('active');
+        }
+
+        // Update every second
+        setInterval(updateDisplay, 1000);
+        updateDisplay();
+    </script>
+</body>
+</html>
