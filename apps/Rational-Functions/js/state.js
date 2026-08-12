@@ -115,41 +115,41 @@ export class AppState {
     }
 
     zoom(factor, centerX, centerY, config) {
-    const xRange = this.xMax - this.xMin;
-    const yRange = this.yMax - this.yMin;
-    
-    let newXRange = xRange * factor;
-    let newYRange = yRange * factor;
-    
-    const minRange = config.graph.minZoom;
-    const maxRange = config.graph.maxZoom;
-    
-    newXRange = Math.max(minRange, Math.min(maxRange, newXRange));
-    newYRange = Math.max(minRange, Math.min(maxRange, newYRange));
-    
-    const xRatio = (centerX - this.xMin) / xRange;
-    const yRatio = (centerY - this.yMin) / yRange;
-    
-    this.xMin = centerX - newXRange * xRatio;
-    this.xMax = centerX + newXRange * (1 - xRatio);
-    this.yMin = centerY - newYRange * yRatio;
-    this.yMax = centerY + newYRange * (1 - yRatio);
-    
-    // Enforce absolute bounds
-    this.xMin = Math.max(config.graph.absoluteXMin, this.xMin);
-    this.xMax = Math.min(config.graph.absoluteXMax, this.xMax);
-    this.yMin = Math.max(config.graph.absoluteYMin, this.yMin);
-    this.yMax = Math.min(config.graph.absoluteYMax, this.yMax);
-}
+        const xRange = this.xMax - this.xMin;
+        const yRange = this.yMax - this.yMin;
+        
+        let newXRange = xRange * factor;
+        let newYRange = yRange * factor;
+        
+        const minRange = config.graph.minZoom;
+        const maxRange = config.graph.maxZoom;
+        
+        newXRange = Math.max(minRange, Math.min(maxRange, newXRange));
+        newYRange = Math.max(minRange, Math.min(maxRange, newYRange));
+        
+        const xRatio = (centerX - this.xMin) / xRange;
+        const yRatio = (centerY - this.yMin) / yRange;
+        
+        this.xMin = centerX - newXRange * xRatio;
+        this.xMax = centerX + newXRange * (1 - xRatio);
+        this.yMin = centerY - newYRange * yRatio;
+        this.yMax = centerY + newYRange * (1 - yRatio);
+        
+        // Enforce absolute bounds
+        this.xMin = Math.max(config.graph.absoluteXMin, this.xMin);
+        this.xMax = Math.min(config.graph.absoluteXMax, this.xMax);
+        this.yMin = Math.max(config.graph.absoluteYMin, this.yMin);
+        this.yMax = Math.min(config.graph.absoluteYMax, this.yMax);
+    }
 
     resetZoom(config) {
-    // Always reset to default symmetric bounds centered on origin
-    this.xMin = -10;
-    this.xMax = 10;
-    this.yMin = -10;
-    this.yMax = 10;
-    this.saveState();
-}
+        // Always reset to default symmetric bounds centered on origin
+        this.xMin = -10;
+        this.xMax = 10;
+        this.yMin = -10;
+        this.yMax = 10;
+        this.saveState();
+    }
 
     startShiftDrag(x, y) {
         this.shiftDragging = true;

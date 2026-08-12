@@ -193,47 +193,47 @@ export class EventHandlers {
     }
 
     updatePanning(x, y) {
-    if (!this.isPanning || !this.panStart) return;
-    
-    const deltaX = x - this.panStart.x;
-    const deltaY = y - this.panStart.y;
-    
-    // Convert pixel delta to graph units
-    const xRange = this.panStartBounds.xMax - this.panStartBounds.xMin;
-    const yRange = this.panStartBounds.yMax - this.panStartBounds.yMin;
-    
-    const graphDeltaX = -(deltaX / this.coordSystem.graphWidth) * xRange;
-    const graphDeltaY = (deltaY / this.coordSystem.graphHeight) * yRange;
-    
-    this.state.xMin = this.panStartBounds.xMin + graphDeltaX;
-    this.state.xMax = this.panStartBounds.xMax + graphDeltaX;
-    this.state.yMin = this.panStartBounds.yMin + graphDeltaY;
-    this.state.yMax = this.panStartBounds.yMax + graphDeltaY;
-    
-    // Enforce absolute bounds
-    const absXMin = this.config.graph.absoluteXMin;
-    const absXMax = this.config.graph.absoluteXMax;
-    const absYMin = this.config.graph.absoluteYMin;
-    const absYMax = this.config.graph.absoluteYMax;
-    
-    if (this.state.xMin < absXMin) {
-        this.state.xMax += (absXMin - this.state.xMin);
-        this.state.xMin = absXMin;
-    }
-    if (this.state.xMax > absXMax) {
-        this.state.xMin -= (this.state.xMax - absXMax);
-        this.state.xMax = absXMax;
-    }
-    if (this.state.yMin < absYMin) {
-        this.state.yMax += (absYMin - this.state.yMin);
-        this.state.yMin = absYMin;
-    }
-    if (this.state.yMax > absYMax) {
-        this.state.yMin -= (this.state.yMax - absYMax);
-        this.state.yMax = absYMax;
-    }
-    
-    this.onUpdate();
+        if (!this.isPanning || !this.panStart) return;
+        
+        const deltaX = x - this.panStart.x;
+        const deltaY = y - this.panStart.y;
+        
+        // Convert pixel delta to graph units
+        const xRange = this.panStartBounds.xMax - this.panStartBounds.xMin;
+        const yRange = this.panStartBounds.yMax - this.panStartBounds.yMin;
+        
+        const graphDeltaX = -(deltaX / this.coordSystem.graphWidth) * xRange;
+        const graphDeltaY = (deltaY / this.coordSystem.graphHeight) * yRange;
+        
+        this.state.xMin = this.panStartBounds.xMin + graphDeltaX;
+        this.state.xMax = this.panStartBounds.xMax + graphDeltaX;
+        this.state.yMin = this.panStartBounds.yMin + graphDeltaY;
+        this.state.yMax = this.panStartBounds.yMax + graphDeltaY;
+        
+        // Enforce absolute bounds
+        const absXMin = this.config.graph.absoluteXMin;
+        const absXMax = this.config.graph.absoluteXMax;
+        const absYMin = this.config.graph.absoluteYMin;
+        const absYMax = this.config.graph.absoluteYMax;
+        
+        if (this.state.xMin < absXMin) {
+            this.state.xMax += (absXMin - this.state.xMin);
+            this.state.xMin = absXMin;
+        }
+        if (this.state.xMax > absXMax) {
+            this.state.xMin -= (this.state.xMax - absXMax);
+            this.state.xMax = absXMax;
+        }
+        if (this.state.yMin < absYMin) {
+            this.state.yMax += (absYMin - this.state.yMin);
+            this.state.yMin = absYMin;
+        }
+        if (this.state.yMax > absYMax) {
+            this.state.yMin -= (this.state.yMax - absYMax);
+            this.state.yMax = absYMax;
+        }
+        
+        this.onUpdate();
     }
 
     stopPanning() {
