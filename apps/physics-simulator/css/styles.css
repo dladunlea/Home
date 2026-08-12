@@ -1,0 +1,156 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+h1 {
+    color: white;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    font-size: clamp(1.2rem, 3vw, 2rem);
+}
+
+.container {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: min(90vw, 90vh);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 15px;
+    width: 100%;
+    aspect-ratio: 1;
+    flex: 1;
+}
+
+.canvas-wrapper {
+    position: relative;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+    min-width: 0;
+}
+
+canvas {
+    border-radius: 6px;
+    display: block;
+    cursor: crosshair;
+    margin: 0 auto;
+}
+
+.graph-buttons {
+    display: flex;
+    gap: 4px;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: 2px solid #ddd;
+    border-radius: 6px 6px 0 0;
+    flex-shrink: 0;
+}
+
+.graph-btn {
+    flex: 1;
+    padding: 6px 8px;
+    background: #e0e0e0;
+    color: #555;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: clamp(10px, 1.2vw, 12px);
+    font-weight: bold;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.graph-btn:hover {
+    background: #d0d0d0;
+    transform: translateY(-1px);
+}
+
+.graph-btn.active-time {
+    background: #9C27B0;
+    color: white;
+    box-shadow: 0 2px 8px rgba(156, 39, 176, 0.4);
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 5px;
+    }
+    
+    h1 {
+        margin-bottom: 10px;
+    }
+    
+    .container {
+        padding: 10px;
+        max-width: 95vw;
+    }
+    
+    .grid-container {
+        gap: 10px;
+    }
+    
+    .graph-buttons {
+        padding: 4px;
+        gap: 3px;
+    }
+    
+    .graph-btn {
+        padding: 5px 6px;
+        font-size: 9px;
+    }
+}
+
+@media (max-height: 700px) {
+    h1 {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+    
+    .grid-container {
+        gap: 10px;
+    }
+}
+
+@media (orientation: portrait) {
+    .container {
+        max-width: 95vw;
+    }
+}
+
+@media (orientation: landscape) {
+    .container {
+        max-width: min(85vw, 85vh);
+    }
+}

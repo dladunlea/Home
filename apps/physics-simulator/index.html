@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Motion Simulator</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Prevent initial overflow */
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Physics Motion Simulator</h1>
+    
+    <div class="container">
+        <div class="grid-container">
+            <!-- Top Left: Y Position (horizontal) -->
+            <div class="canvas-wrapper">
+                <canvas id="yCanvas" width="100" height="100"></canvas>
+            </div>
+            
+            <!-- Top Right: XY Position Grid -->
+            <div class="canvas-wrapper">
+                <canvas id="xyCanvas" width="100" height="100"></canvas>
+            </div>
+            
+            <!-- Bottom Left: Time Graph (toggleable) -->
+            <div class="canvas-wrapper">
+                <div class="graph-buttons">
+                    <button class="graph-btn active-time" id="btnYT">y(t)</button>
+                    <button class="graph-btn" id="btnXT">x(t)</button>
+                    <button class="graph-btn" id="btnTX">t(x)</button>
+                </div>
+                <canvas id="timeCanvas" width="100" height="100"></canvas>
+            </div>
+            
+            <!-- Bottom Right: X Position (horizontal) -->
+            <div class="canvas-wrapper">
+                <canvas id="xCanvas" width="100" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/physics.js"></script>
+    <script src="js/graphics.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
