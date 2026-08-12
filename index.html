@@ -3,81 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr./Ms. [Your Name]'s Classroom</title>
+    <title>Welcome - Mr./Ms. [Your Name]</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
-            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
         }
         header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 20px;
             text-align: center;
-            border-radius: 8px;
+            color: white;
+            margin-bottom: 50px;
         }
-        .section {
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .card {
             background-color: white;
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
-        h2 {
-            color: #4CAF50;
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        .card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+        .teacher-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .teacher-card h2 {
+            color: white;
+        }
+        .teacher-card p {
+            color: rgba(255, 255, 255, 0.95);
+        }
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to [Your Name]'s Classroom</h1>
-        <p>[Subject] | [Grade Level]</p>
-    </header>
+    <div class="container">
+        <header>
+            <h1>Welcome to My Classes</h1>
+            <p>Select your course below</p>
+        </header>
 
-    <div class="section">
-        <h2>About This Class</h2>
-        <p>Welcome! This website contains important information about our class.</p>
-    </div>
+        <div class="cards-grid">
+            <a href="physics.html" class="card">
+                <div class="card-icon">🧬</div>
+                <h2>Physics of the Human Body</h2>
+                <p>Explore the physics principles that govern how our bodies work</p>
+            </a>
 
-    <div class="section">
-        <h2>Weekly Schedule</h2>
-        <ul>
-            <li>Monday: [Topic]</li>
-            <li>Tuesday: [Topic]</li>
-            <li>Wednesday: [Topic]</li>
-            <li>Thursday: [Topic]</li>
-            <li>Friday: [Topic]</li>
-        </ul>
-    </div>
+            <a href="math.html" class="card">
+                <div class="card-icon">📐</div>
+                <h2>Integrated Math 2</h2>
+                <p>Building mathematical understanding through integrated concepts</p>
+            </a>
 
-    <div class="section">
-        <h2>Upcoming Assignments</h2>
-        <ul>
-            <li>Assignment 1 - Due: [Date]</li>
-            <li>Assignment 2 - Due: [Date]</li>
-        </ul>
-    </div>
-    
-    <div class="section">
-        <h2>🚀 Web Apps</h2>
-        <p>Check out our <a href="webapps.html">interactive web applications</a> for practice and fun learning activities!</p>
-    </div>
-    
-    <div class="section">
-        <h2>Resources</h2>
-        <ul>
-            <li><a href="#">Helpful Link 1</a></li>
-            <li><a href="#">Helpful Link 2</a></li>
-        </ul>
+            <div class="card teacher-card" onclick="teacherLogin()">
+                <div class="card-icon">👨‍🏫</div>
+                <h2>Teacher Apps</h2>
+                <p>Control panel for timers, polls, and vocabulary</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 - All Rights Reserved</p>
+        </footer>
     </div>
 
-    <div class="section">
-        <h2>Contact</h2>
-        <p>Email: [your.email@school.edu]</p>
-        <p>Office Hours: [Times]</p>
-    </div>
+    <script>
+        function teacherLogin() {
+            const code = prompt('Enter teacher access code:');
+            if (code === '0') {
+                window.location.href = 'teacher/teacher-hub.html';
+            } else if (code !== null) {
+                alert('Incorrect code');
+            }
+        }
+    </script>
 </body>
 </html>
