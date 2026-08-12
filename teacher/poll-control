@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poll Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #38f9d7;
+            text-align: center;
+            margin-top: 0;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        .section h2 {
+            color: #38f9d7;
+            margin-top: 0;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        button {
+            background-color: #38f9d7;
+            color: #333;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px 5px 10px 0;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #2de0c2;
+        }
+        .danger-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .danger-btn:hover {
+            background-color: #c82333;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #38f9d7;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .results-display {
+            margin-top: 20px;
+        }
+        .result-item {
+            background-color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #38f9d7;
+        }
+        .results-bar {
+            background-color: #e9ecef;
+            height: 30px;
+            border-radius: 15px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .results-fill {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+            color: #333;
+            font-weight: bold;
+        }
+        .status-message {
+            background-color: #d4edda;
+            border: 2px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: #155724;
+        }
+        .info-box {
+            background-color: #d1ecf1;
+            border: 2px solid #17a2b8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="teacher-hub.html" class="back-link">← Back to Hub</a>
+        
+        <h1>📊 Poll Control</h1>
+        
+        <!-- Create Poll Section -->
+        <div class="section">
+            <h2>Create New Poll</h2>
+            <div class="info-box">
+                <strong>How it works:</strong> Create a poll here, and students can vote on the Poll Student page. Results update in real-time!
+            </div>
+            
+            <input type="text" id="pollQuestion" placeholder="Enter your poll question (e.g., What's your favorite lab activity?)">
+            
+            <p><strong>Options (one per line):</strong></p>
+            <textarea id="pollOptions" placeholder="Dissection&#10;Circuit building&#10;Chemical reactions&#10;Physics experiments"></textarea>
+            
+            <button onclick="createPoll()">✨ Create & Activate Poll</button>
+            <button onclick="clearForm()">🗑️ Clear Form</button>
+        </div>
+
+        <!-- Current Poll Section -->
+        <div class="section">
+            <h2>Current Active Poll</h2>
+            <div id="currentPoll">
+                <p style="color: #666;">No active poll</p>
+            </div>
+            
+            <button onclick="refreshResults()">🔄 Refresh Results</button>
+            <button class="danger-btn" onclick="resetPoll()">🔄 Reset Votes</button>
+            <button class="danger-btn" onclick="deletePoll()">🗑️ Delete Poll</button>
+        </div>
+    </div>
+
+    <script>
+        function createPoll() {
+            const question = document.getElementById('pollQuestion').value.trim();
+            const optionsText = document.getElementById('pollOptions').value.trim();
+            
+            if (!question) {
+                alert('Please enter a poll question!');
+                return;
+            }
+            
+            const options = optionsText.split('\n').filter(opt => opt.trim() !== '');
+            
+            if (options.length < 2) {
+                alert('Please enter at least 2 options!');
+                return;
+            }
+            
+            const poll = {
+                question: question,
+                options: options,
+                votes: new Array(options.length).fill(0),
+                created: Date.now()
+            };
+            
+            localStorage.setItem('teacherPoll', JSON.stringify(poll));
+            
+            alert('Poll created and activated! Students can now vote.');
+            clearForm();
+            displayCurrentPoll();
+        }
+
+        function clearForm() {
+            document.getElementById('pollQuestion').value = '';
+            document.getElementById('pollOptions').value = '';
+        }
+
+        function displayCurrentPoll() {
+            const pollData = localStorage.getItem('teacherPoll');
+            
+            if (!pollData) {
+                document.getElementById('currentPoll').innerHTML = 
+                    '<p style="color: #666;">No active poll</p>';
+                return;
+            }
+            
+            const poll = JSON.parse(pollData);
+            const totalVotes = poll.votes.reduce((a, b) => a + b, 0);
+            
+            let html = `
+                <div style="background-color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="color: #38f9d7; margin-top: 0;">${poll.question}</h3>
+                    <p style="color: #666;">Total Votes: <strong>${totalVotes}</strong></p>
+                </div>
+                <div class="results-display">
+            `;
+            
+            poll.options.forEach((option, index) => {
+                const votes = poll.votes[index];
+                const percentage = totalVotes > 0 ? (votes / totalVotes * 100).toFixed(1) : 0;
+                
+                html += `
+                    <div class="result-item">
+                        <div><strong>${option}</strong> - ${votes} vote${votes !== 1 ? 's' : ''}</div>
+                        <div class="results-bar">
+                            <div class="results-fill" style="width: ${percentage}%">
+                                ${percentage}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            document.getElementById('currentPoll').innerHTML = html;
+        }
+
+        function refreshResults() {
+            displayCurrentPoll();
+        }
+
+        function resetPoll() {
+            if (!confirm('Reset all votes to zero? The poll question and options will remain.')) {
+                return;
+            }
+            
+            const pollData = localStorage.getItem('teacherPoll');
+            if (!pollData) {
+                alert('No active poll to reset.');
+                return;
+            }
+            
+            const poll = JSON.parse(pollData);
+            poll.votes = new Array(poll.options.length).fill(0);
+            localStorage.setItem('teacherPoll', JSON.stringify(poll));
+            
+            alert('Poll votes reset to zero!');
+            displayCurrentPoll();
+        }
+
+        function deletePoll() {
+            if (!confirm('Delete the current poll completely? This cannot be undone.')) {
+                return;
+            }
+            
+            localStorage.removeItem('teacherPoll');
+            alert('Poll deleted!');
+            displayCurrentPoll();
+        }
+
+        // Auto-refresh results every 3 seconds
+        setInterval(displayCurrentPoll, 3000);
+        
+        // Initialize
+        displayCurrentPoll();
+
+        // Load sample data for testing
+        document.getElementById('pollQuestion').value = "What's your favorite lab activity?";
+        document.getElementById('pollOptions').value = "Dissection\nCircuit building\nChemical reactions\nPhysics experiments";
+    </script>
+</body>
+</html>
