@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Poll</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #38f9d7;
+            margin-top: 0;
+        }
+        .info-box {
+            background-color: #d4edda;
+            border: 2px solid #28a745;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .info-box strong {
+            color: #155724;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #38f9d7;
+            color: #333;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2de0c2;
+        }
+        .poll-option {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .poll-option:hover {
+            background-color: #e2f9f3;
+            border-color: #38f9d7;
+        }
+        .poll-option.voted {
+            background-color: #d4edda;
+            border-color: #28a745;
+        }
+        .vote-count {
+            background-color: #38f9d7;
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .results-bar {
+            background-color: #e9ecef;
+            height: 30px;
+            border-radius: 15px;
+            margin: 10px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .results-fill {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+            color: #333;
+            font-weight: bold;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .view-toggle {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <a href="../webapps.html" class="back-link">← Back to Apps</a>
+    
+    <div class="container">
+        <h1>📊 Quick Poll</h1>
+        
+        <div class="info-box">
+            <strong>💡 How it works:</strong> Create a poll, share your screen or the link, and see results update in real-time! 
+            Perfect for quick class feedback or group decisions. All data stays in your browser session only.
+        </div>
+
+        <div class="view-toggle">
+            <button onclick="showSection('create')">Create New Poll</button>
+            <button onclick="showSection('vote')">Vote on Poll</button>
+            <button onclick="showSection('results')">View Results</button>
+        </div>
+
+        <!-- Create Poll Section -->
+        <div id="create" class="section active">
+            <h2>Create a Poll</h2>
+            <input type="text" id="pollQuestion" placeholder="Enter your question (e.g., What's your favorite subject?)">
+            
+            <p><strong>Options (one per line):</strong></p>
+            <textarea id="pollOptions" placeholder="Math&#10;Science&#10;English&#10;History"></textarea>
+            
+            <button onclick="createPoll()">✨ Create Poll</button>
+        </div>
+
+        <!-- Voting Section -->
+        <div id="vote" class="section">
+            <h2 id="voteQuestion">Poll Question</h2>
+            <div id="voteOptions"></div>
+            <p id="voteStatus" style="text-align: center; color: #28a745; font-weight: bold; margin-top: 20px;"></p>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="section">
+            <h2 id="resultsQuestion">Poll Results</h2>
+            <div id="resultsDisplay"></div>
+            <p style="text-align: center; color: #666; margin-top: 20px;">
+                Total Votes: <strong id="totalVotes">0</strong>
+            </p>
+            <button onclick="resetPoll()">🔄 Reset Poll</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPoll = {
+            question: '',
+            options: [],
+            votes: []
+        };
+
+        function showSection(sectionName) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionName).classList.add('active');
+            
+            if (sectionName === 'vote') {
+                displayVoteOptions();
+            } else if (sectionName === 'results') {
+                displayResults();
+            }
+        }
+
+        function createPoll() {
+            const question = document.getElementById('pollQuestion').value.trim();
+            const optionsText = document.getElementById('pollOptions').value.trim();
+            
+            if (!question) {
+                alert('Please enter a question!');
+                return;
+            }
+            
+            const options = optionsText.split('\n').filter(opt => opt.trim() !== '');
+            
+            if (options.length < 2) {
+                alert('Please enter at least 2 options!');
+                return;
+            }
+            
+            currentPoll = {
+                question: question,
+                options: options,
+                votes: new Array(options.length).fill(0)
+            };
+            
+            alert('Poll created! Switch to "Vote on Poll" to test it or share your screen for others to vote.');
+            showSection('vote');
+        }
+
+        function displayVoteOptions() {
+            if (!currentPoll.question) {
+                document.getElementById('voteQuestion').textContent = 'No poll created yet!';
+                document.getElementById('voteOptions').innerHTML = 
+                    '<p style="text-align: center; color: #666;">Create a poll first!</p>';
+                return;
+            }
+            
+            document.getElementById('voteQuestion').textContent = currentPoll.question;
+            const optionsDiv = document.getElementById('voteOptions');
+            optionsDiv.innerHTML = '';
+            
+            currentPoll.options.forEach((option, index) => {
+                const div = document.createElement('div');
+                div.className = 'poll-option';
+                div.innerHTML = `<span>${option}</span>`;
+                div.onclick = () => vote(index);
+                optionsDiv.appendChild(div);
+            });
+            
+            document.getElementById('voteStatus').textContent = '';
+        }
+
+        function vote(optionIndex) {
+            currentPoll.votes[optionIndex]++;
+            document.getElementById('voteStatus').textContent = 
+                `✓ Vote recorded for: ${currentPoll.options[optionIndex]}`;
+            
+            // Highlight the voted option
+            const options = document.querySelectorAll('.poll-option');
+            options[optionIndex].classList.add('voted');
+            setTimeout(() => {
+                options[optionIndex].classList.remove('voted');
+            }, 1000);
+            
+            displayResults();
+        }
+
+        function displayResults() {
+            if (!currentPoll.question) {
+                document.getElementById('resultsQuestion').textContent = 'No poll created yet!';
+                document.getElementById('resultsDisplay').innerHTML = 
+                    '<p style="text-align: center; color: #666;">Create a poll first!</p>';
+                return;
+            }
+            
+            document.getElementById('resultsQuestion').textContent = currentPoll.question;
+            const resultsDiv = document.getElementById('resultsDisplay');
+            resultsDiv.innerHTML = '';
+            
+            const totalVotes = currentPoll.votes.reduce((a, b) => a + b, 0);
+            document.getElementById('totalVotes').textContent = totalVotes;
+            
+            currentPoll.options.forEach((option, index) => {
+                const votes = currentPoll.votes[index];
+                const percentage = totalVotes > 0 ? (votes / totalVotes * 100).toFixed(1) : 0;
+                
+                const container = document.createElement('div');
+                container.style.marginBottom = '20px';
+                
+                const label = document.createElement('div');
+                label.innerHTML = `<strong>${option}</strong> - ${votes} vote${votes !== 1 ? 's' : ''} (${percentage}%)`;
+                label.style.marginBottom = '5px';
+                
+                const barContainer = document.createElement('div');
+                barContainer.className = 'results-bar';
+                
+                const barFill = document.createElement('div');
+                barFill.className = 'results-fill';
+                barFill.style.width = `${percentage}%`;
+                barFill.textContent = percentage > 10 ? `${percentage}%` : '';
+                
+                barContainer.appendChild(barFill);
+                container.appendChild(label);
+                container.appendChild(barContainer);
+                resultsDiv.appendChild(container);
+            });
+        }
+
+        function resetPoll() {
+            if (confirm('Reset all votes? This will clear the poll data.')) {
+                currentPoll.votes = new Array(currentPoll.options.length).fill(0);
+                displayResults();
+            }
+        }
+
+        // Load sample poll
+        document.getElementById('pollQuestion').value = "What's your favorite way to study?";
+        document.getElementById('pollOptions').value = "Flashcards\nPractice problems\nReading notes\nGroup study\nVideo tutorials";
+    </script>
+</body>
+</html>
