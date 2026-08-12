@@ -20,7 +20,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             width: 100%;
         }
         header {
@@ -73,15 +73,8 @@
             line-height: 1.6;
             font-size: 1.1em;
         }
-        .teacher-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-        .teacher-card h2 {
-            color: white;
-        }
-        .teacher-card p {
-            color: rgba(255, 255, 255, 0.95);
+        .music-card h2 {
+            color: #f5576c;
         }
         footer {
             text-align: center;
@@ -111,27 +104,16 @@
                 <p>Building mathematical understanding through integrated concepts</p>
             </a>
 
-            <div class="card teacher-card" onclick="teacherLogin()">
-                <div class="card-icon">👨‍🏫</div>
-                <h2>Teacher Apps</h2>
-                <p>Control panel for timers, polls, and vocabulary</p>
-            </div>
+            <a href="music.html" class="card music-card">
+                <div class="card-icon">🎵</div>
+                <h2>X-Block: Music</h2>
+                <p>Explore music theory, composition, and performance</p>
+            </a>
         </div>
 
         <footer>
             <p>&copy; 2024 - All Rights Reserved</p>
         </footer>
     </div>
-
-    <script>
-        function teacherLogin() {
-            const code = prompt('Enter teacher access code:');
-            if (code === '0') {
-                window.location.href = 'teacher/teacher-hub.html';
-            } else if (code !== null) {
-                alert('Incorrect code');
-            }
-        }
-    </script>
 </body>
 </html>
