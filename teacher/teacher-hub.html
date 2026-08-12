@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Control Hub</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        nav {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .control-card {
+            background-color: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .control-card:hover {
+            transform: translateY(-8px);
+        }
+        .control-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        .control-card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+        }
+        .control-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>👨‍🏫 Teacher Control Hub</h1>
+            <p>Manage your classroom tools</p>
+        </header>
+
+        <nav>
+            <a href="../index.html">← Back to Main Page</a>
+        </nav>
+
+        <div class="cards-grid">
+            <a href="timer-control.html" class="control-card">
+                <div class="control-icon">⏱️</div>
+                <h2>Timer Control</h2>
+                <p>Set and control the classroom timer that students can view</p>
+            </a>
+
+            <a href="poll-control.html" class="control-card">
+                <div class="control-icon">📊</div>
+                <h2>Poll Control</h2>
+                <p>Create polls, view results, and reset voting</p>
+            </a>
+
+            <a href="vocab-control.html" class="control-card">
+                <div class="control-icon">📚</div>
+                <h2>Vocabulary Control</h2>
+                <p>Set vocabulary words for Physics and Math courses</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
