@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #38f9d7;
+            text-align: center;
+            margin-top: 0;
+        }
+        .poll-question {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin: 30px 0;
+            color: #333;
+        }
+        .poll-option {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            font-size: 18px;
+        }
+        .poll-option:hover {
+            background-color: #e2f9f3;
+            border-color: #38f9d7;
+        }
+        .poll-option.voted {
+            background-color: #d4edda;
+            border-color: #28a745;
+        }
+        .poll-option.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .results-bar {
+            background-color: #e9ecef;
+            height: 30px;
+            border-radius: 15px;
+            margin: 10px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .results-fill {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+            color: #333;
+            font-weight: bold;
+        }
+        .vote-status {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 20px;
+            color: #28a745;
+            font-weight: bold;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #38f9d7;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .no-poll {
+            text-align: center;
+            color: #666;
+            font-size: 20px;
+            margin: 50px 0;
+        }
+        .total-votes {
+            text-align: center;
+            color: #666;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="javascript:history.back()" class="back-link">← Back</a>
+        
+        <h1>📊 Vote</h1>
+        
+        <div id="pollContent">
+            <div class="no-poll">No active poll. Check back soon!</div>
+        </div>
+    </div>
+
+    <script>
+        let hasVoted = false;
+
+        function loadPoll() {
+            const pollData = localStorage.getItem('teacherPoll');
+            const myVote = sessionStorage.getItem('myPollVote');
+            
+            if (!pollData) {
+                document.getElementById('pollContent').innerHTML = 
+                    '<div class="no-poll">No active poll. Check back soon!</div>';
+                return;
+            }
+
+            const poll = JSON.parse(pollData);
+            hasVoted = myVote !== null;
+
+            let html = `<div class="poll-question">${poll.question}</div>`;
+            
+            if (hasVoted) {
+                html += '<div class="vote-status">✓ You have voted! Here are the live results:</div>';
+            }
+
+            const totalVotes = poll.votes.reduce((a, b) => a + b, 0);
+            html += `<div class="total-votes">Total Votes: ${totalVotes}</div>`;
+
+            poll.options.forEach((option, index) => {
+                const votes = poll.votes[index];
+                const percentage = totalVotes > 0 ? (votes / totalVotes * 100).toFixed(1) : 0;
+                const isMyVote = myVote == index;
+                
+                html += `
+                    <div class="poll-option ${hasVoted ? 'disabled' : ''} ${isMyVote ? 'voted' : ''}" 
+                         onclick="${hasVoted ? '' : `vote(${index})`}">
+                        <div><strong>${option}</strong></div>
+                        ${hasVoted ? `
+                            <div class="results-bar">
+                                <div class="results-fill" style="width: ${percentage}%">
+                                    ${percentage}% (${votes} vote${votes !== 1 ? 's' : ''})
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            document.getElementById('pollContent').innerHTML = html;
+        }
+
+        function vote(optionIndex) {
+            if (hasVoted) return;
+
+            const pollData = localStorage.getItem('teacherPoll');
+            if (!pollData) return;
+
+            const poll = JSON.parse(pollData);
+            poll.votes[optionIndex]++;
+            
+            localStorage.setItem('teacherPoll', JSON.stringify(poll));
+            sessionStorage.setItem('myPollVote', optionIndex);
+            
+            hasVoted = true;
+            loadPoll();
+        }
+
+        // Update every 2 seconds to show live results
+        setInterval(loadPoll, 2000);
+        loadPoll();
+    </script>
+</body>
+</html>
