@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transformation Visualizer</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <div>
+    <h1>Transformation Visualizer</h1>
+    <div class="subtitle">See how transformation order changes shapes, coordinates, rules, and functions.</div>
+  </div>
+  <div class="header-controls">
+    <div class="modebar" style="display:flex">
+      <button id="shapeMode" class="active">Shape Mode</button>
+      <button id="parabolaMode">Parabola Mode</button>
+    </div>
+    <button id="resetTransforms" class="primary">Reset Transformations</button>
+    <button id="resetShape" class="danger">Reset Shape</button>
+  </div>
+</header>
+
+<main>
+  <section class="card left">
+    <div class="section-title" style="margin:2px 2px 10px">Coordinate Plane &amp; Coordinates</div>
+    <div class="canvas-wrap" id="canvasWrap">
+      <canvas id="graph"></canvas>
+      <div class="canvas-help" id="canvasHelp">Shape mode: click/tap to add points. Press and hold, then move to freeform draw.</div>
+    </div>
+  </section>
+
+  <aside class="card right">
+    <div class="section-title">Transformation Inputs</div>
+    <div class="status" id="status">Draw a shape by clicking points on the coordinate plane.</div>
+
+    <div class="section-title">Transformations — drag to reorder</div>
+    <div class="transform-list" id="transformList"></div>
+
+    <div class="coordinate-rule-panel" id="coordinateRulePanel">
+      <div class="section-title">Coordinate Rule</div>
+      <div class="coordinate-rule-value" id="coordinateRule">(x, y) → (x, y)</div>
+    </div>
+
+    <div class="parabola-panel" id="parabolaPanel">
+      <div class="section-title">Parabola Results</div>
+      <div class="equations" style="margin-top:8px">
+        <div><b>Standard form</b><div id="paraStandard">—</div></div>
+        <div><b>Vertex / transformed form</b><div id="paraVertex">—</div></div>
+      </div>
+    </div>
+
+    <div class="data-grid">
+      <div class="mini">
+        <h3>Coordinates</h3>
+        <div class="coordinate-scroll" id="coordinateTable"></div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      The top transformation happens first. Every graph, coordinate table, rule, and parabola is calculated from the same transformation pipeline.
+    </div>
+  </aside>
+</main>
+
+<script src="js/script.js"></script>
+</body>
+</html>
