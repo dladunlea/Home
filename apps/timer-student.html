@@ -1,208 +1,620 @@
-* {\
-box-sizing: border-box;\
-}\
-\
-html,\
-body {\
-width: 100%;\
-min-height: 100%;\
-margin: 0;\
-}\
-\
-body {\
-min-height: 100vh;\
-overflow: hidden;\
-display: flex;\
-align-items: center;\
-justify-content: center;\
-padding: 24px;\
-color: var(--text);\
-font-family: Arial, sans-serif;\
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\
-}\
-\
-#animationCanvas,\
-#bubbleLayer {\
-position: fixed;\
-inset: 0;\
-width: 100%;\
-height: 100%;\
-pointer-events: none;\
-}\
-\
-#animationCanvas {\
-z-index: 1000;\
-}\
-\
-#bubbleLayer {\
-z-index: 1001;\
-overflow: hidden;\
-}\
-\
-.container {\
-position: relative;\
-z-index: 1100;\
-width: min(650px, calc(100vw - 32px));\
-max-height: calc(100vh - 48px);\
-overflow-y: auto;\
-padding: clamp(24px, 5vw, 50px);\
-text-align: center;\
-border: 1px solid var(--border);\
-border-radius: 20px;\
-background: var(--panel);\
-backdrop-filter: blur(10px);\
-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);\
-}\
-\
-h1 {\
-margin: 0;\
-font-size: clamp(1.8rem, 5vw, 2.5rem);\
-text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);\
-}\
-\
-#display {\
-margin: 36px 0;\
-font-size: clamp(4rem, 15vw, 7.5rem);\
-font-weight: bold;\
-font-family: "Courier New", monospace;\
-line-height: 1;\
-text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);\
-}\
-\
-.status {\
-margin: 20px 0;\
-font-size: clamp(1.1rem, 4vw, 1.5rem);\
-font-weight: bold;\
-}\
-\
-.animation-selector {\
-margin-top: 30px;\
-}\
-\
-.animation-selector h2 {\
-margin-bottom: 15px;\
-font-size: 1.15rem;\
-}\
-\
-.animation-options {\
-display: flex;\
-flex-wrap: wrap;\
-justify-content: center;\
-gap: 12px;\
-}\
-\
-.animation-btn,\
-.fullscreen-btn {\
-padding: 12px 18px;\
-color: white;\
-font-size: 1rem;\
-font-weight: bold;\
-cursor: pointer;\
-border: 2px solid white;\
-border-radius: 10px;\
-background: rgba(255, 255, 255, 0.2);\
-transition: transform 0.2s, background 0.2s, color 0.2s;\
-}\
-\
-.animation-btn:hover,\
-.animation-btn:focus-visible,\
-.fullscreen-btn:hover,\
-.fullscreen-btn:focus-visible {\
-background: rgba(255, 255, 255, 0.35);\
-transform: scale(1.05);\
-outline: none;\
-}\
-\
-.animation-btn.selected {\
-color: #667eea;\
-background: white;\
-}\
-\
-.fullscreen-btn {\
-margin-top: 18px;\
-}\
-\
-.back-link {\
-position: fixed;\
-z-index: 1200;\
-top: 20px;\
-left: 20px;\
-padding: 10px 20px;\
-color: white;\
-font-weight: bold;\
-text-decoration: none;\
-border-radius: 8px;\
-background: rgba(255, 255, 255, 0.2);\
-}\
-\
-.back-link:hover,\
-.back-link:focus-visible {\
-background: rgba(255, 255, 255, 0.35);\
-outline: none;\
-}\
-\
-.bubble {\
-position: absolute;\
-bottom: -100px;\
-border: 2px solid rgba(255, 255, 255, 0.7);\
-border-radius: 50%;\
-opacity: 0.8;\
-box-shadow: inset -5px -8px 12px rgba(255, 255, 255, 0.15),\
-0 0 12px rgba(255, 255, 255, 0.25);\
-animation: floatUp linear forwards;\
-}\
-\
-@keyframes floatUp {\
-0% {\
-transform: translate3d(0, 0, 0) scale(0.7);\
-opacity: 0;\
-}\
-10% {\
-opacity: 0.8;\
-}\
-50% {\
-transform: translate3d(var(--drift), -55vh, 0) scale(1);\
-}\
-100% {\
-transform: translate3d(calc(var(--drift) * -0.6), -120vh, 0) scale(1.15);\
-opacity: 0;\
-}\
-}\
-\
-@media (prefers-reduced-motion: reduce) {\
-*,\
-*::before,\
-*::after {\
-animation-duration: 0.01ms !important;\
-animation-iteration-count: 1 !important;\
-scroll-behavior: auto !important;\
-}\
-}
-<div class="status" id="status" role="status" aria-live="polite">\
-Waiting for teacher to start timer...\
-</div>\
-\
-<div id="display" aria-live="polite" aria-atomic="true">--:--</div>\
-\
-<section class="animation-selector" aria-labelledby="animationHeading">\
-<h2 id="animationHeading">Choose Your Celebration Animation</h2>\
-\
-<div class="animation-options">\
-<button class="animation-btn selected" type="button" data-animation="bubbles">\
-🫧 Bubbles\
-</button>\
-<button class="animation-btn" type="button" data-animation="fireworks">\
-🎆 Fireworks\
-</button>\
-<button class="animation-btn" type="button" data-animation="balls">\
-⚽ Bouncing Balls\
-</button>\
-<button class="animation-btn" type="button" data-animation="emoji">\
-🎉 Emoji\
-</button>\
-</div>\
-\
-<button class="fullscreen-btn" id="fullscreenBtn" type="button">\
-⛶ Fullscreen\
-</button>\
-</section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Much Time Is Left?</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --text: #ffffff;
+            --border: rgba(255, 255, 255, 0.35);
+            --panel: rgba(20, 15, 55, 0.42);
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        #animationCanvas,
+        #bubbleLayer {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        #animationCanvas {
+            z-index: 1000;
+        }
+
+        #bubbleLayer {
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1100;
+            width: min(650px, calc(100vw - 32px));
+            max-height: calc(100vh - 48px);
+            overflow-y: auto;
+            padding: clamp(24px, 5vw, 50px);
+            text-align: center;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--panel);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #display {
+            margin: 36px 0;
+            font-size: clamp(4rem, 15vw, 7.5rem);
+            font-weight: bold;
+            font-family: "Courier New", monospace;
+            line-height: 1;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .status {
+            margin: 20px 0;
+            font-size: clamp(1.1rem, 4vw, 1.5rem);
+            font-weight: bold;
+        }
+
+        .animation-selector {
+            margin-top: 30px;
+        }
+
+        .animation-selector h2 {
+            margin-bottom: 15px;
+            font-size: 1.15rem;
+        }
+
+        .animation-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .animation-btn,
+        .fullscreen-btn {
+            padding: 12px 18px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid white;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s, background 0.2s, color 0.2s;
+        }
+
+        .animation-btn:hover,
+        .animation-btn:focus-visible,
+        .fullscreen-btn:hover,
+        .fullscreen-btn:focus-visible {
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(1.05);
+            outline: none;
+        }
+
+        .animation-btn.selected {
+            color: #667eea;
+            background: white;
+        }
+
+        .fullscreen-btn {
+            margin-top: 18px;
+        }
+
+        .back-link {
+            position: fixed;
+            z-index: 1200;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible {
+            background: rgba(255, 255, 255, 0.35);
+            outline: none;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            opacity: 0.8;
+            box-shadow:
+                inset -5px -8px 12px rgba(255, 255, 255, 0.15),
+                0 0 12px rgba(255, 255, 255, 0.25);
+            animation: floatUp linear forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translate3d(0, 0, 0) scale(0.7);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: translate3d(var(--drift), -55vh, 0) scale(1);
+            }
+
+            100% {
+                transform: translate3d(calc(var(--drift) * -0.6), -120vh, 0) scale(1.15);
+                opacity: 0;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="javascript:history.back()" class="back-link">← Back</a>
+
+    <canvas id="animationCanvas"></canvas>
+    <div id="bubbleLayer"></div>
+
+    <div class="container">
+        <h1>⏱️ How Much Time Is Left?</h1>
+
+        <div class="status" id="status" role="status" aria-live="polite">
+            Waiting for teacher to start timer...
+        </div>
+
+        <div id="display" aria-live="polite" aria-atomic="true">--:--</div>
+
+        <section class="animation-selector" aria-labelledby="animationHeading">
+            <h2 id="animationHeading">Choose Your Celebration Animation</h2>
+
+            <div class="animation-options">
+                <button class="animation-btn selected" type="button" data-animation="bubbles">
+                    🫧 Bubbles
+                </button>
+                <button class="animation-btn" type="button" data-animation="fireworks">
+                    🎆 Fireworks
+                </button>
+                <button class="animation-btn" type="button" data-animation="balls">
+                    ⚽ Bouncing Balls
+                </button>
+                <button class="animation-btn" type="button" data-animation="emoji">
+                    🎉 Emoji
+                </button>
+            </div>
+
+            <button class="fullscreen-btn" id="fullscreenBtn" type="button">
+                ⛶ Fullscreen
+            </button>
+        </section>
+    </div>
+
+    <script>
+        // Configuration
+        let selectedAnimation = 'bubbles';
+        let isTimeUp = false;
+        let animationRunning = false;
+
+        // Canvas setup
+        const canvas = document.getElementById('animationCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Animation selector
+        document.querySelectorAll('.animation-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                selectedAnimation = this.dataset.animation;
+                document.querySelectorAll('.animation-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Fullscreen toggle
+        document.getElementById('fullscreenBtn').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Fullscreen request failed:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // ============================================
+        // BUBBLES ANIMATION
+        // ============================================
+        function startBubbles() {
+            const bubbleLayer = document.getElementById('bubbleLayer');
+            let bubbleCount = 0;
+            const maxBubbles = 100;
+
+            const bubbleInterval = setInterval(() => {
+                if (!isTimeUp || bubbleCount >= maxBubbles) {
+                    clearInterval(bubbleInterval);
+                    return;
+                }
+
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                
+                // Random size between 20-80px
+                const size = Math.random() * 60 + 20;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                
+                // Random position across FULL screen width
+                bubble.style.left = Math.random() * 100 + '%';
+                
+                // Random color
+                const colors = [
+                    'rgba(255, 100, 150, 0.6)',
+                    'rgba(100, 200, 255, 0.6)',
+                    'rgba(150, 255, 150, 0.6)',
+                    'rgba(255, 220, 100, 0.6)',
+                    'rgba(200, 150, 255, 0.6)',
+                    'rgba(255, 180, 100, 0.6)'
+                ];
+                bubble.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Random drift amount
+                const drift = (Math.random() - 0.5) * 200;
+                bubble.style.setProperty('--drift', drift + 'px');
+                
+                // Random duration between 4-8 seconds
+                const duration = Math.random() * 4 + 4;
+                bubble.style.animationDuration = duration + 's';
+                
+                bubbleLayer.appendChild(bubble);
+                bubbleCount++;
+                
+                // Remove bubble after animation
+                setTimeout(() => {
+                    bubble.remove();
+                }, duration * 1000);
+            }, 150); // Spawn every 150ms
+        }
+
+        // ============================================
+        // FIREWORKS ANIMATION
+        // ============================================
+        const fireworks = [];
+        const particles = [];
+
+        class Firework {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height;
+                this.targetY = Math.random() * canvas.height * 0.4 + 50;
+                this.speed = Math.random() * 3 + 5;
+                this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+                this.exploded = false;
+            }
+
+            update() {
+                if (!this.exploded) {
+                    this.y -= this.speed;
+                    if (this.y <= this.targetY) {
+                        this.explode();
+                        this.exploded = true;
+                    }
+                }
+            }
+
+            draw() {
+                if (!this.exploded) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+            }
+
+            explode() {
+                const particleCount = Math.random() * 30 + 50;
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle(this.x, this.y, this.color));
+                }
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 2;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.gravity = 0.15;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.015 + 0.01;
+            }
+
+            update() {
+                this.vx *= 0.98;
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function animateFireworks() {
+            if (!isTimeUp) return;
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Add new fireworks
+            if (Math.random() < 0.15 && fireworks.length < 35) {
+                fireworks.push(new Firework());
+            }
+
+            // Update and draw fireworks
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                fireworks[i].update();
+                fireworks[i].draw();
+                if (fireworks[i].exploded) {
+                    fireworks.splice(i, 1);
+                }
+            }
+
+            // Update and draw particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].alpha <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            if (isTimeUp) {
+                requestAnimationFrame(animateFireworks);
+            }
+        }
+
+        // ============================================
+        // BOUNCING BALLS ANIMATION
+        // ============================================
+        const balls = [];
+
+        class Ball {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = -20;
+                this.radius = Math.random() * 20 + 15;
+                this.vx = (Math.random() - 0.5) * 8;
+                this.vy = 0;
+                this.gravity = 0.5;
+                this.bounce = 0.7 + Math.random() * 0.2;
+                this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+            }
+
+            update() {
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce off bottom
+                if (this.y + this.radius >= canvas.height) {
+                    this.y = canvas.height - this.radius;
+                    this.vy *= -this.bounce;
+                    this.vx *= 0.95;
+                }
+
+                // Bounce off sides
+                if (this.x - this.radius <= 0 || this.x + this.radius >= canvas.width) {
+                    this.vx *= -0.8;
+                    this.x = this.x - this.radius <= 0 ? this.radius : canvas.width - this.radius;
+                }
+
+                // Friction when rolling on ground
+                if (Math.abs(this.y + this.radius - canvas.height) < 2) {
+                    this.vx *= 0.98;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        function animateBalls() {
+            if (!isTimeUp) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Add new balls
+            if (Math.random() < 0.2 && balls.length < 60) {
+                balls.push(new Ball());
+            }
+
+            // Update and draw balls
+            for (let i = balls.length - 1; i >= 0; i--) {
+                balls[i].update();
+                balls[i].draw();
+
+                // Remove balls that are barely moving and at bottom
+                if (Math.abs(balls[i].vy) < 0.5 && 
+                    Math.abs(balls[i].vx) < 0.5 && 
+                    balls[i].y + balls[i].radius >= canvas.height - 2) {
+                    balls.splice(i, 1);
+                }
+            }
+
+            if (isTimeUp) {
+                requestAnimationFrame(animateBalls);
+            }
+        }
+
+        // ============================================
+        // EMOJI ANIMATION (Simple fallback)
+        // ============================================
+        function startEmojiAnimation() {
+            const container = document.querySelector('.container');
+            container.style.animation = 'none';
+            setTimeout(() => {
+                container.style.animation = 'pulse 1s ease-in-out infinite';
+            }, 10);
+        }
+
+        // Add pulse animation for emoji mode
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // ============================================
+        // TIMER LOGIC
+        // ============================================
+        function updateDisplay() {
+            const timerData = localStorage.getItem('teacherTimer');
+            
+            if (timerData) {
+                const data = JSON.parse(timerData);
+                const now = Date.now();
+                const timeLeft = Math.max(0, data.endTime - now);
+                
+                if (timeLeft > 0) {
+                    const mins = Math.floor(timeLeft / 60000);
+                    const secs = Math.floor((timeLeft % 60000) / 1000);
+                    document.getElementById('display').textContent = 
+                        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                    document.getElementById('status').textContent = 'Timer Running...';
+                    
+                    // Stop animations if they were running
+                    if (isTimeUp) {
+                        isTimeUp = false;
+                        stopAllAnimations();
+                    }
+                } else {
+                    document.getElementById('display').textContent = '00:00';
+                    document.getElementById('status').textContent = "Time's Up!";
+                    
+                    // Start celebration animation
+                    if (!isTimeUp) {
+                        isTimeUp = true;
+                        startCelebration();
+                    }
+                }
+            } else {
+                document.getElementById('display').textContent = '--:--';
+                document.getElementById('status').textContent = 'Waiting for teacher to start timer...';
+            }
+        }
+
+        function startCelebration() {
+            stopAllAnimations();
+
+            switch(selectedAnimation) {
+                case 'bubbles':
+                    startBubbles();
+                    break;
+                case 'fireworks':
+                    animateFireworks();
+                    break;
+                case 'balls':
+                    animateBalls();
+                    break;
+                case 'emoji':
+                    startEmojiAnimation();
+                    break;
+            }
+        }
+
+        function stopAllAnimations() {
+            // Clear bubbles
+            document.getElementById('bubbleLayer').innerHTML = '';
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Clear arrays
+            fireworks.length = 0;
+            particles.length = 0;
+            balls.length = 0;
+            
+            // Reset container animation
+            document.querySelector('.container').style.animation = 'none';
+        }
+
+        // Update every second
+        setInterval(updateDisplay, 1000);
+        updateDisplay();
+    </script>
+</body>
+</html>
