@@ -1,743 +1,215 @@
 ```text
-<style>
-    :root {
-        --white: #ffffff;
-        --glass: rgba(255, 255, 255, 0.12);
-        --glass-border: rgba(255, 255, 255, 0.28);
-        --shadow: rgba(0, 0, 0, 0.3);
-    }
+* {
+  box-sizing: border-box;
+}
 
-    * {
-        box-sizing: border-box;
-    }
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
 
-    html,
-    body {
-        min-height: 100%;
-    }
+body {
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
 
-    body {
-        margin: 0;
-        padding: 20px;
-        overflow: hidden;
-        color: var(--white);
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
+#animationCanvas,
+#bubbleLayer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
 
-    .back-link {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        z-index: 20;
-        padding: 10px 20px;
-        color: var(--white);
-        text-decoration: none;
-        font-weight: bold;
-        background: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 8px;
-        transition: background 0.2s ease, transform 0.2s ease;
-    }
+#animationCanvas {
+  z-index: 1000;
+}
 
-    .back-link:hover,
-    .back-link:focus-visible {
-        background: rgba(255, 255, 255, 0.32);
-        transform: translateY(-2px);
-    }
+#bubbleLayer {
+  z-index: 1001;
+  overflow: hidden;
+}
 
-    .container {
-        position: relative;
-        z-index: 10;
-        width: min(680px, calc(100vw - 40px));
-        max-height: calc(100vh - 40px);
-        overflow-y: auto;
-        padding: 42px;
-        text-align: center;
-        background: var(--glass);
-        border: 1px solid var(--glass-border);
-        border-radius: 24px;
-        box-shadow: 0 8px 32px var(--shadow);
-        backdrop-filter: blur(12px);
-    }
+.container {
+  position: relative;
+  z-index: 1100;
+  width: min(650px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: clamp(24px, 5vw, 50px);
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
 
-    h1 {
-        margin: 0;
-        font-size: clamp(2rem, 5vw, 3rem);
-        text-shadow: 2px 2px 4px var(--shadow);
-    }
+h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
 
-    .status {
-        min-height: 30px;
-        margin: 22px 0 8px;
-        font-size: clamp(1.1rem, 3vw, 1.5rem);
-        font-weight: bold;
-    }
+#display {
+  margin: 36px 0;
+  font-size: clamp(4rem, 15vw, 7.5rem);
+  font-weight: bold;
+  font-family: "Courier New", monospace;
+  line-height: 1;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+}
 
-    #display {
-        margin: 18px 0 32px;
-        font-family: "Courier New", monospace;
-        font-size: clamp(4rem, 15vw, 7.5rem);
-        font-weight: bold;
-        line-height: 1;
-        text-shadow: 3px 3px 6px var(--shadow);
-        transition: color 0.3s ease, transform 0.3s ease;
-    }
+.status {
+  margin: 20px 0;
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  font-weight: bold;
+}
 
-    #display.warning {
-        color: #ffd166;
-        transform: scale(1.04);
-    }
+.animation-selector {
+  margin-top: 30px;
+}
 
-    .animation-selector h2 {
-        margin: 0 0 15px;
-        font-size: 1.1rem;
-    }
+.animation-selector h2 {
+  margin-bottom: 15px;
+  font-size: 1.15rem;
+}
 
-    .animation-options {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 12px;
-    }
+.animation-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
 
-    .animation-btn {
-        padding: 13px 18px;
-        color: var(--white);
-        font-size: 1rem;
-        cursor: pointer;
-        background: rgba(255, 255, 255, 0.16);
-        border: 2px solid rgba(255, 255, 255, 0.8);
-        border-radius: 12px;
-        transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
-    }
+.animation-btn,
+.fullscreen-btn {
+  padding: 12px 18px;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  border: 2px solid white;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s, background 0.2s, color 0.2s;
+}
 
-    .animation-btn:hover,
-    .animation-btn:focus-visible {
-        background: rgba(255, 255, 255, 0.3);
-        transform: translateY(-2px);
-    }
+.animation-btn:hover,
+.animation-btn:focus-visible,
+.fullscreen-btn:hover,
+.fullscreen-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.05);
+  outline: none;
+}
 
-    .animation-btn.selected {
-        color: #667eea;
-        background: var(--white);
-    }
+.animation-btn.selected {
+  color: #667eea;
+  background: white;
+}
 
-    .animation-btn:focus-visible,
-    .back-link:focus-visible {
-        outline: 3px solid #ffd166;
-        outline-offset: 3px;
-    }
+.fullscreen-btn {
+  margin-top: 18px;
+}
 
-    #effectsCanvas,
-    #bubbleLayer {
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-    }
+.back-link {
+  position: fixed;
+  z-index: 1200;
+  top: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+}
 
-    #effectsCanvas {
-        z-index: 3;
-    }
+.back-link:hover,
+.back-link:focus-visible {
+  background: rgba(255, 255, 255, 0.35);
+  outline: none;
+}
 
-    #bubbleLayer {
-        z-index: 4;
-        overflow: hidden;
-    }
+.bubble {
+  position: absolute;
+  bottom: -100px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  opacity: 0.8;
+  box-shadow: inset -5px -8px 12px rgba(255, 255, 255, 0.15),
+    0 0 12px rgba(255, 255, 255, 0.25);
+  animation: floatUp linear forwards;
+}
 
-    .bubble {
-        position: absolute;
-        bottom: -100px;
-        border: 2px solid rgba(255, 255, 255, 0.7);
-        border-radius: 50%;
-        opacity: 0;
-        box-shadow:
-            inset -8px -8px 16px rgba(255, 255, 255, 0.15),
-            inset 5px 5px 12px rgba(255, 255, 255, 0.28),
-            0 0 16px var(--bubble-color);
-        animation: floatUp var(--duration) linear forwards;
-    }
+@keyframes floatUp {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.7);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate3d(var(--drift), -55vh, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(calc(var(--drift) * -0.6), -120vh, 0) scale(1.15);
+    opacity: 0;
+  }
+}
 
-    .bubble::after {
-        position: absolute;
-        top: 18%;
-        left: 22%;
-        width: 24%;
-        height: 18%;
-        content: "";
-        background: rgba(255, 255, 255, 0.7);
-        border-radius: 50%;
-        transform: rotate(-35deg);
-    }
-
-    @keyframes floatUp {
-        0% {
-            opacity: 0;
-            transform: translate3d(0, 0, 0) scale(0.7);
-        }
-
-        10% {
-            opacity: 0.85;
-        }
-
-        50% {
-            transform: translate3d(var(--drift-mid), -55vh, 0) scale(1);
-        }
-
-        100% {
-            opacity: 0;
-            transform: translate3d(var(--drift-end), -120vh, 0) scale(1.1);
-        }
-    }
-
-    .celebration {
-        position: fixed;
-        inset: 0;
-        z-index: 15;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        pointer-events: none;
-        background: rgba(0, 0, 0, 0.16);
-    }
-
-    .celebration.active {
-        display: flex;
-    }
-
-    #celebrationEmoji {
-        font-size: clamp(5rem, 18vw, 10rem);
-        filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.35));
-        animation: bounceEmoji 0.7s ease-in-out infinite;
-    }
-
-    @keyframes bounceEmoji {
-        0%,
-        100% {
-            transform: scale(1) rotate(-5deg);
-        }
-
-        50% {
-            transform: scale(1.22) rotate(5deg);
-        }
-    }
-
-    @media (max-width: 600px) {
-        body {
-            padding: 12px;
-        }
-
-        .container {
-            padding: 28px 18px;
-        }
-
-        .back-link {
-            top: 12px;
-            left: 12px;
-            padding: 8px 13px;
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-            animation-duration: 0.001ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.001ms !important;
-        }
-    }
-</style>
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
 ```
 
+← Back
+
 ```text
-<div id="bubbleLayer" aria-hidden="true"></div>
-<canvas id="effectsCanvas" aria-hidden="true"></canvas>
-
-<main class="container">
-    <h1>⏱️ How Much Time Is Left?</h1>
-
-    <div class="status" id="status" role="status" aria-live="polite">
-        Waiting for teacher to start timer...
-    </div>
-
-    <div id="display" aria-live="polite" aria-atomic="true">--:--</div>
-
-    <section class="animation-selector" aria-labelledby="animationHeading">
-        <h2 id="animationHeading">Choose Your Celebration Animation</h2>
-
-        <div class="animation-options">
-            <button class="animation-btn selected" type="button" data-animation="bubbles">
-                🫧 Bubbles
-            </button>
-            <button class="animation-btn" type="button" data-animation="fireworks">
-                🎆 Fireworks
-            </button>
-            <button class="animation-btn" type="button" data-animation="balls">
-                ⚽ Bouncing Balls
-            </button>
-            <button class="animation-btn" type="button" data-animation="emoji">
-                🎉 Emoji
-            </button>
-        </div>
-    </section>
-</main>
-
-<div class="celebration" id="celebration" aria-hidden="true">
-    <div id="celebrationEmoji">🎉</div>
+<div class="status" id="status" role="status" aria-live="polite">
+  Waiting for teacher to start timer...
 </div>
 
-<script>
-    "use strict";
-
-    const display = document.getElementById("display");
-    const status = document.getElementById("status");
-    const celebration = document.getElementById("celebration");
-    const celebrationEmoji = document.getElementById("celebrationEmoji");
-    const bubbleLayer = document.getElementById("bubbleLayer");
-    const canvas = document.getElementById("effectsCanvas");
-    const context = canvas.getContext("2d", { alpha: true });
-
-    const animationButtons = document.querySelectorAll(".animation-btn");
-
-    let selectedAnimation = "bubbles";
-    let timerFinished = false;
-    let celebrationStarted = false;
-    let animationFrameId = null;
-    let bubbleIntervalId = null;
-    let lastFrameTime = 0;
-    let canvasWidth = window.innerWidth;
-    let canvasHeight = window.innerHeight;
-
-    const fireworks = [];
-    const balls = [];
-
-    const colors = [
-        "#ff6b6b",
-        "#ffd166",
-        "#06d6a0",
-        "#4cc9f0",
-        "#f72585",
-        "#ffffff"
-    ];
-
-    /*
-     * Canvas sizing uses the device pixel ratio so particles stay sharp
-     * on high-resolution displays without changing their CSS dimensions.
-     */
-    function resizeCanvas() {
-        const ratio = Math.min(window.devicePixelRatio || 1, 2);
-
-        canvasWidth = window.innerWidth;
-        canvasHeight = window.innerHeight;
-
-        canvas.width = canvasWidth * ratio;
-        canvas.height = canvasHeight * ratio;
-        canvas.style.width = `${canvasWidth}px`;
-        canvas.style.height = `${canvasHeight}px`;
-
-        context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    }
-
-    function randomBetween(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-
-    function randomColor() {
-        return colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    /*
-     * Bubbles are lightweight DOM elements. Each bubble receives its own
-     * size, duration, color, and horizontal drift through CSS variables.
-     */
-    function createBubble() {
-        if (selectedAnimation !== "bubbles" || bubbleLayer.childElementCount > 45) {
-            return;
-        }
-
-        const bubble = document.createElement("div");
-        const size = randomBetween(18, 75);
-        const duration = randomBetween(7, 14);
-        const driftMid = randomBetween(-100, 100);
-        const driftEnd = randomBetween(-180, 180);
-
-        bubble.className = "bubble";
-        bubble.style.left = `${randomBetween(-5, 100)}%`;
-        bubble.style.width = `${size}px`;
-        bubble.style.height = `${size}px`;
-        bubble.style.setProperty("--duration", `${duration}s`);
-        bubble.style.setProperty("--drift-mid", `${driftMid}px`);
-        bubble.style.setProperty("--drift-end", `${driftEnd}px`);
-        bubble.style.setProperty("--bubble-color", randomColor());
-
-        bubble.addEventListener("animationend", () => bubble.remove(), { once: true });
-        bubbleLayer.appendChild(bubble);
-    }
-
-    function clearBubbles() {
-        bubbleLayer.replaceChildren();
-    }
-
-    /*
-     * A firework begins as a rising rocket. When its vertical speed reaches
-     * zero, it becomes a group of particles launched in all directions.
-     * Gravity increases downward velocity, producing a natural arc.
-     */
-    function launchFirework() {
-        fireworks.push({
-            type: "rocket",
-            x: randomBetween(canvasWidth * 0.12, canvasWidth * 0.88),
-            y: canvasHeight + 10,
-            targetY: randomBetween(canvasHeight * 0.16, canvasHeight * 0.58),
-            speed: randomBetween(420, 600),
-            color: randomColor(),
-            trail: []
-        });
-    }
-
-    function explodeFirework(firework) {
-        const particleCount = 70;
-
-        for (let index = 0; index < particleCount; index += 1) {
-            const angle = (Math.PI * 2 * index) / particleCount;
-            const speed = randomBetween(90, 300);
-
-            fireworks.push({
-                type: "particle",
-                x: firework.x,
-                y: firework.y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                gravity: 150,
-                friction: 0.985,
-                life: randomBetween(0.9, 1.6),
-                maxLife: 1.6,
-                radius: randomBetween(1.5, 3.5),
-                color: firework.color
-            });
-        }
-    }
-
-    /*
-     * Balls use semi-realistic motion:
-     * - gravity accelerates vertical velocity
-     * - friction reduces horizontal motion
-     * - restitution controls how much energy remains after impact
-     */
-    function createBall() {
-        balls.push({
-            x: randomBetween(20, Math.max(21, canvasWidth - 20)),
-            y: randomBetween(-canvasHeight * 0.7, -30),
-            vx: randomBetween(-120, 120),
-            vy: randomBetween(0, 80),
-            radius: randomBetween(12, 30),
-            color: randomColor(),
-            gravity: 900,
-            restitution: randomBetween(0.68, 0.84),
-            friction: 0.995,
-            bounces: 0
-        });
-    }
-
-    function clearCanvasEffects() {
-        fireworks.length = 0;
-        balls.length = 0;
-        context.clearRect(0, 0, canvasWidth, canvasHeight);
-    }
-
-    function stopAllEffects() {
-        if (bubbleIntervalId !== null) {
-            clearInterval(bubbleIntervalId);
-            bubbleIntervalId = null;
-        }
-
-        clearBubbles();
-        clearCanvasEffects();
-        celebration.classList.remove("active");
-        celebration.setAttribute("aria-hidden", "true");
-        celebrationStarted = false;
-    }
-
-    function startSelectedAnimation() {
-        stopAllEffects();
-
-        if (selectedAnimation === "emoji") {
-            celebrationEmoji.textContent = "🎉";
-            celebration.classList.add("active");
-            celebration.setAttribute("aria-hidden", "false");
-            celebrationStarted = true;
-            return;
-        }
-
-        if (selectedAnimation === "bubbles") {
-            for (let index = 0; index < 18; index += 1) {
-                window.setTimeout(createBubble, index * 100);
-            }
-
-            bubbleIntervalId = window.setInterval(createBubble, 280);
-            celebrationStarted = true;
-            return;
-        }
-
-        if (selectedAnimation === "fireworks") {
-            for (let index = 0; index < 4; index += 1) {
-                window.setTimeout(launchFirework, index * 500);
-            }
-
-            celebrationStarted = true;
-            return;
-        }
-
-        if (selectedAnimation === "balls") {
-            for (let index = 0; index < 14; index += 1) {
-                window.setTimeout(createBall, index * 180);
-            }
-
-            celebrationStarted = true;
-        }
-    }
-
-    function selectAnimation(type) {
-        selectedAnimation = type;
-
-        animationButtons.forEach((button) => {
-            const isSelected = button.dataset.animation === type;
-            button.classList.toggle("selected", isSelected);
-            button.setAttribute("aria-pressed", String(isSelected));
-        });
-
-        if (timerFinished) {
-            startSelectedAnimation();
-        }
-    }
-
-    function updateFireworks(deltaTime) {
-        if (selectedAnimation === "fireworks" && fireworks.length < 12 && Math.random() < deltaTime * 1.8) {
-            launchFirework();
-        }
-
-        for (let index = fireworks.length - 1; index >= 0; index -= 1) {
-            const item = fireworks[index];
-
-            if (item.type === "rocket") {
-                item.y -= item.speed * deltaTime;
-                item.trail.push({ x: item.x, y: item.y });
-
-                if (item.trail.length > 8) {
-                    item.trail.shift();
-                }
-
-                if (item.y <= item.targetY) {
-                    explodeFirework(item);
-                    fireworks.splice(index, 1);
-                }
-            } else {
-                item.vx *= Math.pow(item.friction, deltaTime * 60);
-                item.vy += item.gravity * deltaTime;
-                item.x += item.vx * deltaTime;
-                item.y += item.vy * deltaTime;
-                item.life -= deltaTime;
-
-                if (item.life <= 0) {
-                    fireworks.splice(index, 1);
-                }
-            }
-        }
-    }
-
-    function drawFireworks() {
-        for (const item of fireworks) {
-            if (item.type === "rocket") {
-                context.strokeStyle = item.color;
-                context.lineWidth = 2;
-                context.beginPath();
-
-                item.trail.forEach((point, pointIndex) => {
-                    if (pointIndex === 0) {
-                        context.moveTo(point.x, point.y);
-                    } else {
-                        context.lineTo(point.x, point.y);
-                    }
-                });
-
-                context.stroke();
-
-                context.fillStyle = item.color;
-                context.beginPath();
-                context.arc(item.x, item.y, 3, 0, Math.PI * 2);
-                context.fill();
-            } else {
-                context.globalAlpha = Math.max(0, item.life / item.maxLife);
-                context.fillStyle = item.color;
-                context.beginPath();
-                context.arc(item.x, item.y, item.radius, 0, Math.PI * 2);
-                context.fill();
-            }
-        }
-
-        context.globalAlpha = 1;
-    }
-
-    function updateBalls(deltaTime) {
-        if (selectedAnimation === "balls" && balls.length < 24 && Math.random() < deltaTime * 2.5) {
-            createBall();
-        }
-
-        for (let index = balls.length - 1; index >= 0; index -= 1) {
-            const ball = balls[index];
-
-            ball.vy += ball.gravity * deltaTime;
-            ball.vx *= Math.pow(ball.friction, deltaTime * 60);
-            ball.x += ball.vx * deltaTime;
-            ball.y += ball.vy * deltaTime;
-
-            if (ball.x - ball.radius < 0) {
-                ball.x = ball.radius;
-                ball.vx = Math.abs(ball.vx) * 0.85;
-            }
-
-            if (ball.x + ball.radius > canvasWidth) {
-                ball.x = canvasWidth - ball.radius;
-                ball.vx = -Math.abs(ball.vx) * 0.85;
-            }
-
-            if (ball.y + ball.radius >= canvasHeight) {
-                ball.y = canvasHeight - ball.radius;
-                ball.vy = -Math.abs(ball.vy) * ball.restitution;
-                ball.vx *= 0.96;
-                ball.bounces += 1;
-            }
-
-            if (
-                ball.bounces > 7 &&
-                Math.abs(ball.vy) < 45 &&
-                ball.y + ball.radius >= canvasHeight - 1
-            ) {
-                balls.splice(index, 1);
-            }
-        }
-    }
-
-    function drawBalls() {
-        for (const ball of balls) {
-            const gradient = context.createRadialGradient(
-                ball.x - ball.radius * 0.35,
-                ball.y - ball.radius * 0.35,
-                1,
-                ball.x,
-                ball.y,
-                ball.radius
-            );
-
-            gradient.addColorStop(0, "#ffffff");
-            gradient.addColorStop(0.18, ball.color);
-            gradient.addColorStop(1, "rgba(0, 0, 0, 0.45)");
-
-            context.fillStyle = gradient;
-            context.beginPath();
-            context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-            context.fill();
-        }
-    }
-
-    /*
-     * One shared animation loop minimizes browser work. It runs only while
-     * the page is visible and clears effects when an animation is inactive.
-     */
-    function animate(timestamp) {
-        const deltaTime = Math.min((timestamp - lastFrameTime) / 1000 || 0, 0.05);
-        lastFrameTime = timestamp;
-
-        context.clearRect(0, 0, canvasWidth, canvasHeight);
-
-        if (selectedAnimation === "fireworks") {
-            updateFireworks(deltaTime);
-            drawFireworks();
-        } else if (selectedAnimation === "balls") {
-            updateBalls(deltaTime);
-            drawBalls();
-        }
-
-        animationFrameId = window.requestAnimationFrame(animate);
-    }
-
-    function formatTime(milliseconds) {
-        const totalSeconds = Math.ceil(milliseconds / 1000);
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-
-        return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-    }
-
-    function updateDisplay() {
-        const timerData = localStorage.getItem("teacherTimer");
-
-        if (!timerData) {
-            timerFinished = false;
-            display.textContent = "--:--";
-            display.classList.remove("warning");
-            status.textContent = "Waiting for teacher to start timer...";
-            stopAllEffects();
-            return;
-        }
-
-        let data;
-
-        try {
-            data = JSON.parse(timerData);
-        } catch (error) {
-            timerFinished = false;
-            display.textContent = "--:--";
-            status.textContent = "Waiting for teacher to start timer...";
-            stopAllEffects();
-            return;
-        }
-
-        const timeLeft = Math.max(0, Number(data.endTime) - Date.now());
-
-        if (timeLeft > 0) {
-            timerFinished = false;
-            celebrationStarted = false;
-            display.textContent = formatTime(timeLeft);
-            display.classList.toggle("warning", timeLeft <= 60000);
-            status.textContent = "Timer Running...";
-            stopAllEffects();
-            return;
-        }
-
-        display.textContent = "00:00";
-        display.classList.add("warning");
-        status.textContent = "Time's Up!";
-        timerFinished = true;
-
-        if (!celebrationStarted) {
-            startSelectedAnimation();
-        }
-    }
-
-    animationButtons.forEach((button) => {
-        button.setAttribute("aria-pressed", String(button.classList.contains("selected")));
-        button.addEventListener("click", () => {
-            selectAnimation(button.dataset.animation);
-        });
-    });
-
-    window.addEventListener("resize", resizeCanvas);
-
-    document.addEventListener("visibilitychange", () => {
-        if (document.hidden) {
-            context.clearRect(0, 0, canvasWidth, canvasHeight);
-        }
-    });
-
-    window.addEventListener("storage", updateDisplay);
-
-    resizeCanvas();
-    updateDisplay();
-    window.setInterval(updateDisplay, 500);
-    animationFrameId = window.requestAnimationFrame(animate);
-</script>
+<div id="display" aria-live="polite" aria-atomic="true">--:--</div>
+
+<section class="animation-selector" aria-labelledby="animationHeading">
+  <h2 id="animationHeading">Choose Your Celebration Animation</h2>
+
+  <div class="animation-options">
+    <button class="animation-btn selected" type="button" data-animation="bubbles">
+      🫧 Bubbles
+    </button>
+    <button class="animation-btn" type="button" data-animation="fireworks">
+      🎆 Fireworks
+    </button>
+    <button class="animation-btn" type="button" data-animation="balls">
+      ⚽ Bouncing Balls
+    </button>
+    <button class="animation-btn" type="button" data-animation="emoji">
+      🎉 Emoji
+    </button>
+  </div>
+
+  <button class="fullscreen-btn" id="fullscreenBtn" type="button">
+    ⛶ Fullscreen
+  </button>
+</section>
 ```
