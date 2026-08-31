@@ -76,6 +76,13 @@
             background-color: #fff9e6;
             border-left: 5px solid #ffa500;
         }
+        .current-tools {
+            background-color: #fff9e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid #ffa500;
+        }
     </style>
 </head>
 <body>
@@ -98,15 +105,11 @@
         </ul>
     </div>
     
-    <!-- TOOLS SECTION -->
-    <div class="section tools-section">
-        <h2>🛠️ Tools</h2>
-        <ul class="link-list">
-            <li><a href="URL_HERE" target="_blank">Desmos Graphing Calculator</a></li>
-            <li><a href="URL_HERE" target="_blank">GeoGebra</a></li>
-            <li><a href="URL_HERE" target="_blank">Calculator Tool</a></li>
-            <li><a href="URL_HERE" target="_blank">Formula Sheet</a></li>
-            <!-- Add more tools as needed -->
+    <!-- CURRENT UNIT TOOLS -->
+    <div class="current-tools">
+        <h2>🛠️ This Unit's Tools</h2>
+        <ul class="link-list" id="currentTools">
+            <!-- Auto-populated from All Tools -->
         </ul>
     </div>
     
@@ -138,23 +141,41 @@
         </ul>
     </div>
 
+    <!-- ALL TOOLS SECTION -->
+    <div class="section tools-section">
+        <h2>🛠️ All Tools</h2>
+        <ul class="link-list" id="allTools">
+            <li><a href="https://www.desmos.com/calculator" target="_blank">Desmos Graphing Calculator</a></li>
+            <li><a href="https://www.geogebra.org/calculator" target="_blank">GeoGebra Calculator</a></li>
+            <li><a href="URL_HERE" target="_blank">Scientific Calculator</a></li>
+            <li><a href="URL_HERE" target="_blank">Formula Sheet</a></li>
+            <li><a href="URL_HERE" target="_blank">Unit Circle Reference</a></li>
+            <li><a href="URL_HERE" target="_blank">Graphing Paper Generator</a></li>
+            <!-- Add more tools as needed -->
+        </ul>
+    </div>
+
     <script>
         // Configuration: Set which items belong to current unit
         const currentUnit = {
-            warmups: [0, 1], // indices from allWarmups (0-based)
-            webApps: [0, 1]  // indices from allWebApps (0-based)
+            warmups: [0, 1],  // indices from allWarmups (0-based)
+            webApps: [0, 1],  // indices from allWebApps (0-based)
+            tools: [0, 1, 3]  // indices from allTools (0-based)
         };
         
         // Auto-populate current unit from full lists
         window.addEventListener('DOMContentLoaded', function() {
             const allWarmups = document.querySelectorAll('#allWarmups li');
             const allWebApps = document.querySelectorAll('#allWebApps li');
+            const allTools = document.querySelectorAll('#allTools li');
             const currentWarmupsList = document.getElementById('currentWarmups');
             const currentWebAppsList = document.getElementById('currentWebApps');
+            const currentToolsList = document.getElementById('currentTools');
             
             // Clear placeholder content
             currentWarmupsList.innerHTML = '';
             currentWebAppsList.innerHTML = '';
+            currentToolsList.innerHTML = '';
             
             // Copy selected warmups
             currentUnit.warmups.forEach(index => {
@@ -167,6 +188,13 @@
             currentUnit.webApps.forEach(index => {
                 if (allWebApps[index]) {
                     currentWebAppsList.appendChild(allWebApps[index].cloneNode(true));
+                }
+            });
+            
+            // Copy selected tools
+            currentUnit.tools.forEach(index => {
+                if (allTools[index]) {
+                    currentToolsList.appendChild(allTools[index].cloneNode(true));
                 }
             });
         });
