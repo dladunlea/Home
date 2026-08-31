@@ -135,5 +135,12 @@
             <p>&copy; Fall 2026</p>
         </footer>
     </div>
+    <script>
+        // Force reload from server, not cache
+        if (performance.navigation.type === 1) {
+            // Page was reloaded
+            location.reload(true);
+        }
+    </script>
 </body>
 </html>
