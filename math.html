@@ -7,16 +7,11 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f5f5;
             line-height: 1.6;
-        }
-        h1 {
-            color: #333;
-            border-bottom: 3px solid #0066cc;
-            padding-bottom: 10px;
         }
         .welcome {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -29,59 +24,104 @@
         }
         .welcome h1 {
             color: white;
-            border-bottom: none;
             margin: 0;
             font-size: 2.5em;
         }
-        h2 {
-            color: #0066cc;
-            margin-top: 30px;
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 5px;
+        .current-unit-container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .current-unit {
-            background-color: #e8f4f8;
+        .current-unit-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #0066cc;
+        }
+        .three-column-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .column-box {
+            background-color: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
-            margin-bottom: 30px;
             border-left: 5px solid #0066cc;
+            min-height: 200px;
+        }
+        .column-box.tools {
+            border-left-color: #ffa500;
+        }
+        .column-box.webapps {
+            border-left-color: #28a745;
+        }
+        .column-box h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 15px;
         }
         .link-list {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
         .link-list li {
-            margin: 10px 0;
-            padding: 10px;
+            margin: 8px 0;
+            padding: 8px 12px;
             background-color: white;
             border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .link-list a {
             color: #0066cc;
             text-decoration: none;
             font-weight: 500;
+            display: block;
         }
         .link-list a:hover {
             text-decoration: underline;
         }
         .section {
             background-color: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: 8px;
             margin-bottom: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
+        .section h2 {
+            color: #0066cc;
+            margin-top: 0;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .unit-group {
+            margin-bottom: 25px;
+        }
+        .unit-group h3 {
+            color: #555;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            padding-left: 10px;
+            border-left: 4px solid #0066cc;
+        }
         .tools-section {
             background-color: #fff9e6;
-            border-left: 5px solid #ffa500;
         }
-        .current-tools {
-            background-color: #fff9e6;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            border-left: 5px solid #ffa500;
+        .tools-section h2 {
+            color: #ffa500;
+        }
+
+        @media (max-width: 768px) {
+            .three-column-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -91,54 +131,98 @@
     </div>
     
     <!-- CURRENT UNIT SECTION -->
-    <div class="current-unit">
-        <h2>📚 This Unit's Materials</h2>
+    <div class="current-unit-container">
+        <div class="current-unit-title" id="currentUnitTitle">C2U3 Coordinate Methods</div>
         
-        <h3>Warmups</h3>
-        <ul class="link-list" id="currentWarmups">
-            <!-- Auto-populated from All Warmups -->
-        </ul>
-        
-        <h3>Web Apps</h3>
-        <ul class="link-list" id="currentWebApps">
-            <!-- Auto-populated from All Web Apps -->
-        </ul>
-    </div>
-    
-    <!-- CURRENT UNIT TOOLS -->
-    <div class="current-tools">
-        <h2>🛠️ This Unit's Tools</h2>
-        <ul class="link-list" id="currentTools">
-            <!-- Auto-populated from All Tools -->
-        </ul>
+        <div class="three-column-grid">
+            <!-- Warmups Column -->
+            <div class="column-box warmups">
+                <h3>🔥 Warmups</h3>
+                <ul class="link-list" id="currentWarmups">
+                    <!-- Auto-populated -->
+                </ul>
+            </div>
+            
+            <!-- Web Apps Column -->
+            <div class="column-box webapps">
+                <h3>💻 Web Apps</h3>
+                <ul class="link-list" id="currentWebApps">
+                    <!-- Auto-populated -->
+                </ul>
+            </div>
+            
+            <!-- Tools Column -->
+            <div class="column-box tools">
+                <h3>🛠️ Tools</h3>
+                <ul class="link-list" id="currentTools">
+                    <!-- Auto-populated from favorites -->
+                </ul>
+            </div>
+        </div>
     </div>
     
     <!-- ALL WARMUPS SECTION -->
     <div class="section">
         <h2>🔥 All Warmups</h2>
-        <ul class="link-list" id="allWarmups">
-            <!-- Unit 1 -->
-            <li><a href="URL_HERE" target="_blank">Unit 1 - Warmup 1: Topic</a></li>
-            <li><a href="URL_HERE" target="_blank">Unit 1 - Warmup 2: Topic</a></li>
-            <!-- Unit 2 -->
-            <li><a href="URL_HERE" target="_blank">Unit 2 - Warmup 1: Topic</a></li>
-            <li><a href="URL_HERE" target="_blank">Unit 2 - Warmup 2: Topic</a></li>
-            <!-- Add more warmups as needed -->
-        </ul>
+        
+        <div class="unit-group">
+            <h3>Unit 1: Transformations</h3>
+            <ul class="link-list" data-unit="unit1">
+                <li><a href="URL_HERE" target="_blank">Warmup 1: Translations</a></li>
+                <li><a href="URL_HERE" target="_blank">Warmup 2: Reflections</a></li>
+                <li><a href="URL_HERE" target="_blank">Warmup 3: Rotations</a></li>
+            </ul>
+        </div>
+        
+        <div class="unit-group">
+            <h3>Unit 2: Similarity</h3>
+            <ul class="link-list" data-unit="unit2">
+                <li><a href="URL_HERE" target="_blank">Warmup 1: Scale Factors</a></li>
+                <li><a href="URL_HERE" target="_blank">Warmup 2: Similar Triangles</a></li>
+            </ul>
+        </div>
+        
+        <div class="unit-group">
+            <h3>Unit 3: Coordinate Methods</h3>
+            <ul class="link-list" data-unit="unit3">
+                <li><a href="URL_HERE" target="_blank">Warmup 1: Distance Formula</a></li>
+                <li><a href="URL_HERE" target="_blank">Warmup 2: Midpoint Formula</a></li>
+                <li><a href="URL_HERE" target="_blank">Warmup 3: Slope Review</a></li>
+            </ul>
+        </div>
+        
+        <!-- Add more units as needed -->
     </div>
     
     <!-- ALL WEB APPS SECTION -->
     <div class="section">
         <h2>💻 All Web Apps</h2>
-        <ul class="link-list" id="allWebApps">
-            <!-- Unit 1 -->
-            <li><a href="URL_HERE" target="_blank">Unit 1 - App 1: Description</a></li>
-            <li><a href="URL_HERE" target="_blank">Unit 1 - App 2: Description</a></li>
-            <!-- Unit 2 -->
-            <li><a href="URL_HERE" target="_blank">Unit 2 - App 1: Description</a></li>
-            <li><a href="URL_HERE" target="_blank">Unit 2 - App 2: Description</a></li>
-            <!-- Add more apps as needed -->
-        </ul>
+        
+        <div class="unit-group">
+            <h3>Unit 1: Transformations</h3>
+            <ul class="link-list" data-unit="unit1">
+                <li><a href="URL_HERE" target="_blank">Transformation Explorer</a></li>
+                <li><a href="URL_HERE" target="_blank">Rotation Visualizer</a></li>
+            </ul>
+        </div>
+        
+        <div class="unit-group">
+            <h3>Unit 2: Similarity</h3>
+            <ul class="link-list" data-unit="unit2">
+                <li><a href="URL_HERE" target="_blank">Dilation Tool</a></li>
+                <li><a href="URL_HERE" target="_blank">Similar Shapes Builder</a></li>
+            </ul>
+        </div>
+        
+        <div class="unit-group">
+            <h3>Unit 3: Coordinate Methods</h3>
+            <ul class="link-list" data-unit="unit3">
+                <li><a href="URL_HERE" target="_blank">Distance & Midpoint Calculator</a></li>
+                <li><a href="URL_HERE" target="_blank">Coordinate Plane Plotter</a></li>
+            </ul>
+        </div>
+        
+        <!-- Add more units as needed -->
     </div>
 
     <!-- ALL TOOLS SECTION -->
@@ -147,6 +231,7 @@
         <ul class="link-list" id="allTools">
             <li><a href="https://www.desmos.com/calculator" target="_blank">Desmos Graphing Calculator</a></li>
             <li><a href="https://www.geogebra.org/calculator" target="_blank">GeoGebra Calculator</a></li>
+            <li><a href="https://www.desmos.com/geometry" target="_blank">Desmos Geometry</a></li>
             <li><a href="URL_HERE" target="_blank">Scientific Calculator</a></li>
             <li><a href="URL_HERE" target="_blank">Formula Sheet</a></li>
             <li><a href="URL_HERE" target="_blank">Unit Circle Reference</a></li>
@@ -156,43 +241,42 @@
     </div>
 
     <script>
-        // Configuration: Set which items belong to current unit
-        const currentUnit = {
-            warmups: [0, 1],  // indices from allWarmups (0-based)
-            webApps: [0, 1],  // indices from allWebApps (0-based)
-            tools: [0, 1, 3]  // indices from allTools (0-based)
+        // ===== CONFIGURATION =====
+        const config = {
+            currentUnitTitle: "C2U3 Coordinate Methods",
+            currentUnit: "unit3",  // Must match data-unit attribute
+            favoriteTools: [0, 1, 2, 4]  // Indices from allTools (0-based)
         };
         
         // Auto-populate current unit from full lists
         window.addEventListener('DOMContentLoaded', function() {
-            const allWarmups = document.querySelectorAll('#allWarmups li');
-            const allWebApps = document.querySelectorAll('#allWebApps li');
-            const allTools = document.querySelectorAll('#allTools li');
+            // Set unit title
+            document.getElementById('currentUnitTitle').textContent = config.currentUnitTitle;
+            
+            // Get current unit's warmups
+            const warmupSection = document.querySelector(`#allWarmups .link-list[data-unit="${config.currentUnit}"]`);
             const currentWarmupsList = document.getElementById('currentWarmups');
+            if (warmupSection) {
+                const warmupItems = warmupSection.querySelectorAll('li');
+                warmupItems.forEach(item => {
+                    currentWarmupsList.appendChild(item.cloneNode(true));
+                });
+            }
+            
+            // Get current unit's web apps
+            const webAppSection = document.querySelector(`#allWebApps .link-list[data-unit="${config.currentUnit}"]`);
             const currentWebAppsList = document.getElementById('currentWebApps');
+            if (webAppSection) {
+                const webAppItems = webAppSection.querySelectorAll('li');
+                webAppItems.forEach(item => {
+                    currentWebAppsList.appendChild(item.cloneNode(true));
+                });
+            }
+            
+            // Get favorite tools
+            const allTools = document.querySelectorAll('#allTools li');
             const currentToolsList = document.getElementById('currentTools');
-            
-            // Clear placeholder content
-            currentWarmupsList.innerHTML = '';
-            currentWebAppsList.innerHTML = '';
-            currentToolsList.innerHTML = '';
-            
-            // Copy selected warmups
-            currentUnit.warmups.forEach(index => {
-                if (allWarmups[index]) {
-                    currentWarmupsList.appendChild(allWarmups[index].cloneNode(true));
-                }
-            });
-            
-            // Copy selected web apps
-            currentUnit.webApps.forEach(index => {
-                if (allWebApps[index]) {
-                    currentWebAppsList.appendChild(allWebApps[index].cloneNode(true));
-                }
-            });
-            
-            // Copy selected tools
-            currentUnit.tools.forEach(index => {
+            config.favoriteTools.forEach(index => {
                 if (allTools[index]) {
                     currentToolsList.appendChild(allTools[index].cloneNode(true));
                 }
