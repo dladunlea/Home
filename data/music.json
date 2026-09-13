@@ -1,0 +1,22 @@
+{
+  "className": "Music",
+  "resources": [
+    { "id": "res-fav-song", "label": "Favorite Song: Lagunas by Peso Pluma and Jasiel Nunez", "url": "https://www.youtube.com/watch?v=BGCL-kbNUrY&t=28s", "visible": true },
+    { "id": "res-justinguitar", "label": "JustinGuitar", "url": "https://www.justinguitar.com/", "visible": true },
+    { "id": "res-getting-to-know-you", "label": "Getting to know you", "url": "https://docs.google.com/forms/d/e/1FAIpQLSeKccMqPSp__fxxeobm_G54lY59_Aym9wxGsVREkFIJR1tlzA/viewform?usp=dialog", "visible": true }
+  ],
+  "weeks": [
+    {
+      "id": "music-week1",
+      "title": "Music",
+      "visible": true,
+      "warmups": [],
+      "apps": [
+        { "id": "app-chrome-music-lab", "label": "Chrome Music Lab", "url": "https://musiclab.chromeexperiments.com/Experiments", "visible": true },
+        { "id": "app-sound-exploration", "label": "Sound Exploration", "url": "https://listeningtowaves.com/sound-exploration", "visible": true },
+        { "id": "app-virtual-piano", "label": "Virtual Piano", "url": "https://www.onlinepianist.com/virtual-piano", "visible": true },
+        { "id": "app-chord-progression", "label": "Chord Progression Maker", "url": "https://dladunlea.github.io/ChordProgression/", "visible": true }
+      ]
+    }
+  ]
+}

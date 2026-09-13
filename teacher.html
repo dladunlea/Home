@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Dashboard</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="subject-teacher">
+
+<div class="teacher-banner">🔒 TEACHER VIEW — shows hidden/upcoming material. Don't share this page's link with students.</div>
+
+<nav class="top-nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">🏫 Class Pages</a>
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="math.html">➗ Math</a>
+    <a class="nav-link" href="physics.html">🔬 Physics</a>
+    <a class="nav-link" href="homeroom.html">🧑‍🏫 Homeroom</a>
+    <a class="nav-link" href="music.html">🎵 Music</a>
+    <a class="nav-link active" href="teacher.html">🧑‍💻 Teacher</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="page-header">
+    <h1>Teacher Dashboard</h1>
+    <p class="subtitle">Check the boxes for what students should see right now. Everything else waits here until you're ready.</p>
+  </div>
+
+  <div class="panel">
+    <h2>1. Where's your site?</h2>
+    <p class="panel-desc">Your GitHub username, the repo name, and the branch GitHub Pages publishes from. Not secret — just location info.</p>
+
+    <div class="field-row">
+      <label>Owner</label>
+      <input type="text" id="gh-owner" placeholder="dladunlea">
+      <label>Repo</label>
+      <input type="text" id="gh-repo" placeholder="Home">
+      <label>Branch</label>
+      <input type="text" id="gh-branch" placeholder="main">
+      <button class="btn secondary" id="gh-save-btn">Save</button>
+    </div>
+    <div class="status-msg" id="settings-status"></div>
+  </div>
+
+  <div class="panel">
+    <h2>2. Publishing access</h2>
+    <p class="panel-desc">This is what lets "Publish" save your changes straight to your live site. Your GitHub token is encrypted with a PIN you choose and kept only in this browser — never sent anywhere except directly to GitHub, and never sent or stored anywhere in plain text.</p>
+
+    <div id="token-area"><!-- filled in by teacher.js depending on lock state --></div>
+    <div class="status-msg" id="token-status"></div>
+
+    <details class="setup-help">
+      <summary>First time? How to get a token (2 minutes)</summary>
+      <ol>
+        <li>Go to <strong>github.com → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</strong>.</li>
+        <li>Give it a name like "Class site publishing" and set an expiration (e.g. 1 year — avoid "no expiration").</li>
+        <li>Under "Repository access," choose <strong>Only select repositories</strong> and pick your class-site repo (e.g. <code>Home</code>).</li>
+        <li>Under "Permissions," find <strong>Contents</strong> and set it to <strong>Read and write</strong>. Leave everything else as "No access."</li>
+        <li>Click Generate, then copy the token (starts with <code>github_pat_</code>) — you'll paste it below along with a PIN of your choosing.</li>
+      </ol>
+      <p><strong>About the PIN:</strong> it encrypts the token in this browser's storage so a casual visitor to this page can't just open dev tools and read it out. It's a real deterrent, not bank-grade security — a longer PIN (6+ characters, letters allowed) is safer than a short numeric one. Don't share this page's link, and use "Lock now" when you step away from a shared computer.</p>
+    </details>
+  </div>
+
+  <h2 style="margin-top:32px;">3. Edit a class</h2>
+  <div class="class-tabs" id="class-tabs"></div>
+  <div class="panel" id="editor-area" style="border-top-left-radius:0;"></div>
+
+  <footer class="site-footer">Teacher dashboard — not linked from student pages.</footer>
+</div>
+
+<script src="assets/teacher.js" defer></script>
+</body>
+</html>
