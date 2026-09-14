@@ -59,14 +59,15 @@
       "id": "u1-t1",
       "title": "Unit 1: Fundamentals of Structural Kinesiology — Topic 3: Career Pathways",
       "visible": true,
-      "warmups": [],
-      "apps": [
+      "warmups": [
         {
-          "id": "app-zygote",
+          "id": "item-mu0q8ahx-9tziu",
           "label": "STEM Careers Quiz",
           "url": "https://dowstem.us/myfuture/",
           "visible": true
-        },
+        }
+      ],
+      "apps": [
         {
           "id": "app-getbodysmart",
           "label": "STEM Careers Videos",
@@ -79,7 +80,14 @@
       "id": "u1-t2",
       "title": "Unit 1: Fundamentals of Structural Kinesiology — Topic 2: Joint and Muscle Movement",
       "visible": true,
-      "warmups": [],
+      "warmups": [
+        {
+          "id": "item-mu0qr9qw-9kqvb",
+          "label": "Stretching",
+          "url": "https://www.youtube.com/shorts/g8yyL5xgXIk",
+          "visible": true
+        }
+      ],
       "apps": [
         {
           "id": "app-musclewiki",
