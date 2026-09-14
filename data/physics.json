@@ -1,20 +1,32 @@
 {
   "className": "Physics of the Human Body",
-  "resources": [
-    { "id": "res-drt", "label": "Distance = Rate x Time", "url": "https://dladunlea.github.io/practice_drt/", "visible": true },
-    { "id": "res-unit-conversions", "label": "Unit Conversions", "url": "https://dladunlea.github.io/unit-conversions/", "visible": true },
-    { "id": "res-calculator-pemdas", "label": "Calculator Skills: Order of Operations", "url": "https://dladunlea.github.io/Calculator_PEMDAS/", "visible": true }
-  ],
+  "resources": [],
   "weeks": [
     {
       "id": "u2-t1",
       "title": "Unit 2: Modeling Motion — Topic 1: Representing Motion",
       "visible": true,
       "warmups": [
-        { "id": "wu-0910", "label": "Thursday 9/10", "url": "https://docs.google.com/forms/d/e/1FAIpQLSd6n81WJ54LNXKQAbD_rwMxDOJcxvgXP69U6qhtUqGLwi6Pyg/viewform?usp=dialog", "visible": true }
+        {
+          "id": "wu-0910",
+          "label": "Thursday 9/10",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLSd6n81WJ54LNXKQAbD_rwMxDOJcxvgXP69U6qhtUqGLwi6Pyg/viewform?usp=dialog",
+          "visible": true
+        }
       ],
       "apps": [
-        { "id": "app-moving-man", "label": "Moving Man", "url": "https://www.labxchange.org/library/items/lb:LabXchange:aefb97e0:lx_simulation:1?fullscreen=true", "visible": true }
+        {
+          "id": "app-moving-man",
+          "label": "Moving Man",
+          "url": "https://www.labxchange.org/library/items/lb:LabXchange:aefb97e0:lx_simulation:1?fullscreen=true",
+          "visible": true
+        },
+        {
+          "id": "item-mu0nvo1z-fil0r",
+          "label": "Motion is in two Directions: x(t) and y(t)",
+          "url": "https://dladunlea.github.io/x-t_and_y-t/",
+          "visible": true
+        }
       ]
     },
     {
@@ -23,17 +35,44 @@
       "visible": true,
       "warmups": [],
       "apps": [
-        { "id": "app-xt-yt", "label": "Motion is in two Directions: x(t) and y(t)", "url": "https://dladunlea.github.io/x-t_and_y-t/", "visible": true }
+        {
+          "id": "item-mu0nymah-ahynn",
+          "label": "Distance = Rate x Time",
+          "url": "https://dladunlea.github.io/practice_drt/",
+          "visible": true
+        },
+        {
+          "id": "item-mu0nyut5-kks61",
+          "label": "Unit Conversions",
+          "url": "https://dladunlea.github.io/unit-conversions/",
+          "visible": true
+        },
+        {
+          "id": "item-mu0nz3lo-3mtvs",
+          "label": "Calculator Skills: Order of Operations",
+          "url": "https://dladunlea.github.io/Calculator_PEMDAS/",
+          "visible": true
+        }
       ]
     },
     {
       "id": "u1-t1",
-      "title": "Unit 1: Fundamentals of Structural Kinesiology — Topic 1: Anatomy and Physiology",
+      "title": "Unit 1: Fundamentals of Structural Kinesiology — Topic 3: Career Pathways",
       "visible": true,
       "warmups": [],
       "apps": [
-        { "id": "app-zygote", "label": "Zygote Body Systems Scanner", "url": "https://www.zygotebody.com/", "visible": true },
-        { "id": "app-getbodysmart", "label": "Body Systems Explainer", "url": "https://www.getbodysmart.com/", "visible": true }
+        {
+          "id": "app-zygote",
+          "label": "STEM Careers Quiz",
+          "url": "https://dowstem.us/myfuture/",
+          "visible": true
+        },
+        {
+          "id": "app-getbodysmart",
+          "label": "STEM Careers Videos",
+          "url": "https://ca.pbslearningmedia.org/collection/nova-premium-collection/broadcast-and-digital-collections/nova-education-the-secret-life-of-scientists-engineers/",
+          "visible": true
+        }
       ]
     },
     {
@@ -42,17 +81,32 @@
       "visible": true,
       "warmups": [],
       "apps": [
-        { "id": "app-musclewiki", "label": "Muscle Wiki: Which exercise should I do?", "url": "https://musclewiki.com/", "visible": true }
+        {
+          "id": "app-musclewiki",
+          "label": "Muscle Wiki: Which exercise should I do?",
+          "url": "https://musclewiki.com/",
+          "visible": true
+        }
       ]
     },
     {
       "id": "u1-t3",
-      "title": "Unit 1: Fundamentals of Structural Kinesiology — Topic 3: Career Pathways",
+      "title": "Unit 1: Fundamentals of Structural Kinesiology — Topic 1: Anatomy and Physiology",
       "visible": true,
       "warmups": [],
       "apps": [
-        { "id": "app-stem-quiz", "label": "STEM Careers Quiz", "url": "https://dowstem.us/myfuture/", "visible": true },
-        { "id": "app-stem-videos", "label": "STEM Careers Videos", "url": "https://ca.pbslearningmedia.org/collection/nova-premium-collection/broadcast-and-digital-collections/nova-education-the-secret-life-of-scientists-engineers/", "visible": true }
+        {
+          "id": "item-mu0nwpvo-wa72i",
+          "label": "Zygote Body Systems Scanner",
+          "url": "https://www.zygotebody.com/",
+          "visible": true
+        },
+        {
+          "id": "item-mu0nwx2v-u4o0m",
+          "label": "Body Systems Explainer",
+          "url": "https://www.getbodysmart.com/",
+          "visible": true
+        }
       ]
     }
   ]
