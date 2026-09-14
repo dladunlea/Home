@@ -5,12 +5,24 @@
       "id": "res-desmos-calc",
       "label": "Desmos Graphing Calculator",
       "url": "https://www.desmos.com/calculator",
-      "visible": true
+      "visible": false
     },
     {
       "id": "res-desmos-geo",
       "label": "Desmos Geometry",
       "url": "https://www.desmos.com/geometry",
+      "visible": false
+    },
+    {
+      "id": "item-mu0ngf2h-uhhgo",
+      "label": "Clever",
+      "url": "https://www.clever.com/",
+      "visible": true
+    },
+    {
+      "id": "item-mu0ngnrm-ix06f",
+      "label": "Edia",
+      "url": "https://edia.app/",
       "visible": true
     }
   ],
@@ -18,8 +30,15 @@
     {
       "id": "c3u2-week4",
       "title": "C3U2: Coordinate Methods — Week of 9/14/2026",
-      "visible": false,
-      "warmups": [],
+      "visible": true,
+      "warmups": [
+        {
+          "id": "item-mu0nf8rt-qjpua",
+          "label": "Final warmup for Unit Test",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLSdbY-heHB6A7tyNkmNLxvhoziTgAD3TXLPULalpTui9rGvbLA/viewform?usp=dialog",
+          "visible": true
+        }
+      ],
       "apps": [
         {
           "id": "app-calculator-pemdas",
