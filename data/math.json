@@ -37,6 +37,12 @@
           "label": "Final warmup for Unit Test",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSdbY-heHB6A7tyNkmNLxvhoziTgAD3TXLPULalpTui9rGvbLA/viewform?usp=dialog",
           "visible": true
+        },
+        {
+          "id": "item-mu1lcxf0-lfzmc",
+          "label": "Edia Diagnostic",
+          "url": "https://edia.app/assignments/5c2fcbb5-be0c-42f1-ad77-f367b578d8a2",
+          "visible": true
         }
       ],
       "apps": [
