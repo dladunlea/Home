@@ -11,6 +11,12 @@
           "id": "wu-0910",
           "label": "Thursday 9/10",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSd6n81WJ54LNXKQAbD_rwMxDOJcxvgXP69U6qhtUqGLwi6Pyg/viewform?usp=dialog",
+          "visible": false
+        },
+        {
+          "id": "item-mu1h5cli-4780z",
+          "label": "Monday 9/14",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLScIBWujH2y9PCOgjpJ7scEsP7VAv8O-jU7BLTor8Efeek8XBQ/viewform?usp=publish-editor",
           "visible": true
         }
       ],
