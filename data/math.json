@@ -57,12 +57,19 @@
           "visible": true
         }
       ],
-      "apps": []
+      "apps": [
+        {
+          "id": "item-mua2m1pd-cuufx",
+          "label": "Calculator Order of Operations",
+          "url": "https://dladunlea.github.io/Calculator_PEMDAS/",
+          "visible": true
+        }
+      ]
     },
     {
       "id": "c3u2-week4",
       "title": "C3U2: Coordinate Methods — Week of 9/14/2026",
-      "visible": true,
+      "visible": false,
       "warmups": [
         {
           "id": "item-mu0nf8rt-qjpua",
@@ -79,12 +86,6 @@
       ],
       "apps": [
         {
-          "id": "app-calculator-pemdas",
-          "label": "Calculator Order of Operations",
-          "url": "https://dladunlea.github.io/Calculator_PEMDAS/",
-          "visible": false
-        },
-        {
           "id": "app-box-factor",
           "label": "Box Method Factoring",
           "url": "https://dladunlea.github.io/BoxFactor/",
@@ -95,7 +96,7 @@
     {
       "id": "c3u2-week3",
       "title": "C3U2: Coordinate Methods — Week of 9/7/2026",
-      "visible": true,
+      "visible": false,
       "warmups": [
         {
           "id": "wu-w3-tue",
@@ -140,7 +141,7 @@
     {
       "id": "c3u2-week2",
       "title": "C3U2: Coordinate Methods — Week of 8/31/2026",
-      "visible": true,
+      "visible": false,
       "warmups": [
         {
           "id": "wu-w2-tue",
@@ -203,7 +204,7 @@
     {
       "id": "c3u2-week1",
       "title": "C3U2: Coordinate Methods — Week of 8/24/2026",
-      "visible": true,
+      "visible": false,
       "warmups": [
         {
           "id": "wu-w1-tue",
