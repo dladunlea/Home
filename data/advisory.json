@@ -3,9 +3,9 @@
   "resources": [
     {
       "id": "res-example",
-      "label": "Example resource (edit or delete me)",
-      "url": "https://example.com",
-      "visible": false
+      "label": "DLA TV",
+      "url": "https://www.youtube.com/channel/UClrk8BLy-fnhz_g2xGnmH1A",
+      "visible": true
     }
   ],
   "weeks": [
