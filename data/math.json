@@ -28,6 +28,38 @@
   ],
   "weeks": [
     {
+      "id": "week-mua2fq5n-h11w7",
+      "title": "C3U5: Non-Linear Functions — Week of 9/14/2026",
+      "visible": true,
+      "warmups": [
+        {
+          "id": "item-mua2gpyw-os3xi",
+          "label": "Tuesday",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLSfkVN9-gCRc7rAKlpJTbB6v5sKwIYZFMZPrLwpSGiJ-j8NhRQ/viewform?usp=publish-editor",
+          "visible": true
+        },
+        {
+          "id": "item-mua2hnoh-pmpg1",
+          "label": "Wednesday",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLScKDEYZbm7WPbs2SG-tmmrDWtOLkEZQqaYbujEWX9AQKZ59zg/viewform?usp=publish-editor",
+          "visible": true
+        },
+        {
+          "id": "item-mua2j3n5-fh40b",
+          "label": "Thursday",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLScE5moKgLyC7TuFdjdWzlCvm3rawIzahvP-v8yBdqlVe_vMjg/viewform?usp=publish-editor",
+          "visible": true
+        },
+        {
+          "id": "item-mua2k9tz-5av24",
+          "label": "Friday",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLSfmMPOLaepHvd5gUU5pjHkYGhUMRrgJHkD1b5RUG3qDe6M18Q/viewform?usp=publish-editor",
+          "visible": true
+        }
+      ],
+      "apps": []
+    },
+    {
       "id": "c3u2-week4",
       "title": "C3U2: Coordinate Methods — Week of 9/14/2026",
       "visible": true,
