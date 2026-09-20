@@ -12,7 +12,7 @@
     {
       "id": "week1",
       "title": "Week 1",
-      "visible": false,
+      "visible": true,
       "warmups": [
         {
           "id": "wu-example",
