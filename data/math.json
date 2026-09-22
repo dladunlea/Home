@@ -5,7 +5,7 @@
       "id": "res-desmos-calc",
       "label": "Desmos Graphing Calculator",
       "url": "https://www.desmos.com/calculator",
-      "visible": false
+      "visible": true
     },
     {
       "id": "res-desmos-geo",
