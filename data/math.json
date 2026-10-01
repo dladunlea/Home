@@ -28,9 +28,23 @@
   ],
   "weeks": [
     {
+      "id": "week-mupufnv0-1mnn7",
+      "title": "Week of 9/28/26",
+      "visible": true,
+      "warmups": [
+        {
+          "id": "item-mupuglfs-h71dq",
+          "label": "SUB DAY EDIA",
+          "url": "https://edia.app/assignments/cfbd37fb-b1b3-450e-8e31-05fefb64830c",
+          "visible": true
+        }
+      ],
+      "apps": []
+    },
+    {
       "id": "week-mua2fq5n-h11w7",
       "title": "C3U5: Non-Linear Functions — Week of 9/14/2026",
-      "visible": true,
+      "visible": false,
       "warmups": [
         {
           "id": "item-mua2gpyw-os3xi",
