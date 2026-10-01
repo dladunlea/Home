@@ -39,7 +39,14 @@
           "visible": true
         }
       ],
-      "apps": []
+      "apps": [
+        {
+          "id": "item-mupuul9a-30kub",
+          "label": "Calculator Order of Operations",
+          "url": "https://dladunlea.github.io/Calculator_PEMDAS/",
+          "visible": true
+        }
+      ]
     },
     {
       "id": "week-mua2fq5n-h11w7",
