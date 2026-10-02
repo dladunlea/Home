@@ -29,13 +29,19 @@
   "weeks": [
     {
       "id": "week-mupufnv0-1mnn7",
-      "title": "Week of 9/28/26",
+      "title": "Sub Day 10/2/26",
       "visible": true,
       "warmups": [
         {
           "id": "item-mupuglfs-h71dq",
-          "label": "SUB DAY EDIA",
+          "label": "First: EDIA",
           "url": "https://edia.app/assignments/cfbd37fb-b1b3-450e-8e31-05fefb64830c",
+          "visible": true
+        },
+        {
+          "id": "item-muqj15vj-atxrp",
+          "label": "Second: Practice Packet (Answers Here)",
+          "url": "https://drive.google.com/file/d/1HZz8iw1lO8vGvPAaVtbryGJiMntAEAm1/view?usp=sharing",
           "visible": true
         }
       ],
@@ -44,6 +50,12 @@
           "id": "item-mupuul9a-30kub",
           "label": "Calculator Order of Operations",
           "url": "https://dladunlea.github.io/Calculator_PEMDAS/",
+          "visible": true
+        },
+        {
+          "id": "item-muqj2g2c-odbsx",
+          "label": "Box Method Factoring",
+          "url": "https://dladunlea.github.io/BoxFactor/",
           "visible": true
         }
       ]
@@ -84,6 +96,12 @@
           "label": "Calculator Order of Operations",
           "url": "https://dladunlea.github.io/Calculator_PEMDAS/",
           "visible": true
+        },
+        {
+          "id": "item-muqj1uoi-j85xh",
+          "label": "",
+          "url": "",
+          "visible": false
         }
       ]
     },
@@ -108,8 +126,8 @@
       "apps": [
         {
           "id": "app-box-factor",
-          "label": "Box Method Factoring",
-          "url": "https://dladunlea.github.io/BoxFactor/",
+          "label": "",
+          "url": "",
           "visible": false
         }
       ]
