@@ -28,9 +28,23 @@
   ],
   "weeks": [
     {
+      "id": "week-mux2mmwe-71nx0",
+      "title": "10/5/26",
+      "visible": true,
+      "warmups": [
+        {
+          "id": "item-mux2mxl3-oxj9m",
+          "label": "Warmup 10/6",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLSes7aKPttGQVyYX8DF7PhpIMYGswm0GR5L_oQRM-ZPkCgTdAA/viewform?usp=publish-editor",
+          "visible": true
+        }
+      ],
+      "apps": []
+    },
+    {
       "id": "week-mupufnv0-1mnn7",
       "title": "Sub Day 10/2/26",
-      "visible": true,
+      "visible": false,
       "warmups": [
         {
           "id": "item-mupuglfs-h71dq",
