@@ -39,7 +39,14 @@
           "visible": true
         }
       ],
-      "apps": []
+      "apps": [
+        {
+          "id": "item-muycxmo2-s9hdv",
+          "label": "Log Lab",
+          "url": "https://dladunlea.github.io/LogDrop/",
+          "visible": true
+        }
+      ]
     },
     {
       "id": "week-mupufnv0-1mnn7",
