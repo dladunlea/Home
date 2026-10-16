@@ -17,13 +17,19 @@
       "id": "item-mu0ngf2h-uhhgo",
       "label": "Clever",
       "url": "https://www.clever.com/",
-      "visible": true
+      "visible": false
     },
     {
       "id": "item-mu0ngnrm-ix06f",
       "label": "Edia",
       "url": "https://edia.app/",
       "visible": false
+    },
+    {
+      "id": "item-mvbal4eo-koctl",
+      "label": "Box Method Factoring",
+      "url": "https://dladunlea.github.io/BoxFactor/",
+      "visible": true
     }
   ],
   "weeks": [
@@ -63,13 +69,13 @@
           "id": "item-mupuglfs-h71dq",
           "label": "First: EDIA",
           "url": "https://edia.app/assignments/cfbd37fb-b1b3-450e-8e31-05fefb64830c",
-          "visible": true
+          "visible": false
         },
         {
           "id": "item-muqj15vj-atxrp",
           "label": "Second: Practice Packet (Answers Here)",
           "url": "https://drive.google.com/file/d/1HZz8iw1lO8vGvPAaVtbryGJiMntAEAm1/view?usp=sharing",
-          "visible": true
+          "visible": false
         }
       ],
       "apps": [
