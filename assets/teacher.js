@@ -588,7 +588,7 @@
 
     var warmupCol = document.createElement("div");
     warmupCol.className = "editor-col";
-    warmupCol.innerHTML = "<h4>🔥 Warmups</h4>";
+    warmupCol.innerHTML = "<h4>🔥 Essential Tasks</h4>";
     warmupCol.appendChild(renderItemEditorList(week.warmups, function () { renderEditor(); }));
     warmupCol.appendChild(renderAddItemRow(function (label, url) {
       week.warmups.push(blankItem(label, url));
