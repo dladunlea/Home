@@ -5,7 +5,7 @@
       "id": "res-desmos-calc",
       "label": "Desmos Graphing Calculator",
       "url": "https://www.desmos.com/calculator",
-      "visible": true
+      "visible": false
     },
     {
       "id": "res-desmos-geo",
@@ -24,18 +24,12 @@
       "label": "Edia",
       "url": "https://edia.app/",
       "visible": false
-    },
-    {
-      "id": "item-mvbal4eo-koctl",
-      "label": "Box Method Factoring",
-      "url": "https://dladunlea.github.io/BoxFactor/",
-      "visible": true
     }
   ],
   "weeks": [
     {
       "id": "week-mviwg215-8lbee",
-      "title": "C3U7: Trigonometry — Week of 10/21/2026",
+      "title": "SUB DAY C3U7: Trigonometry — 10/22/2026",
       "visible": true,
       "warmups": [
         {
@@ -43,14 +37,20 @@
           "label": "Edia Practice",
           "url": "https://edia.app/assignments/f62f111d-2ed7-46c1-9b5a-bb658d83185b",
           "visible": true
+        },
+        {
+          "id": "item-mvj2fq3e-0zn8k",
+          "label": "SOH CAH TOA Lab",
+          "url": "https://dladunlea.github.io/SOHCAHTOA_Lab/",
+          "visible": true
         }
       ],
       "apps": []
     },
     {
       "id": "week-mux2mmwe-71nx0",
-      "title": "10/12/26",
-      "visible": false,
+      "title": "C3U7: Non-Linear Functions ",
+      "visible": true,
       "warmups": [
         {
           "id": "item-mux2mxl3-oxj9m",
@@ -70,6 +70,12 @@
           "id": "item-muycxmo2-s9hdv",
           "label": "Log Lab",
           "url": "https://dladunlea.github.io/LogDrop/",
+          "visible": true
+        },
+        {
+          "id": "item-mvj2e2da-vi5hu",
+          "label": "Box Method Factoring",
+          "url": "https://dladunlea.github.io/BoxFactor/",
           "visible": true
         }
       ]
@@ -145,10 +151,10 @@
           "visible": true
         },
         {
-          "id": "item-muqj1uoi-j85xh",
-          "label": "",
-          "url": "",
-          "visible": false
+          "id": "item-mvj2cz5q-fm0k1",
+          "label": "Pythagorean Circle",
+          "url": "https://dladunlea.github.io/pythagorean-circle/",
+          "visible": true
         }
       ]
     },
@@ -170,14 +176,7 @@
           "visible": true
         }
       ],
-      "apps": [
-        {
-          "id": "app-box-factor",
-          "label": "",
-          "url": "",
-          "visible": false
-        }
-      ]
+      "apps": []
     },
     {
       "id": "c3u2-week3",
@@ -233,31 +232,31 @@
           "id": "wu-w2-tue",
           "label": "Tuesday",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSfZ57SPxz-pG-qjz0FxAUhyZwa7gtmd1cyaUsipr75bcy8WXQ/viewform?usp=dialog",
-          "visible": true
+          "visible": false
         },
         {
           "id": "wu-w2-wed",
           "label": "Wednesday",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSeka5VdLA2-5gi8NNUZgCtvG7vDXqi7f33uFCQQGPU74Y_s7A/viewform?usp=dialog",
-          "visible": true
+          "visible": false
         },
         {
           "id": "wu-w2-thu",
           "label": "Thursday",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLScPaW-5u8b3dGuLjkJ09oSR_pftm7J6mFw20mzZdEtNA7pxxQ/viewform?usp=dialog",
-          "visible": true
+          "visible": false
         },
         {
           "id": "wu-w2-fri",
           "label": "Friday",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSfdcA_j21n8jlq6Bo-t7ET3j4T-DTES4LOEysz9KNAB_T5QeQ/viewform?usp=dialog",
-          "visible": true
+          "visible": false
         },
         {
           "id": "wu-w2-all",
           "label": "All Week 2",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSdpf2q1oKHx7BCNZqhYEFHjkNB6IWlSRih-ZB7wodqihKd38g/viewform?usp=dialog",
-          "visible": true
+          "visible": false
         }
       ],
       "apps": [
@@ -296,31 +295,31 @@
           "id": "wu-w1-tue",
           "label": "Tuesday",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSeZv0DXXV0BKibw1HfXNCh_blAdaOuzXn6jzUxBhORULmxz7A/viewform?usp=dialog",
-          "visible": true
+          "visible": false
         },
         {
           "id": "wu-w1-wed",
           "label": "Wednesday",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSeU7epUIsP-QM6-f-PLK-wyZT4Wo1pofabmOHNmH_oI5A2W4g/viewform?usp=dialog",
-          "visible": true
+          "visible": false
         },
         {
           "id": "wu-w1-thu",
           "label": "Thursday",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSctMlnFYBU2OOGF8EPnRFnKpVaR3eYdalt1_zHSbh01JoljZw/viewform?usp=dialog",
-          "visible": true
+          "visible": false
         },
         {
           "id": "wu-w1-fri",
           "label": "Friday",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSe7VZCRFuqpFWGQBwfLJuVp8uwjDCSnpGQ7we5teRe5HeSKjw/viewform?usp=dialog",
-          "visible": true
+          "visible": false
         },
         {
           "id": "wu-w1-all",
           "label": "All Week 1",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSe-kaz4X2k2KY_AjDluzWFU74Xa3QBS-efuMEEGNxOD3u3lGw/viewform?usp=dialog",
-          "visible": true
+          "visible": false
         }
       ],
       "apps": [
