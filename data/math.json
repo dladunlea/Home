@@ -34,9 +34,23 @@
   ],
   "weeks": [
     {
+      "id": "week-mviwg215-8lbee",
+      "title": "C3U7: Trigonometry — Week of 10/21/2026",
+      "visible": true,
+      "warmups": [
+        {
+          "id": "item-mviwgw7f-0uufr",
+          "label": "Edia Practice",
+          "url": "https://edia.app/assignments/f62f111d-2ed7-46c1-9b5a-bb658d83185b",
+          "visible": true
+        }
+      ],
+      "apps": []
+    },
+    {
       "id": "week-mux2mmwe-71nx0",
       "title": "10/12/26",
-      "visible": true,
+      "visible": false,
       "warmups": [
         {
           "id": "item-mux2mxl3-oxj9m",
