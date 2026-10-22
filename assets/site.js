@@ -32,7 +32,7 @@
 
   function renderColumns(warmups, apps, resources, twoCol) {
     var html = '<div class="columns' + (twoCol ? "" : "") + '">';
-    html += '<div class="column"><h3>🔥 Warmups</h3>' + renderItemList(warmups) + "</div>";
+    html += '<div class="column"><h3>🔥 Essential Tasks</h3>' + renderItemList(warmups) + "</div>";
     html += '<div class="column"><h3>💻 Web Apps</h3>' + renderItemList(apps) + "</div>";
     if (!twoCol) {
       html += '<div class="column"><h3>🛠️ Resources</h3>' + renderItemList(resources) + "</div>";
