@@ -51,7 +51,14 @@
           "visible": true
         }
       ],
-      "apps": []
+      "apps": [
+        {
+          "id": "item-mvpoxldd-ns5bj",
+          "label": "Pythagorean Circle",
+          "url": "https://dladunlea.github.io/pythagorean-circle/",
+          "visible": true
+        }
+      ]
     },
     {
       "id": "week-mux2mmwe-71nx0",
