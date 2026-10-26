@@ -29,7 +29,7 @@
   "weeks": [
     {
       "id": "week-mviwg215-8lbee",
-      "title": "SUB DAY C3U7: Trigonometry — 10/22/2026",
+      "title": "Trigonometry — 10/28",
       "visible": true,
       "warmups": [
         {
@@ -42,6 +42,12 @@
           "id": "item-mvj2fq3e-0zn8k",
           "label": "SOH CAH TOA Lab",
           "url": "https://dladunlea.github.io/SOHCAHTOA_Lab/",
+          "visible": true
+        },
+        {
+          "id": "item-mvpnj3ld-e6169",
+          "label": "Quadratics Retake Studying",
+          "url": "https://dladunlea.github.io/Non-Linear_Functions/index.html",
           "visible": true
         }
       ],
