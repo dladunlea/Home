@@ -29,7 +29,7 @@
   "weeks": [
     {
       "id": "week-mviwg215-8lbee",
-      "title": "Trigonometry — 10/28",
+      "title": "Trigonometry",
       "visible": true,
       "warmups": [
         {
@@ -48,6 +48,12 @@
           "id": "item-mvpnj3ld-e6169",
           "label": "Quadratics Retake Studying",
           "url": "https://dladunlea.github.io/Non-Linear_Functions/index.html",
+          "visible": true
+        },
+        {
+          "id": "item-mvwyfj2m-mvu9j",
+          "label": "Practice Test Answers",
+          "url": "https://docs.google.com/presentation/d/1Q1ns_iQQ-wVeubZZwL0zVfnv2mMBHZvXkLL5mFvCeYo/edit?usp=sharing",
           "visible": true
         }
       ],
