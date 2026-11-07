@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Math 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/classpage.css">
+</head>
+<body>
+<div class="wrap" id="app">
+  <header class="top" id="hdr"><h1>Math 2</h1></header>
+  <p class="status" id="loading">Loading today's work…</p>
+</div>
+<script>
+/* ===== SETTINGS FOR THIS CLASS: the only part to edit ===== */
+window.CLASS_CONFIG = {
+  KEY: 'math2',
+  TITLE: 'Math 2',
+  SUBTITLE: 'Mrs. Dunlea · C119',
+
+  // "Publish to web" CSV link for this class's Student View tab
+  CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQelJp9R95FwavTfcew_juMSE6nhqAzJcpArV7Vb0VO37QdrbCQ2E1Z5imUbnMgcs0LUM6l0CpcvCO2/pub?gid=1341448792&single=true&output=csv',
+  SHEET_ID: '1kGkRWuYNEnOXlNhcJYIlcndfDFrLgWRxK4BXwYI8pWo',   // backup if the published link fails
+  SHEET_TAB: 'Student View',
+  FALL_YEAR: 2026,
+
+  // Used for every day. (Leave blank to use each day's WU Link / ET Link from the sheet instead.)
+  WARMUP_APP: 'https://dladunlea.github.io/Math2_Warmup/',
+  CHECKIN_FORM: 'https://docs.google.com/forms/d/13-LIJsDsXHTsZo4kMr7DYieKcdkDgoZtaQPHKgOnibc/viewform',
+
+  // Study app for each unit's performance task (matched against the unit name in the sheet)
+  APPS: [
+    { match: /CP2 Unit 3\b/, name: 'Coordinate Methods',   url: 'https://dladunlea.github.io/CoordinateMethods/' },
+    { match: /CP2 Unit 5\b/, name: 'Non-Linear Functions', url: 'https://dladunlea.github.io/Non-Linear_Functions/' },
+    { match: /CP2 Unit 7\b/, name: 'Trigonometry',         url: 'https://dladunlea.github.io/Trigonometry/' },
+    // { match: /CP2 Unit 8\b/, name: 'Probability', url: 'https://dladunlea.github.io/Probability/' },
+  ],
+};
+/* ========================================================== */
+</script>
+<script src="assets/classpage.js"></script>
+</body>
+</html>

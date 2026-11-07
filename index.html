@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Class Pages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/classpage.css">
+<style>
+  .hello{text-align:center;margin:22px 0 6px}
+  .hello h2{margin:0;font-size:1.6em;color:var(--teal-d)}
+  .hello p{margin:6px 0 0;color:var(--muted);font-weight:600}
+  .classes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}
+  .classes a{display:block;text-decoration:none;color:var(--ink);background:var(--cream);border:3px solid var(--teal);border-radius:14px;padding:22px 18px;text-align:center;transition:transform .15s, box-shadow .15s}
+  .classes a:hover,.classes a:focus-visible{transform:translateY(-3px);box-shadow:0 8px 18px rgba(53,106,106,.18)}
+  .classes .ic{font-size:2.6em;line-height:1}
+  .classes h3{margin:8px 0 4px;font-size:1.3em;color:var(--teal-d)}
+  .classes p{margin:0;color:var(--muted);font-size:.95em}
+  footer{text-align:center;color:var(--muted);font-size:.85em;margin-top:28px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><h1>🏫 Class Pages</h1><p>Mrs. Dunlea · C119</p></header>
+  <div class="hello">
+    <h2>Welcome! 👋</h2>
+    <p>Pick your class to see today's tasks, the calendar and study apps.</p>
+  </div>
+  <div class="classes">
+    <a href="math.html"><div class="ic">➗</div><h3>Math</h3><p>Today's tasks, calendar and study apps for Math 2.</p></a>
+    <a href="physics.html"><div class="ic">🔬</div><h3>Physics</h3><p>Today's tasks, calendar and study apps for Physics.</p></a>
+    <a href="advisory.html"><div class="ic">🧑‍🏫</div><h3>Advisory</h3><p>Announcements and resources for Advisory.</p></a>
+    <a href="music.html"><div class="ic">🎵</div><h3>Music</h3><p>Today's tasks and resources for Music.</p></a>
+  </div>
+  <footer>Made with ❤️ for our class.</footer>
+</div>
+</body>
+</html>
