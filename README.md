@@ -1,6 +1,6 @@
 # Class Pages
 
-Upload these six .html files to the **Home** repo (Add file → Upload files), replacing what's there. You can delete the old `assets` folder if it made it up.
+Upload the .html files to the **Home** repo (Add file → Upload files), replacing what's there.
 The links students already have (…/Home/index.html, math.html, physics.html, advisory.html, music.html) stay the same.
 
 ## How it works
@@ -21,6 +21,15 @@ Each page is self-contained: its colors and code are inside the file, so there a
 2. File → Share → **Publish to web** → Student View → **CSV**, with "Automatically republish when changes are made" checked.
 3. Open the class page file (e.g. `physics.html`), paste the link into `CSV_URL` in the SETTINGS block near the bottom, and upload it.
 4. Add the sheet's edit link to `SHEETS` in `teacher.html` so its Edit button shows up.
+
+## Ahead or behind: the Shift cell
+Each sheet's Student View tab has a **Shift** column (header in row 1, the number right under it).
+- `0` = on the plan, `-1` = one class day behind, `2` = two class days ahead.
+- The page then shows that lesson's topic, unit card and checklist (task, practice, web apps, exit ticket), with a small "(planned for …)" note.
+- These stay on the real date: the date, warm-up or checkpoint, substitute task, honors, announcements, the calendar, and every test and due date.
+- The shift never reaches past a test, exam, assessment or performance task day, so those days catch everyone back up. Still, set it back to `0` once you've caught up.
+- Preview a shift without touching the sheet: add `?shift=-1` to the page address (works with `?date=` too).
+The teacher dashboard shows each class's current shift with a **Change shift** button that opens the sheet right at that cell.
 
 ## Teacher dashboard
 `teacher.html` isn't linked anywhere for students. It shows whether each class's sheet is loading, with Edit sheet, Open page and Preview-a-day buttons.

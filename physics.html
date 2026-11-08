@@ -182,6 +182,7 @@ const COLUMN_NAMES={
   task:['essential task',"today's task",'task','daily task'], taskLink:['essential task link','task link'],
   honors:['honors'], honorsLink:['honors link'],
   announce:['announcement','announcements'], announceLink:['announcement link','announcements link'],
+  shift:['shift'],
 };
 const OLD_POSITIONS={week:0,date:1,topic:2,wu:3,cp:4,wuLink:5,etLink:6,practice:7,et:8,what:9,why:10,how:11,sub:12};
 function columnMap(rows){
@@ -232,18 +233,44 @@ function buildModel(rows, fallYear){
     s.unit = /start|first/i.test(s.name) ? (next||prev) : (prev||next);
   });
   days.forEach(d=>{ d.unit = d.section ? d.section.unit : null; });
+  // SHIFT: a whole number under the "Shift" header (e.g. -1 = one class day behind, 2 = two ahead, 0 = on the plan)
+  let shift=0;
+  if(C.shift!=null){ for(const r of rows){ const v=(r[C.shift]||'').trim(); if(/^[+-]?\d+$/.test(v)){ shift=parseInt(v,10); break; } } }
   // CARRY_TASK: a class day with no Essential Task keeps working on the last one (not on test days, never a performance task)
   if(CONFIG.CARRY_TASK){ let last=null;
     days.forEach(d=>{ if(d.noSchool) return;
       if(d.task){ last = PT_RE.test(d.task) ? null : d; return; }
       if(last && !d.testDay){ d.task=last.task; d.taskLink=last.taskLink; d.taskCarried=true; } }); }
-  return {sections, days};
+  return {sections, days, shift};
 }
 
 function shortName(n){ return (n||'').replace(/\s*\(\d+\s*days?\)\s*$/i,''); }
 function appFor(unit){ return unit ? (CONFIG.APPS.find(a=>a.match.test(unit.name))||null) : null; }
 function classDays(days){ return days.filter(d=>!d.noSchool); }
 function pickDay(days, todayIso){ const c=classDays(days); return c.find(d=>d.iso>=todayIso) || c[c.length-1]; }
+
+/* SHIFT: when class is ahead or behind, today's checklist shows the lesson that many class days away.
+   Test, exam, assessment and performance task days keep their dates, and the shift stops at them (it never reaches past one).
+   The warm-up/checkpoint, substitute task, honors and announcement stay with the real date; the calendar never changes. */
+function fixedDay(d){ return !!(d.testDay || PT_RE.test(d.topic) || PT_RE.test(d.task||'')); }
+function lessonDay(days, focus, shift){
+  if(!focus || !shift || fixedDay(focus)) return focus;
+  const c=classDays(days), i=c.indexOf(focus); if(i<0) return focus;
+  // The shift never crosses a test or performance task: those days catch everyone back up to the plan.
+  let lo=i, hi=i;
+  while(lo>0 && !fixedDay(c[lo-1])) lo--;
+  while(hi<c.length-1 && !fixedDay(c[hi+1])) hi++;
+  return c[Math.max(lo, Math.min(hi, i+shift))] || focus;
+}
+function showDay(days, focus, shift){
+  const lesson=lessonDay(days, focus, shift);
+  if(!lesson || lesson===focus) return focus;
+  return Object.assign({}, lesson, {
+    date:focus.date, iso:focus.iso, label:focus.label, week:focus.week,
+    wu:focus.wu, cp:focus.cp, wuLink:focus.wuLink, sub:focus.sub,
+    honors:focus.honors, honorsLink:focus.honorsLink, announce:focus.announce, announceLink:focus.announceLink,
+    testDay:false, lessonFrom:lesson });
+}
 
 function labels(){ return Object.assign({warmup:'Warm-up', practice:'Practice problems', practicePrefix:'Textbook: ',
   task:'Essential Task', honors:'Honors', exit:'Exit ticket', sub:"Today's task"}, CONFIG.LABELS||{}); }
@@ -362,7 +389,7 @@ function taskCard(day, todayIso){
     </li>`).join('');
   return `<section class="card" id="today" aria-label="${esc(heading)}">
     <div class="day-head"><h2>${esc(heading)}</h2><span class="progress" id="prog"></span></div>
-    <p class="day-topic">${esc(longDate(day.date))} · ${esc(day.topic)}</p>
+    <p class="day-topic">${esc(longDate(day.date))} · ${esc(day.topic)}${day.lessonFrom?` <span class="t-sub">(planned for ${esc(day.lessonFrom.label)})</span>`:''}</p>
     ${day.announce?`<div class="banner">📣 ${esc(day.announce.replace(/https?:\/\/\S+/,'').trim())}${(day.announceLink||(day.announce.match(/https?:\/\/\S+/)||[''])[0])?` <a class="btn" style="margin-left:8px" href="${esc(day.announceLink||day.announce.match(/https?:\/\/\S+/)[0])}" target="_blank" rel="noopener">Open</a>`:''}</div>`:''}
     ${pt?`<div class="banner">📝 ${esc(pt[0])} is today. Show your work and do your best!</div>`:''}
     ${tasks.length?`<div class="bar"><span id="barfill"></span></div><ul class="tasks">${items}</ul><p class="yay" id="yay" hidden>🎉 All done. Nice work!</p>`:'<p class="t-sub">No checklist items for this day.</p>'}
@@ -371,7 +398,7 @@ function taskCard(day, todayIso){
 
 function wireTasks(day){
   const box=document.getElementById('today'); if(!box||!day) return;
-  const key='classpage-'+CONFIG.KEY+'-done-'+day.iso;
+  const key='classpage-'+CONFIG.KEY+'-done-'+day.iso+(day.lessonFrom?'-'+day.lessonFrom.iso:'');
   let done={}; try{ done=JSON.parse(recall(key)||'{}'); }catch(e){}
   const items=[...box.querySelectorAll('.task')];
   const update=()=>{
@@ -532,21 +559,23 @@ async function main(){
 
   const model=buildModel(parseCSV(data.text), CONFIG.FALL_YEAR);
   const focus=pickDay(model.days, todayIso);
-  const unit=focus?focus.unit:null;
+  const shift=params.has('shift') ? (parseInt(params.get('shift'),10)||0) : model.shift;   // ?shift=-1 to preview
+  const shown=showDay(model.days, focus, shift);
+  const unit=shown?shown.unit:null;
   const groups=ptGroups(model.days);
 
   if(view){
     document.body.classList.add('embed');
     document.getElementById('hdr').remove(); const nv=document.querySelector('nav.top-nav'); if(nv) nv.remove();
     if(view==='unit') app.append(el(unitCard(unit)||'<div></div>'));
-    if(view==='today'){ app.append(el(taskCard(focus,todayIso))); wireTasks(focus); }
+    if(view==='today'){ app.append(el(taskCard(shown,todayIso))); wireTasks(shown); }
     if(view==='scroll') app.append(el(calendar(model,focus,todayIso)));
     if(view==='study') app.append(el(CONFIG.SIDE==='honors'?honorsBox(model.days,todayIso,today):ptBox(groups,todayIso,today)));
   } else {
-    const layout=el(`<div class="layout"><div class="main">${unitCard(unit)}${taskCard(focus,todayIso)}</div>
+    const layout=el(`<div class="layout"><div class="main">${unitCard(unit)}${taskCard(shown,todayIso)}</div>
       <aside class="side">${CONFIG.SIDE==='honors'?honorsBox(model.days,todayIso,today):ptBox(groups,todayIso,today)}${calendar(model,focus,todayIso)}</aside></div>`);
     app.append(layout);
-    wireTasks(focus);
+    wireTasks(shown);
   }
   const j=document.getElementById('jump'); if(j) j.addEventListener('click',()=>jumpToToday(true));
   jumpToToday(false);
