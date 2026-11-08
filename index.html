@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Class Pages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+    --teal:#4c8c8c; --teal-d:#356a6a; --aqua:#a0e7e5; --cream:#fff4e6; --peach:#ffe6cc;
+    --ink:#24343a; --muted:#5d6f73; --line:#ead9c2; --bg:#fbf8f3; --ok:#3f9a6b; --star:#c98a12;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font:16px/1.45 "Nunito",system-ui,-apple-system,"Segoe UI",sans-serif}
+  a{color:var(--teal-d)}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 16px 32px}
+  nav.top-nav{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:10px 0 0}
+  nav.top-nav a{text-decoration:none;font-weight:800;color:var(--teal-d);background:#fff;border:2px solid var(--line);border-radius:99px;padding:6px 14px}
+  nav.top-nav a.on{background:var(--teal);border-color:var(--teal);color:#fff}
+  .soon-card{text-align:center;padding:40px 16px;margin-top:16px}
+  .soon-card .big{font-size:3em;margin:0}
+  header.top{background:linear-gradient(135deg,var(--teal),var(--aqua));color:#fff;text-align:center;padding:14px 16px;border-radius:0 0 14px 14px}
+  header.top h1{margin:0;font-size:1.7em;font-weight:800}
+  header.top p{margin:2px 0 0;font-weight:600}
+  .card{background:var(--cream);border:3px solid var(--teal);border-radius:14px;padding:16px}
+  .card h2{margin:0 0 10px;color:var(--teal-d);font-size:1.2em;font-weight:800}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;margin-top:16px;align-items:stretch}
+  .main{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .main > #today{flex:1}
+  @media (max-width:860px){.layout{grid-template-columns:1fr}}
+
+  /* Unit */
+  .unit-name{font-size:.85em;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0}
+  .unit-q{font-size:1.25em;font-weight:800;margin:4px 0 12px}
+  .wwh{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  @media (max-width:700px){.wwh{grid-template-columns:1fr}}
+  .wwh div{background:#fff;border-radius:10px;padding:10px 12px;border-left:6px solid var(--teal)}
+  .wwh div:nth-child(2){border-color:#e39b4f}
+  .wwh div:nth-child(3){border-color:#7a9fd6}
+  .wwh b{display:block;font-size:.8em;letter-spacing:.06em;color:var(--muted)}
+
+  /* Tasks */
+  .day-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .day-topic{margin:2px 0 12px;font-weight:700}
+  .progress{font-weight:700;color:var(--muted);font-size:.9em}
+  .bar{height:8px;background:#fff;border-radius:99px;overflow:hidden;margin:-4px 0 12px}
+  .bar span{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+  .tasks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .task{display:flex;gap:12px;align-items:center;background:#fff;border-radius:10px;padding:10px 12px;border:2px solid transparent}
+  .task.done{border-color:var(--ok);background:#f1faf5}
+  .task.done .t-title{text-decoration:line-through;color:var(--muted)}
+  .t-hit{display:flex;gap:14px;align-items:center;flex:1;min-width:0;cursor:pointer;min-height:48px;-webkit-tap-highlight-color:transparent}
+  .task input{width:34px;height:34px;accent-color:var(--ok);flex:none;cursor:pointer;margin:0}
+  .task .btn{padding:12px 18px}
+  .t-body{flex:1;min-width:0}
+  .t-title{font-weight:800}
+  .t-sub{font-size:.92em;color:var(--muted)}
+  .opt{font-size:.75em;font-weight:800;color:var(--star);margin-left:6px}
+  .btn{display:inline-block;background:var(--teal);color:#fff;text-decoration:none;font-weight:800;padding:8px 14px;border-radius:99px;white-space:nowrap;border:0;font:inherit;font-weight:800;cursor:pointer}
+  .btn:hover{background:var(--teal-d)}
+  .btn.light{background:#fff;color:var(--teal-d);border:2px solid var(--teal)}
+  .banner{background:var(--peach);border-radius:10px;padding:10px 12px;font-weight:800;margin-bottom:10px}
+  .yay{text-align:center;font-weight:800;color:var(--ok);margin:10px 0 0}
+
+  /* Side */
+  .side{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .side .cal-card{flex:1;contain:size;min-height:360px;display:flex;flex-direction:column}
+  .side .cal-card .cal{flex:1;min-height:0;max-height:none}
+  .pt{background:#fff;border-radius:10px;padding:12px;margin-bottom:10px}
+  .pt:last-child{margin-bottom:0}
+  .pt .lbl{font-size:.8em;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  .pt .name{font-weight:800;font-size:1.1em;margin:2px 0}
+  .pt .when{color:var(--muted);font-weight:700;margin-bottom:8px}
+  .pt .soon{color:var(--muted);font-size:.92em}
+  .more{margin:8px 0 0;padding-left:18px}
+  .more li{margin:4px 0}
+
+  /* Calendar */
+  .cal-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .cal-head h2{margin:0}
+  .cal{position:relative;max-height:520px;overflow-y:auto;background:#fff;border-radius:10px;border:1px solid var(--line)}
+  .sec{position:sticky;top:0;z-index:2;background:var(--teal);color:#fff;padding:8px 12px;font-weight:800}
+  .sec small{display:block;font-weight:600;opacity:.95}
+  .wk{padding:4px 12px;background:var(--peach);font-size:.8em;font-weight:800;color:var(--muted)}
+  .row{display:grid;grid-template-columns:88px minmax(0,1fr);gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:.92em}
+  .row.past{opacity:.55}
+  .row.today{background:#e4f6f5;outline:3px solid var(--teal);outline-offset:-3px;opacity:1}
+  .row.off{color:var(--muted);font-style:italic}
+  .row .d{font-weight:800}
+  .chip{display:inline-block;padding:1px 8px;border-radius:99px;background:var(--cream);border:1px solid var(--line);font-weight:700;font-size:.88em}
+  .chip.cp{background:#fde2c8;border-color:#e39b4f}
+  .chip.pt{background:#ffd9d9;border-color:#d66}
+  .row .muted{color:var(--muted)}
+  .cols{position:sticky;top:0}
+  @media (max-width:760px){ .row{grid-template-columns:70px 1fr} }
+  .status{font-size:.8em;color:var(--muted);text-align:center;margin-top:14px}
+  .err{background:#fff;border:2px dashed #d66;border-radius:10px;padding:14px;margin-top:16px}
+
+  /* Embed views (?view=unit, ?view=scroll, ?view=today) */
+  body.embed{background:transparent}
+  body.embed .wrap{padding:0}
+  body.embed .layout{display:block;margin:0}
+</style>
+<style>
+  .hello{text-align:center;margin:22px 0 6px}
+  .hello h2{margin:0;font-size:1.6em;color:var(--teal-d)}
+  .hello p{margin:6px 0 0;color:var(--muted);font-weight:600}
+  .classes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}
+  .classes a{display:block;text-decoration:none;color:var(--ink);background:var(--cream);border:3px solid var(--teal);border-radius:14px;padding:22px 18px;text-align:center;transition:transform .15s, box-shadow .15s}
+  .classes a:hover,.classes a:focus-visible{transform:translateY(-3px);box-shadow:0 8px 18px rgba(53,106,106,.18)}
+  .classes .ic{font-size:2.6em;line-height:1}
+  .classes h3{margin:8px 0 4px;font-size:1.3em;color:var(--teal-d)}
+  .classes p{margin:0;color:var(--muted);font-size:.95em}
+  footer{text-align:center;color:var(--muted);font-size:.85em;margin-top:28px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><h1>🏫 Class Pages</h1><p>Mrs. Dunlea · C119</p></header>
+  <div class="hello">
+    <h2>Welcome! 👋</h2>
+    <p>Pick your class to see today's tasks, the calendar and study apps.</p>
+  </div>
+  <div class="classes">
+    <a href="math.html"><div class="ic">➗</div><h3>Math</h3><p>Today's tasks, calendar and study apps for Math 2.</p></a>
+    <a href="physics.html"><div class="ic">🔬</div><h3>Physics</h3><p>Today's tasks, calendar and study apps for Physics.</p></a>
+    <a href="advisory.html"><div class="ic">🧑‍🏫</div><h3>Advisory</h3><p>Announcements and resources for Advisory.</p></a>
+    <a href="music.html"><div class="ic">🎵</div><h3>Music</h3><p>Today's tasks and resources for Music.</p></a>
+  </div>
+  <footer>Made with ❤️ for our class.</footer>
+</div>
+</body>
+</html>
