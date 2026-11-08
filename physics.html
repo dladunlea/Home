@@ -213,6 +213,9 @@ function buildModel(rows, fallYear){
         practice:get(r,'practice'), et:get(r,'et'), sub:get(r,'sub'), app:get(r,'app'),
         task:get(r,'task'), taskLink:get(r,'taskLink'), honors:get(r,'honors'), honorsLink:get(r,'honorsLink'),
         announce:get(r,'announce'), announceLink:get(r,'announceLink'), section:sec};
+      // "Name | https://link" in the Essential Task or Honors cell becomes the name plus a button
+      [['task','taskLink'],['honors','honorsLink']].forEach(([k,lk])=>{ const m=day[k].match(/\s*\|?\s*(https?:\/\/\S+)\s*$/);
+        if(m){ day[k]=day[k].slice(0,m.index).trim(); if(!day[lk]) day[lk]=m[1]; } });
       day.testDay = C.wu!=null && /\((?:test|exam|assessment) day\)/i.test(r[C.wu]||'');
       day.noSchool = /no school/i.test(topic) || !(topic||day.wu||day.cp||day.task||day.practice||day.et||day.announce);
       days.push(day); if(sec) sec.days.push(day);
@@ -449,7 +452,7 @@ function honorsGroups(days){
   const groups=[], open={};
   for(const d of days){
     if(!d.honors) continue;
-    const m=d.honors.match(/https?:\/\/\S+/), url=m?m[0]:'';
+    const m=d.honors.match(/https?:\/\/\S+/), url=d.honorsLink||(m?m[0]:'');
     const text=d.honors.replace(url,'').replace(/[\s|]+$/,'').trim();
     const due=/\bdue\s*$/i.test(text), name=text.replace(/\s*\bdue\s*$/i,'').trim();
     const key=name.toLowerCase();
