@@ -20,7 +20,7 @@
   nav.top-nav a{text-decoration:none;font-weight:800;color:var(--teal-d);background:#fff;border:2px solid var(--line);border-radius:99px;padding:6px 14px}
   nav.top-nav a.on{background:linear-gradient(135deg,var(--teal),var(--aqua));border-color:var(--teal);color:#fff;font-size:1.15em;padding:8px 20px;box-shadow:0 4px 12px rgba(53,106,106,.2)}
   nav.top-nav .welcome{display:inline-block;max-width:0;overflow:hidden;white-space:nowrap;vertical-align:bottom;opacity:0;transition:max-width .7s ease, opacity .5s ease .2s}
-  nav.top-nav.open .welcome{max-width:520px;opacity:1}
+  nav.top-nav.open .welcome{max-width:min(1000px,calc(100vw - 260px));opacity:1;text-overflow:ellipsis}
   body.has-nav header.top{display:none}
   .soon-card{text-align:center;padding:40px 16px;margin-top:16px}
   .soon-card .big{font-size:3em;margin:0}
