@@ -307,8 +307,18 @@ function tasksFor(day){
   if(!linkedApps && app && /^(practice|flex|check-in)/i.test(day.topic))
     t.push({id:'app', icon:'💻', title:'Study app: '+app.name, sub:'Work through the sections you need for the performance task.', url:app.url, btn:'Open'});
   if(day.honors && CONFIG.SIDE!=='honors') t.push({id:'hon', icon:'⭐', title:L.honors, sub:day.honors, url:day.honorsLink, btn:'Open', optional:true});
-  if(day.et) t.push({id:'et', icon:'🎟️', title:L.exit, sub:day.et, url:CONFIG.CHECKIN_FORM||day.etLink, btn:'Answer'});
+  if(day.et) t.push({id:'et', icon:'🎟️', title:L.exit, sub:day.et, url:exitLink(day), btn:'Answer'});
   return t;
+}
+
+// Exit ticket button: opens exit.html, which shows the question of the day above the embedded form
+function exitLink(day){
+  const form=CONFIG.CHECKIN_FORM||day.etLink; if(!form) return '';
+  const page=(typeof location!=='undefined' && location.pathname.split('/').pop())||'';
+  if(!/^[\w-]+\.html$/.test(page)) return form;
+  const p=new URLSearchParams({c:page, q:day.et.replace(/\s*\|?\s*https?:\/\/\S+\s*$/,'')});
+  if(!CONFIG.CHECKIN_FORM) p.set('f', form);
+  return 'exit.html?'+p.toString();
 }
 
 const PT_RE=/^(?:PT #\d+(?:\s+Part \d)?|Performance Task \d+)/i;
@@ -387,7 +397,7 @@ function taskCard(day, todayIso){
       <label class="t-hit"><input type="checkbox" aria-label="Mark ${esc(t.title)} done">
       <div class="t-body"><div class="t-title">${t.icon} ${esc(t.title)}${t.optional?'<span class="opt">OPTIONAL</span>':''}</div>
       ${t.sub?`<div class="t-sub">${esc(t.sub)}</div>`:''}</div></label>
-      ${t.url?`<a class="btn" href="${esc(t.url)}" target="_blank" rel="noopener">${t.btn||'Open'}</a>`:''}
+      ${t.url?`<a class="btn" href="${esc(t.url)}"${/^exit\.html/.test(t.url)?'':' target="_blank" rel="noopener"'}>${t.btn||'Open'}</a>`:''}
     </li>`).join('');
   return `<section class="card" id="today" aria-label="${esc(heading)}">
     <div class="day-head"><h2>${esc(heading)}</h2><span class="progress" id="prog"></span></div>

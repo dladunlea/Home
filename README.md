@@ -31,6 +31,11 @@ Each sheet's Student View tab has a **Shift** column (header in row 1, the numbe
 - Preview a shift without touching the sheet: add `?shift=-1` to the page address (works with `?date=` too).
 The teacher dashboard shows each class's current shift with a **Change shift** button that opens the sheet right at that cell.
 
+## Exit tickets
+The Exit ticket button opens `exit.html`: the day's question (from the Exit Ticket column) in big text at the top, with the class's Google Form embedded below it.
+The form is the class's `CHECKIN_FORM` setting (or the day's `ET Link` if that's blank). Nothing to set up per day.
+If a form ever won't show inside the page, the "Open the form in a new tab" button under it still works.
+
 ## Teacher dashboard
 `teacher.html` isn't linked anywhere for students. It shows whether each class's sheet is loading, with Edit sheet, Open page and Preview-a-day buttons.
 Preview any page on a given day by adding `?date=2026-11-18` to its address.
