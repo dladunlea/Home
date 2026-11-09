@@ -494,12 +494,20 @@ function honorsGroups(days){
 }
 function honorsBox(days, todayIso, today){
   const gs=honorsGroups(days);
-  const up=gs.find(g=>g.due.iso>=todayIso && (!g.assigned || g.assigned.iso<=todayIso)), past=gs.filter(g=>g.due.iso<todayIso).pop();
+  const term=d=>d.getFullYear()+(d.getMonth()<6?'-spring':'-fall');   // a semester class repeats its honors tasks
+  const up=gs.find(g=>g.due.iso>=todayIso && (!g.assigned || g.assigned.iso<=todayIso));
+  const pastAll=gs.filter(g=>g.due.iso<todayIso && term(g.due.date)===term(today)).reverse(), past=pastAll[0];
   const btn=g=>g.url?`<a class="btn" href="${esc(g.url)}" target="_blank" rel="noopener">Open</a>`:'';
   const away=g=>{const n=Math.round((g.due.date-today)/864e5); return n<=0?'Due today!':n===1?'Due tomorrow':`Due ${g.due.label} · ${n} days away`;};
   let html='<section class="card" aria-label="Honors"><h2>⭐ Honors</h2>';
   if(up) html+=`<div class="pt"><div class="lbl">Upcoming honors task</div><div class="name">${esc(up.name)}</div><div class="when">${esc(away(up))}</div>${btn(up)}</div>`;
-  if(past) html+=`<div class="pt"><div class="lbl">Past honors task</div><div class="name">${esc(past.name)}</div><div class="when">Was due ${esc(past.due.label)}</div>${btn(past)}</div>`;
+  if(past){
+    html+=`<div class="pt"><div class="lbl">Past honors task</div><div class="name">${esc(past.name)}</div><div class="when">Was due ${esc(past.due.label)}</div>${btn(past)}`;
+    const older=pastAll.slice(1);
+    if(older.length) html+=`<div class="lbl" style="margin-top:12px">Earlier honors tasks</div><ul class="more">${
+      older.map(g=>`<li>${g.url?`<a href="${esc(g.url)}" target="_blank" rel="noopener">${esc(g.name)}</a>`:esc(g.name)}</li>`).join('')}</ul>`;
+    html+='</div>';
+  }
   if(!up && !past) html+='<p class="t-sub">No honors tasks right now.</p>';
   return html+'</section>';
 }
