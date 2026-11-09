@@ -36,6 +36,11 @@ The Exit ticket button opens `exit.html`: the day's question (from the Exit Tick
 The form is the class's `CHECKIN_FORM` setting (or the day's `ET Link` if that's blank). Nothing to set up per day.
 If a form ever won't show inside the page, the "Open the form in a new tab" button under it still works.
 
+## Lesson notes
+Each sheet's Calendar tab has a **Lesson Notes** column (Math 2: column M, Physics: column O). Student View copies it into its own Lesson Notes column, so it's published along with the rest of Student View. Keep anything private out of it.
+The teacher dashboard shows each class's notes for the day in "Preview a day" (following the Shift), and **Edit notes** opens the sheet at that day's cell. Class pages ignore this column.
+Links in a note become clickable on the dashboard. Line breaks in a note (Ctrl/Cmd+Enter in a cell) are kept.
+
 ## Teacher dashboard
 `teacher.html` isn't linked anywhere for students. It shows whether each class's sheet is loading, with Edit sheet, Open page and Preview-a-day buttons.
 Preview any page on a given day by adding `?date=2026-11-18` to its address.

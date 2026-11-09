@@ -120,12 +120,18 @@
   .shift .what{flex:1;min-width:140px;font-weight:700}
   .shift.off{border:2px solid var(--star)}
   .shift.off .num{color:var(--star)}
+  .notes{background:#fff;border-radius:10px;padding:10px 12px;margin-top:12px;border-left:6px solid #7a9fd6}
+  .notes .lbl{font-size:.8em;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  .notes .day{font-weight:800;margin:2px 0 6px}
+  .notes .body{white-space:pre-wrap;overflow-wrap:anywhere;margin:0 0 10px}
+  .notes .empty{color:var(--muted);font-style:italic}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top"><h1>🍎 Teacher Dashboard</h1><p>Edit the sheet, and the class page updates itself</p></header>
   <p class="note">Each class page reads its own Google Sheet (Student View tab, published to the web as CSV). Edits show up on the page within about 5 minutes. Nothing here needs a password: the sheets themselves only open for your Google account.</p>
+  <p class="note">📓 <b>Lesson notes</b> come from the <b>Lesson Notes</b> column on each sheet's Calendar tab. Each class shows the notes for the day picked under "Preview a day" (today to start), following the Shift. Tap <b>Edit notes</b> to jump to that day's cell. Heads up: these notes are published with Student View, so don't put anything private in them.</p>
   <p class="note">📅 <b>Ahead or behind?</b> Tap <b>Change shift</b> and type a number in the Shift cell: <b>-1</b> = one class day behind, <b>1</b> = one ahead, <b>0</b> = on the plan. Today's checklist, topic and unit card move to that lesson. The date, warm-up, calendar, tests and due dates stay put. Set it back to 0 once you've caught up.</p>
   <div class="grid" id="grid"></div>
 </div>
@@ -144,6 +150,13 @@ const STUDENT_VIEW_GID = {
   advisory: '',
   music:    '',
 };
+/* Where each sheet's Lesson Notes live on its Calendar tab (Calendar gid + column letter), for the Edit notes button */
+const NOTES_CELL = {
+  math2:    { gid:'221403444', col:'M' },
+  physics:  { gid:'221403444', col:'O' },
+  advisory: null,
+  music:    null,
+};
 const PAGES = [
   { key:'math2',    file:'math.html',     icon:'➗', name:'Math 2' },
   { key:'physics',  file:'physics.html',  icon:'🔬', name:'Physics' },
@@ -160,6 +173,7 @@ PAGES.forEach(p=>{
   card.innerHTML=`<h2>${p.icon} ${esc(p.name)} <span class="st" id="st-${p.key}">checking…</span></h2>
     <p class="sub" id="info-${p.key}"></p>
     <div id="sh-${p.key}"></div>
+    <div id="nt-${p.key}"></div>
     <div class="links">
       <a class="btn" href="${p.file}" target="_blank" rel="noopener">Open page</a>
       ${SHEETS[p.key]?`<a class="btn light" href="${esc(SHEETS[p.key])}" target="_blank" rel="noopener">Edit sheet</a>`:''}
@@ -169,7 +183,7 @@ PAGES.forEach(p=>{
       <a class="btn light" id="go-${p.key}" href="#" target="_blank" rel="noopener">Preview</a></div>`;
   grid.appendChild(card);
   const inp=card.querySelector('input'), go=card.querySelector(`#go-${p.key}`);
-  const upd=()=>{ go.href=`${p.file}?date=${inp.value}`; }; inp.addEventListener('input',upd); upd();
+  const upd=()=>{ go.href=`${p.file}?date=${inp.value}`; if(p.data) showNotes(p, inp.value); }; inp.addEventListener('input',upd); upd();
   checkPage(p);
 });
 
@@ -189,6 +203,7 @@ async function checkPage(p){
     st.textContent='live ✓'; st.className='st ok';
     info.textContent=`Sheet is published and loading (${days} calendar days).`;
     showShift(p, text);
+    p.data={html, text}; showNotes(p, document.getElementById('d-'+p.key).value||iso);
   }catch(e){
     st.textContent='not loading'; st.className='st bad';
     info.textContent='The published sheet didn\'t load. Check File → Share → Publish to web.';
@@ -225,6 +240,44 @@ function showShift(p, text){
   const link = base && gid ? `${base}/edit#gid=${gid}&range=${cell}` : '';
   box.innerHTML=`<div class="shift${n?' off':''}"><span class="num">${n>0?'+':''}${n}</span><span class="what">${esc(what)}</span>
     ${link?`<a class="btn light" href="${esc(link)}" target="_blank" rel="noopener">Change shift</a>`:''}</div>`;
+}
+
+/* ---------- Lesson notes: runs the class page's own engine so the day (and Shift) match what students see ---------- */
+function engineFor(p){
+  if(p.engine) return p.engine;
+  const cfg=(p.data.html.match(/window\.CLASS_CONFIG = (\{[\s\S]*?\n\});/)||[])[1];
+  const logic=(p.data.html.match(/\/\*LOGIC-START\*\/([\s\S]*?)\/\*LOGIC-END\*\//)||[])[1];
+  if(!cfg||!logic) return null;
+  p.engine=new Function(`const window={CLASS_CONFIG:${cfg}};
+    const CONFIG=Object.assign({APPS:[],WARMUP_APP:'',CHECKIN_FORM:''},window.CLASS_CONFIG);
+    ${logic}
+    return {parseCSV, buildModel, pickDay, showDay, isoOf, DAY_RE, CONFIG};`)();
+  return p.engine;
+}
+const linkify=t=>esc(t).replace(/https?:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
+function showNotes(p, dateIso){
+  const box=document.getElementById('nt-'+p.key); if(!box) return;
+  try{
+    const E=engineFor(p); if(!E){ box.innerHTML=''; return; }
+    const rows=E.parseCSV(p.data.text);
+    const h=rows.findIndex(r=>(r[0]||'').toLowerCase()==='week' && (r[1]||'').toLowerCase()==='date');
+    const col=h<0?-1:rows[h].findIndex(c=>c.toLowerCase()==='lesson notes');
+    if(col<0){ box.innerHTML=`<p class="sub">No Lesson Notes column on this sheet yet.</p>`; return; }
+    const m=E.buildModel(rows, E.CONFIG.FALL_YEAR);
+    const focus=E.pickDay(m.days, dateIso||iso); if(!focus){ box.innerHTML=''; return; }
+    const shown=E.showDay(m.days, focus, m.shift), lesson=shown.lessonFrom||focus;
+    // find the sheet row for that lesson (Student View rows line up with Calendar rows)
+    let r=-1;
+    for(let i=h+1;i<rows.length;i++){ const d=(rows[i][1]||'').match(E.DAY_RE);
+      if(d && +d[2]===lesson.date.getMonth()+1 && +d[3]===lesson.date.getDate()){ r=i; break; } }
+    const notes=r<0?'':(rows[r][col]||'').trim();
+    const nc=NOTES_CELL[p.key], base=(SHEETS[p.key]||'').replace(/\/edit.*$/,'');
+    const edit = nc && base && r>=0 ? `${base}/edit#gid=${nc.gid}&range=${nc.col}${r+1}` : '';
+    box.innerHTML=`<div class="notes"><div class="lbl">📓 Lesson notes</div>
+      <div class="day">${esc(lesson.label)} · ${esc(lesson.topic)}${shown.lessonFrom?` <span class="sub">(teaching on ${esc(focus.label)})</span>`:''}</div>
+      ${notes?`<p class="body">${linkify(notes)}</p>`:'<p class="body empty">No notes for this lesson yet.</p>'}
+      ${edit?`<a class="btn light" href="${esc(edit)}" target="_blank" rel="noopener">Edit notes</a>`:''}</div>`;
+  }catch(e){ console.warn('notes', e); box.innerHTML=''; }
 }
 </script>
 </body>
