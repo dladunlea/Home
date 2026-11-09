@@ -248,17 +248,12 @@ function classDays(days){ return days.filter(d=>!d.noSchool); }
 function pickDay(days, todayIso){ const c=classDays(days); return c.find(d=>d.iso>=todayIso) || c[c.length-1]; }
 
 /* SHIFT: when class is ahead or behind, today's checklist shows the lesson that many class days away.
-   Test, exam, assessment and performance task days keep their dates, and the shift stops at them (it never reaches past one).
-   The warm-up/checkpoint, substitute task, honors and announcement stay with the real date; the calendar never changes. */
-function fixedDay(d){ return !!(d.testDay || PT_RE.test(d.topic) || PT_RE.test(d.task||'')); }
+   It counts straight through test and performance task days, so a pushed-back test moves with the shift.
+   The warm-up/checkpoint, substitute task, honors and announcement stay with the real date; the calendar and side box never change. */
 function lessonDay(days, focus, shift){
-  if(!focus || !shift || fixedDay(focus)) return focus;
+  if(!focus || !shift) return focus;
   const c=classDays(days), i=c.indexOf(focus); if(i<0) return focus;
-  // The shift never crosses a test or performance task: those days catch everyone back up to the plan.
-  let lo=i, hi=i;
-  while(lo>0 && !fixedDay(c[lo-1])) lo--;
-  while(hi<c.length-1 && !fixedDay(c[hi+1])) hi++;
-  return c[Math.max(lo, Math.min(hi, i+shift))] || focus;
+  return c[Math.max(0, Math.min(c.length-1, i+shift))] || focus;
 }
 function showDay(days, focus, shift){
   const lesson=lessonDay(days, focus, shift);

@@ -26,8 +26,8 @@ Each page is self-contained: its colors and code are inside the file, so there a
 Each sheet's Student View tab has a **Shift** column (header in row 1, the number right under it).
 - `0` = on the plan, `-1` = one class day behind, `2` = two class days ahead.
 - The page then shows that lesson's topic, unit card and checklist (task, practice, web apps, exit ticket), with a small "(planned for …)" note.
-- These stay on the real date: the date, warm-up or checkpoint, substitute task, honors, announcements, the calendar, and every test and due date.
-- The shift never reaches past a test, exam, assessment or performance task day, so those days catch everyone back up. Still, set it back to `0` once you've caught up.
+- These stay on the real date: the date, warm-up or checkpoint, substitute task, honors, announcements, the calendar and the Study/Honors box.
+- The shift counts straight through test and performance task days, so if you push a test back, the test day's checklist moves with it. The calendar and the Study/Honors box still show the test on its original date; change the date in the sheet if the test is moving for good. Set the shift back to `0` once you've caught up.
 - Preview a shift without touching the sheet: add `?shift=-1` to the page address (works with `?date=` too).
 The teacher dashboard shows each class's current shift with a **Change shift** button that opens the sheet right at that cell.
 
