@@ -269,7 +269,7 @@ function showDay(days, focus, shift){
     testDay:false, lessonFrom:lesson });
 }
 
-function labels(){ return Object.assign({warmup:'Warm-up', practice:'Practice problems', practicePrefix:'Textbook: ',
+function labels(){ return Object.assign({warmup:'Warm-up', practice:'Practice problems', practicePrefix:'',
   task:'Essential Task', honors:'Honors', exit:'Exit ticket', sub:"Today's task"}, CONFIG.LABELS||{}); }
 function tasksFor(day){
   const t=[], L=labels(); if(!day) return t;
