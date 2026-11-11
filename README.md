@@ -37,8 +37,12 @@ The Exit ticket button opens `exit.html`: the day's question (from the Exit Tick
 The form is the class's `CHECKIN_FORM` setting (or the day's `ET Link` if that's blank). Nothing to set up per day.
 If a form ever won't show inside the page, the "Open the form in a new tab" button under it still works.
 
+## Videos
+Put videos in the Video column of the Calendar tab (right after Web Apps) as `▶ Video: name | https://www.youtube.com/watch?v=…` (one per line); Student View adds them to the Web App column.
+The Watch button opens `video.html`, which plays the video inside the site (YouTube's privacy-enhanced player) with a Back to class button and an "Open it on YouTube" button underneath. Non-YouTube video links just open in a new tab.
+
 ## Lesson notes
-Each sheet's Calendar tab has a **Lesson Notes** column (Math 2 and Math 3: column C, Physics: column O). Student View copies it into its own Lesson Notes column, so it's published along with the rest of Student View. Keep anything private out of it.
+Each sheet's Calendar tab has a **Lesson Notes** column (column C on every class sheet). Student View copies it into its own Lesson Notes column, so it's published along with the rest of Student View. Keep anything private out of it.
 The teacher dashboard shows each class's notes for the day in "Preview a day" (following the Shift), and **Edit notes** opens the sheet at that day's cell. Class pages ignore this column.
 Links in a note become clickable on the dashboard. Line breaks in a note (Ctrl/Cmd+Enter in a cell) are kept.
 

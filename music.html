@@ -298,7 +298,8 @@ function tasksFor(day){
       const m=seg.match(/https?:\/\/\S+/); const url=m?m[0].replace(/[).,;]+$/,''):'';
       const label=seg.replace(m?m[0]:'','').replace(/^[\s|:–—-]+|[\s|:–—-]+$/g,'')||'Web app';
       const vid=/^▶?\s*Video:\s*/i.test(label);   // "▶ Video: name | link" from the Video column
-      if(url){ linkedApps++; t.push({id:'app'+i, icon:vid?'🎬':'💻', title:vid?label.replace(/^▶?\s*Video:\s*/i,''):label, sub:vid?'Video':'Web app', url, btn:vid?'Watch':'Open'}); }   // apps without a link stay off the checklist
+      const name=vid?label.replace(/^▶?\s*Video:\s*/i,''):label;
+      if(url){ linkedApps++; t.push({id:'app'+i, icon:vid?'🎬':'💻', title:name, sub:vid?'Video':'Web app', url:vid?videoLink(day,name,url):url, btn:vid?'Watch':'Open'}); }   // apps without a link stay off the checklist
     });
   }
   const app=appFor(day.unit);
@@ -307,6 +308,22 @@ function tasksFor(day){
   if(day.honors && CONFIG.SIDE!=='honors') t.push({id:'hon', icon:'⭐', title:L.honors, sub:day.honors, url:day.honorsLink, btn:'Open', optional:true});
   if(day.et) t.push({id:'et', icon:'🎟️', title:L.exit, sub:day.et, url:exitLink(day), btn:'Answer'});
   return t;
+}
+
+// Watch button: opens video.html, which plays a YouTube video inside the class site (other video links open as they are)
+// Single videos (watch?v=, youtu.be, embed, shorts) send v=<id>; playlist links send l=<list id>;
+// a channel link (youtube.com/channel/UC…) sends that channel's uploads list (UU…), which opens on its newest video.
+function videoLink(day, name, url){
+  const page=(typeof location!=='undefined' && location.pathname.split('/').pop())||'';
+  if(!/^[\w-]+\.html$/.test(page) || !/youtu\.?be/i.test(url)) return url;
+  const p={c:page, t:name, d:day.iso};
+  const v=url.match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/);
+  const l=url.match(/[?&]list=([\w-]+)/), ch=url.match(/youtube\.com\/channel\/UC([\w-]{22})/);
+  if(v && !/\/embed\/videoseries/.test(url)) p.v=v[1];
+  else if(l) p.l=l[1];
+  else if(ch) p.l='UU'+ch[1];
+  else return url;
+  return 'video.html?'+new URLSearchParams(p).toString();
 }
 
 // Exit ticket button: opens exit.html, which shows the question of the day above the embedded form
@@ -397,7 +414,7 @@ function taskCard(day, todayIso, picked){
       <label class="t-hit"><input type="checkbox" aria-label="Mark ${esc(t.title)} done">
       <div class="t-body"><div class="t-title">${t.icon} ${esc(t.title)}${t.optional?'<span class="opt">OPTIONAL</span>':''}</div>
       ${t.sub?`<div class="t-sub">${esc(t.sub)}</div>`:''}</div></label>
-      ${t.url?`<a class="btn" href="${esc(t.url)}"${/^exit\.html/.test(t.url)?'':' target="_blank" rel="noopener"'}>${t.btn||'Open'}</a>`:''}
+      ${t.url?`<a class="btn" href="${esc(t.url)}"${/^(exit|video)\.html/.test(t.url)?'':' target="_blank" rel="noopener"'}>${t.btn||'Open'}</a>`:''}
     </li>`).join('');
   return `<section class="card" id="today" aria-label="${esc(heading)}">
     <div class="day-head"><h2>${esc(heading)}</h2><span class="progress" id="prog"></span></div>
