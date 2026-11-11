@@ -1,13 +1,14 @@
 # Class Pages
 
 Upload the .html files to the **Home** repo (Add file → Upload files), replacing what's there.
-The links students already have (…/Home/index.html, math.html, physics.html, advisory.html, music.html) stay the same.
+Class pages: …/Home/index.html, math2.html, math3.html, physics.html, advisory.html, music.html.
+To add a class to the top menu, add it to the `CLASSES` list in every class page (each page keeps its own copy).
 
 ## How it works
 Each class page reads the **Student View** tab of its own Google Sheet, so editing the sheet updates the page (within about 5 minutes).
 Each page is self-contained: its colors and code are inside the file, so there are no extra folders to upload.
 
-## Turning on a new class (Physics, Advisory, Music)
+## Turning on a new class (Math 3, Advisory, Music)
 1. Make the class's Google Sheet with a **Student View** tab. The page finds columns by their header name, so order doesn't matter. Use any of:
    `Week, Date, Topic, Warm Up, Checkpoint, Practice, Exit Ticket, What, Why, How, Substitute Task, Web App`
    (optional per-day links: `WU Link`, `ET Link`; Web App cells look like `App name | https://…`, one per line)
@@ -37,7 +38,7 @@ The form is the class's `CHECKIN_FORM` setting (or the day's `ET Link` if that's
 If a form ever won't show inside the page, the "Open the form in a new tab" button under it still works.
 
 ## Lesson notes
-Each sheet's Calendar tab has a **Lesson Notes** column (Math 2: column M, Physics: column O). Student View copies it into its own Lesson Notes column, so it's published along with the rest of Student View. Keep anything private out of it.
+Each sheet's Calendar tab has a **Lesson Notes** column (Math 2 and Math 3: column C, Physics: column O). Student View copies it into its own Lesson Notes column, so it's published along with the rest of Student View. Keep anything private out of it.
 The teacher dashboard shows each class's notes for the day in "Preview a day" (following the Shift), and **Edit notes** opens the sheet at that day's cell. Class pages ignore this column.
 Links in a note become clickable on the dashboard. Line breaks in a note (Ctrl/Cmd+Enter in a cell) are kept.
 

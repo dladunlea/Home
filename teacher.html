@@ -139,6 +139,7 @@
 /* Edit links to each class's Google Sheet. Fill these in as you make the sheets. */
 const SHEETS = {
   math2:    'https://docs.google.com/spreadsheets/d/1kGkRWuYNEnOXlNhcJYIlcndfDFrLgWRxK4BXwYI8pWo/edit',
+  math3:    'https://docs.google.com/spreadsheets/d/1NNNS4HBO5VatXkFiVKU3DgBsd_YP1fo2b-eC5-dNnwg/edit',
   physics:  'https://docs.google.com/spreadsheets/d/1JKpQoLWhMx-Ha8ONNx-GNtMJFdxwpvv7f-BYYrSVDPY/edit',
   advisory: '',
   music:    '',
@@ -146,19 +147,22 @@ const SHEETS = {
 /* gid of each sheet's Student View tab (the number after #gid= when that tab is open), for the Change shift button */
 const STUDENT_VIEW_GID = {
   math2:    '1341448792',
+  math3:    '1341448792',
   physics:  '1341448792',
   advisory: '',
   music:    '',
 };
 /* Where each sheet's Lesson Notes live on its Calendar tab (Calendar gid + column letter), for the Edit notes button */
 const NOTES_CELL = {
-  math2:    { gid:'221403444', col:'M' },
+  math2:    { gid:'221403444', col:'C' },
+  math3:    { gid:'221403444', col:'C' },
   physics:  { gid:'221403444', col:'O' },
   advisory: null,
   music:    null,
 };
 const PAGES = [
-  { key:'math2',    file:'math.html',     icon:'➗', name:'Math 2' },
+  { key:'math2',    file:'math2.html',    icon:'➗', name:'Math 2' },
+  { key:'math3',    file:'math3.html',    icon:'📐', name:'Math 3' },
   { key:'physics',  file:'physics.html',  icon:'🔬', name:'Physics' },
   { key:'advisory', file:'advisory.html', icon:'🧑‍🏫', name:'Advisory' },
   { key:'music',    file:'music.html',    icon:'🎵', name:'Music' },
