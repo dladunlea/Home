@@ -70,9 +70,10 @@ async function main(){
   }
   if(title){ document.getElementById('title').textContent='🎟️ '+title+' · Exit Ticket'; document.title='Exit Ticket · '+title; }
 
-  const today=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  const dd=/^\d{4}-\d{2}-\d{2}$/.test(p.get('d')||'') ? new Date(p.get('d')+'T12:00') : new Date();   // &d= the day the question is from
+  const today=dd.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
   app.append(el(`<section class="card q" aria-label="Question of the day">
-    <p class="lbl">Today's exit ticket question</p>
+    <p class="lbl">${dd.toDateString()!==new Date().toDateString()?'Exit ticket question':'Today\'s exit ticket question'}</p>
     <p class="date">${esc(today)}</p>
     <p class="text">${q?esc(q):'Check the board for today\'s question.'}</p>
   </section>`));

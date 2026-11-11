@@ -270,10 +270,15 @@ function showDay(days, focus, shift){
 
 function labels(){ return Object.assign({warmup:'Warm-up', practice:'Practice problems', practicePrefix:'Textbook: ',
   task:'Essential Task', honors:'Honors', exit:'Exit ticket', sub:"Today's task"}, CONFIG.LABELS||{}); }
+// Warm-up / checkpoint button: the class's warm-up page opens that exact one with ?wu=<name> (otherwise the day's WU Link)
+function warmupUrl(day, title){
+  const u=CONFIG.WARMUP_APP; if(!u) return day.wuLink;
+  return title ? u+(u.includes('?')?'&':'?')+'wu='+encodeURIComponent(title) : u;
+}
 function tasksFor(day){
   const t=[], L=labels(); if(!day) return t;
-  if(day.cp) t.push({id:'cp', icon:'📝', title:day.cp, sub:'Quiz on what we learned recently. It replaces the warm-up today.', url:CONFIG.WARMUP_APP||day.wuLink, btn:'Start'});
-  else if(day.wu) t.push({id:'wu', icon:'🔥', title:L.warmup, sub:day.wu, url:CONFIG.WARMUP_APP||day.wuLink, btn:'Start'});
+  if(day.cp) t.push({id:'cp', icon:'📝', title:day.cp, sub:'Quiz on what we learned recently. It takes the place of the warm-up.', url:warmupUrl(day, day.cp), btn:'Start'});
+  else if(day.wu) t.push({id:'wu', icon:'🔥', title:L.warmup, sub:day.wu, url:warmupUrl(day, day.wu), btn:'Start'});
   if(day.task){
     const isPT=PT_RE.test(day.task);
     t.push({id:'task', icon:isPT?'📝':'📌', title:isPT?day.task:L.task, sub:isPT?'Performance task':(day.taskCarried?'Keep working on: ':'')+day.task, url:day.taskLink, btn:'Open'});
@@ -294,7 +299,8 @@ function tasksFor(day){
     day.app.split(/\n|;|\s·\s/).map(x=>x.trim()).filter(Boolean).forEach((seg,i)=>{
       const m=seg.match(/https?:\/\/\S+/); const url=m?m[0].replace(/[).,;]+$/,''):'';
       const label=seg.replace(m?m[0]:'','').replace(/^[\s|:–—-]+|[\s|:–—-]+$/g,'')||'Web app';
-      if(url){ linkedApps++; t.push({id:'app'+i, icon:'💻', title:label, sub:'Web app', url, btn:'Open'}); }   // apps without a link stay off the checklist
+      const vid=/^▶?\s*Video:\s*/i.test(label);   // "▶ Video: name | link" from the Video column
+      if(url){ linkedApps++; t.push({id:'app'+i, icon:vid?'🎬':'💻', title:vid?label.replace(/^▶?\s*Video:\s*/i,''):label, sub:vid?'Video':'Web app', url, btn:vid?'Watch':'Open'}); }   // apps without a link stay off the checklist
     });
   }
   const app=appFor(day.unit);
@@ -311,6 +317,7 @@ function exitLink(day){
   const page=(typeof location!=='undefined' && location.pathname.split('/').pop())||'';
   if(!/^[\w-]+\.html$/.test(page)) return form;
   const p=new URLSearchParams({c:page, q:day.et.replace(/\s*\|?\s*https?:\/\/\S+\s*$/,'')});
+  p.set('d', day.iso);
   if(!CONFIG.CHECKIN_FORM) p.set('f', form);
   return 'exit.html?'+p.toString();
 }
@@ -380,10 +387,11 @@ function unitCard(unit){
     </div></section>`;
 }
 
-function taskCard(day, todayIso){
+function taskCard(day, todayIso, picked){
   if(!day) return '';
   const isToday = day.iso===todayIso;
-  const heading = isToday ? "Today's Tasks" : 'Next Class: '+day.date.toLocaleDateString('en-US',{weekday:'long'});
+  const wk=day.date.toLocaleDateString('en-US',{weekday:'long'}), md=(day.date.getMonth()+1)+'/'+day.date.getDate();
+  const heading = isToday ? "Today's Tasks" : picked ? (day.iso<todayIso?'Tasks from ':'Tasks for ')+wk+' '+md : 'Next Class: '+wk;
   const tasks=tasksFor(day);
   const pt=day.topic.match(PT_RE)||(day.task||'').match(PT_RE);
   const items = tasks.map(t=>`
@@ -397,7 +405,7 @@ function taskCard(day, todayIso){
     <div class="day-head"><h2>${esc(heading)}</h2><span class="progress" id="prog"></span></div>
     <p class="day-topic">${esc(longDate(day.date))} · ${esc(day.topic)}${day.lessonFrom?` <span class="t-sub">(planned for ${esc(day.lessonFrom.label)})</span>`:''}</p>
     ${day.announce?`<div class="banner">📣 ${esc(day.announce.replace(/https?:\/\/\S+/,'').trim())}${(day.announceLink||(day.announce.match(/https?:\/\/\S+/)||[''])[0])?` <a class="btn" style="margin-left:8px" href="${esc(day.announceLink||day.announce.match(/https?:\/\/\S+/)[0])}" target="_blank" rel="noopener">Open</a>`:''}</div>`:''}
-    ${pt?`<div class="banner">📝 ${esc(pt[0])} is today. Show your work and do your best!</div>`:''}
+    ${pt?`<div class="banner">📝 ${esc(pt[0])} ${isToday?'is today. Show your work and do your best!':day.iso<todayIso?'was on this day.':'is on this day. Show your work and do your best!'}</div>`:''}
     ${tasks.length?`<div class="bar"><span id="barfill"></span></div><ul class="tasks">${items}</ul><p class="yay" id="yay" hidden>🎉 All done. Nice work!</p>`:'<p class="t-sub">No checklist items for this day.</p>'}
   </section>`;
 }
@@ -527,7 +535,7 @@ function calendar(model, focus, todayIso){
       const isPT=PT_RE.test(d.topic);
       const topic = isPT ? `<span class="chip pt">${esc(d.topic)}</span>` : esc(d.topic);
       const cp = (d.cp ? ` <span class="chip cp">📝 ${esc(d.cp)}</span>` : '') + (!isPT && PT_RE.test(d.task||'') ? ` <span class="chip pt">${esc(d.task)}</span>` : '');
-      html+=`<div class="${cls}" data-iso="${d.iso}"><span class="d">${esc(d.label)}</span><span>${topic}${cp}</span></div>`;
+      html+=`<div class="${cls}" data-iso="${d.iso}" tabindex="0" role="button" aria-label="Show ${esc(d.label)}"><span class="d">${esc(d.label)}</span><span>${topic}${cp}</span></div>`;
     }
     html+='</div>';
   }
@@ -557,6 +565,12 @@ async function main(){
       ? `<a href="${c.file}" class="on" aria-current="page">${c.icon} <span class="short">${esc(c.name)}</span><span class="welcome">Welcome to ${esc(CONFIG.TITLE)} with ${esc(CONFIG.SUBTITLE)}</span></a>`
       : `<a href="${c.file}">${c.icon} ${esc(c.name)}</a>`).join('')}</nav>`));
   document.body.classList.add('has-nav');
+  document.head.insertAdjacentHTML('beforeend',`<style>
+    .cal .row[role=button]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .cal .row[role=button]:hover{background:#f4fbfb}
+    .cal .row.sel{background:#fff1dc;outline:3px solid #e39b4f;outline-offset:-3px;opacity:1}
+    .viewing{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:var(--peach);border:2px solid #e39b4f;border-radius:14px;padding:10px 14px;font-weight:800}
+  </style>`);
   const navEl=document.querySelector('nav.top-nav');
   requestAnimationFrame(()=>requestAnimationFrame(()=>{ navEl.classList.add('open'); const sh=navEl.querySelector('.on .short'); if(sh) sh.style.display='none'; }));
 
@@ -586,10 +600,30 @@ async function main(){
     if(view==='scroll') app.append(el(calendar(model,focus,todayIso)));
     if(view==='study') app.append(el(CONFIG.SIDE==='honors'?honorsBox(model.days,todayIso,today):ptBox(groups,todayIso,today)));
   } else {
-    const layout=el(`<div class="layout"><div class="main">${unitCard(unit)}${taskCard(shown,todayIso)}</div>
+    const layout=el(`<div class="layout"><div class="main"></div>
       <aside class="side">${CONFIG.SIDE==='honors'?honorsBox(model.days,todayIso,today):ptBox(groups,todayIso,today)}${calendar(model,focus,todayIso)}</aside></div>`);
     app.append(layout);
-    wireTasks(shown);
+    /* Tap a day on the calendar to see that day's unit card and checklist (?day=2026-09-15 opens one directly).
+       The Study box and calendar stay the same. A picked day shows the lesson written on that row (no Shift). */
+    const mainEl=layout.querySelector('.main'), byIso={};
+    model.days.forEach(d=>{ byIso[d.iso]=d; });
+    const showPicked=(iso, scroll)=>{
+      const d=iso?byIso[iso]:null, picked=(d && !d.noSchool && d!==focus) ? d : null, day=picked||shown;
+      mainEl.innerHTML=(picked?`<div class="viewing"><span>📅 Viewing ${esc(longDate(picked.date))}</span><button class="btn light" type="button" id="backToday">Back to today</button></div>`:'')
+        + unitCard(day?day.unit:null) + taskCard(day,todayIso,!!picked);
+      wireTasks(day);
+      layout.querySelectorAll('#cal .row.sel').forEach(r=>r.classList.remove('sel'));
+      if(picked){ const r=layout.querySelector(`#cal .row[data-iso="${picked.iso}"]`); if(r) r.classList.add('sel'); }
+      const b=document.getElementById('backToday');
+      if(b) b.addEventListener('click',()=>{ showPicked(null,true); jumpToToday(true); });
+      try{ const u=new URL(location.href); if(picked) u.searchParams.set('day',picked.iso); else u.searchParams.delete('day'); history.replaceState(null,'',u); }catch(e){}
+      if(scroll){ const top=mainEl.getBoundingClientRect().top; if(top<0 || top>innerHeight*0.5) window.scrollTo({top:scrollY+top-10, behavior:'smooth'}); }
+    };
+    const cal=layout.querySelector('#cal');
+    const rowOf=e=>{ const r=e.target.closest('.row[data-iso]'); return r && !r.classList.contains('off') ? r : null; };
+    cal.addEventListener('click',e=>{ const r=rowOf(e); if(r) showPicked(r.dataset.iso,true); });
+    cal.addEventListener('keydown',e=>{ if(e.key!=='Enter' && e.key!==' ') return; const r=rowOf(e); if(r){ e.preventDefault(); showPicked(r.dataset.iso,true); } });
+    showPicked(params.get('day'), false);
   }
   const j=document.getElementById('jump'); if(j) j.addEventListener('click',()=>jumpToToday(true));
   jumpToToday(false);

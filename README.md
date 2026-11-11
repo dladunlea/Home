@@ -42,6 +42,11 @@ Each sheet's Calendar tab has a **Lesson Notes** column (Math 2 and Math 3: colu
 The teacher dashboard shows each class's notes for the day in "Preview a day" (following the Shift), and **Edit notes** opens the sheet at that day's cell. Class pages ignore this column.
 Links in a note become clickable on the dashboard. Line breaks in a note (Ctrl/Cmd+Enter in a cell) are kept.
 
+## Picking a day on the calendar
+Students can tap any class day on the calendar to see that day's unit card and checklist, with a "Back to today" button. The Study box and calendar don't change.
+The warm-up or checkpoint button on that day opens that exact one (the warm-up page gets `?wu=<name>`), and the exit ticket shows that day's question. Each day keeps its own checkmarks.
+A picked day shows the lesson written on that row (the Shift only applies to today). Link straight to a day with `?day=2026-09-15`.
+
 ## Teacher dashboard
 `teacher.html` isn't linked anywhere for students. It shows whether each class's sheet is loading, with Edit sheet, Open page and Preview-a-day buttons.
 Preview any page on a given day by adding `?date=2026-11-18` to its address.
