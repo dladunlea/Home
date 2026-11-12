@@ -217,15 +217,91 @@ function ClassLogic(CONFIG){
     groups.forEach(g=>{ g.first=g.days[0]; g.last=g.days[g.days.length-1]; g.app=appFor(g.unit); });
     return groups;
   }
+
+  /* ---------- Advisory layout: one row per calendar date, weekends included ---------- */
+  // Dates like "8/18/2026", "8/18", "Tue 8/18" or "2026-08-18"
+  function parseDateCell(s, fallYear){
+    s=(s||'').trim(); let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if(m) return new Date(+m[1], m[2]-1, +m[3]);
+    m=s.match(/^(?:[A-Za-z]+,?\s+)?(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/); if(!m) return null;
+    const mo=+m[1], dd=+m[2]; let yr=m[3] ? +m[3] : (mo>=7 ? fallYear : fallYear+1); if(yr<100) yr+=2000;
+    const d=new Date(yr, mo-1, dd); return isNaN(d) ? null : d;
+  }
+  // Finds the header row (the first row holding every name in `must`) and reads cells by header name
+  function headerMap(rows, must){
+    const at=rows.findIndex(r=>must.every(h=>r.some(c=>(c||'').trim().toLowerCase()===h)));
+    if(at<0) return null;
+    const map={}; rows[at].forEach((h,j)=>{ const k=(h||'').trim().toLowerCase(); if(k && !(k in map)) map[k]=j; });
+    return {at, col:(r,...names)=>{ for(const n of names){ if(map[n]!=null) return (r[map[n]]||'').trim(); } return ''; }};
+  }
+  const linkIn=s=>{ const m=(s||'').match(/https?:\/\/\S+/); return m ? m[0].replace(/[).,;]+$/,'') : ''; };
+  function buildAdvisory(rows, fallYear){
+    const H=headerMap(rows, ['date','day type']); if(!H) return {days:[]};
+    const days=[];
+    for(const r of rows.slice(H.at+1)){
+      const date=parseDateCell(H.col(r,'date'), fallYear); if(!date) continue;
+      const type=H.col(r,'day type')||'School Day', video=H.col(r,'video'), url=linkIn(video);
+      days.push({date, iso:isoOf(date), label:WEEKDAYS[date.getDay()]+' '+(date.getMonth()+1)+'/'+date.getDate(), type,
+        weekend:/weekend/i.test(type), school:!/no school|weekend|holiday|break/i.test(type),
+        topic:H.col(r,'topic of the week','topic'), event:H.col(r,'school event','event'), deadline:H.col(r,'deadline'),
+        ice:H.col(r,'icebreaker'), videoUrl:url,
+        videoName:video.replace(url,'').replace(/^▶?\s*Video:\s*/i,'').replace(/[\s|:–—-]+$/,'').trim()||'DLA TV',
+        notes:H.col(r,'lesson notes')});
+    }
+    // Topic of the Week: typed on a Monday, it carries through that week
+    let topic='';
+    days.forEach(d=>{ if(d.topic) topic=d.topic; else if(d.date.getDay()===1) topic=''; else d.topic=topic; });
+    return {days};
+  }
+  // Announcements tab: shown from Show Starting (or a week before the Event Date) through Hide After (or the Event Date)
+  function activeAnnouncements(rows, today, fallYear){
+    const H=headerMap(rows, ['title']); if(!H) return [];
+    const t=today.getTime(), out=[];
+    for(const r of rows.slice(H.at+1)){
+      const title=H.col(r,'title'), details=H.col(r,'details'); if(!title && !details) continue;
+      const ev=parseDateCell(H.col(r,'event date'), fallYear), from=parseDateCell(H.col(r,'show starting'), fallYear), to=parseDateCell(H.col(r,'hide after'), fallYear);
+      const start=from || (ev ? new Date(ev.getFullYear(), ev.getMonth(), ev.getDate()-7) : null);
+      const end=to || ev;
+      if(start && t<start.getTime()) continue;
+      if(end && t>end.getTime()) continue;
+      out.push({title, details, ev, link:H.col(r,'link')||linkIn(details)});
+    }
+    return out.sort((a,b)=>(a.ev?a.ev.getTime():Infinity)-(b.ev?b.ev.getTime():Infinity) || 0);
+  }
+  // X-Block tab: the sign-up button shows only while a window is open (Opens through Closes)
+  function openXBlock(rows, today, fallYear){
+    const H=headerMap(rows, ['opens','closes']); if(!H) return null;
+    for(const r of rows.slice(H.at+1)){
+      const o=parseDateCell(H.col(r,'opens'), fallYear), c=parseDateCell(H.col(r,'closes'), fallYear);
+      const link=H.col(r,'sign-up link','signup link','link')||linkIn(r.join(' '));
+      if(o && c && link && today>=o && today<=c) return {cycle:H.col(r,'cycle','cycle #'), closes:c, link};
+    }
+    return null;
+  }
+  // The next few school events and deadlines; a run of days with the same event (a break) counts once
+  function upcomingEvents(days, todayIso, n){
+    const out=[];
+    for(let i=0;i<days.length;i++){ const d=days[i]; if(d.iso<=todayIso) continue;
+      if(d.event){ const p=[...out].reverse().find(x=>x.kind==='event');
+        if(p && p.text===d.event && p.endIdx===i-1){ p.end=d; p.endIdx=i; }
+        else { if(out.length>=n) break; out.push({kind:'event', text:d.event, start:d, end:d, endIdx:i}); } }
+      if(d.deadline){ if(out.length>=n) break; out.push({kind:'deadline', text:d.deadline, start:d, end:d, endIdx:i}); }
+    }
+    return out;
+  }
+
   return {parseCSV, isoOf, DAY_RE, buildModel, shortName, appFor, classDays, pickDay, lessonDay, showDay,
-          labels, tasksFor, warmupUrl, videoLink, exitLink, PT_RE, ptGroups, CONFIG};
+          labels, tasksFor, warmupUrl, videoLink, exitLink, PT_RE, ptGroups,
+          parseDateCell, buildAdvisory, activeAnnouncements, openXBlock, upcomingEvents, CONFIG};
 }
 
 /* The class page itself */
 function startClassPage(key){
   const CONFIG=classConfig(key)||Object.assign({}, CLASS_DEFAULTS);
   const CLASSES=window.CLASSES||[];
-  const {parseCSV, isoOf, buildModel, shortName, pickDay, showDay, tasksFor, PT_RE, ptGroups}=ClassLogic(CONFIG);
+  const {parseCSV, isoOf, buildModel, shortName, pickDay, showDay, tasksFor, PT_RE, ptGroups, videoLink,
+         buildAdvisory, activeAnnouncements, openXBlock, upcomingEvents}=ClassLogic(CONFIG);
+  const ADVISORY=CONFIG.LAYOUT==='advisory';
 
   /* ---------- Loading: show the saved copy right away, then swap in the live sheet if it changed ---------- */
   const CACHE_KEY='classpage-'+CONFIG.KEY+'-csv';
@@ -243,7 +319,8 @@ function startClassPage(key){
   // A real calendar, not an error page or a half-loaded sheet
   function looksRight(text){
     if(!text || /<html/i.test(text.slice(0,500))) return false;
-    return buildModel(parseCSV(text), CONFIG.FALL_YEAR).days.length > 20;
+    const rows=parseCSV(text);
+    return (ADVISORY ? buildAdvisory(rows, CONFIG.FALL_YEAR) : buildModel(rows, CONFIG.FALL_YEAR)).days.length > 20;
   }
   async function loadLive(){
     const urls=[];
@@ -506,6 +583,126 @@ function startClassPage(key){
     jumpToToday(false);
   }
 
+  /* ---------- Advisory page ---------- */
+  const shortDate=d=>WEEKDAY_LONG[d.getDay()]+' '+(d.getMonth()+1)+'/'+d.getDate();
+  const WEEKDAY_LONG=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function dayKind(d){
+    if(!d) return 'out';
+    if(d.weekend) return 'wknd';
+    if(!d.school) return 'off';
+    if(/finals|psat|caaspp|testing|exam/i.test(d.type+' '+d.event)) return 'test';
+    return 'sch';
+  }
+  function checklistItems(tasks){
+    return tasks.map(t=>`
+      <li class="task" data-id="${t.id}">
+        <label class="t-hit"><input type="checkbox" aria-label="Mark ${esc(t.title)} done">
+        <div class="t-body"><div class="t-title">${t.icon} ${esc(t.title)}</div>${t.sub?`<div class="t-sub">${esc(t.sub)}</div>`:''}</div></label>
+        ${t.url?`<a class="btn" href="${esc(t.url)}"${t.app?` data-app="${esc(t.app)}"`:''}${/^video\.html/.test(t.url)?'':' target="_blank" rel="noopener"'}>${t.btn||'Open'}</a>`:''}
+      </li>`).join('');
+  }
+  function advisoryMainHtml(focus, isToday, todayDay, xb, anns){
+    let html='';
+    if(!isToday) html+=`<div class="banner">🏖️ ${todayDay ? esc(todayDay.event||todayDay.type||'No school today') : 'No school today'}${focus?`. Here's what's coming on ${esc(shortDate(focus.date))}.`:''}</div>`;
+    if(focus && focus.topic) html+=`<section class="card adv-topic" aria-label="Topic of the week"><p class="unit-name">Topic of the week</p><p class="adv-topic-text">${esc(focus.topic)}</p></section>`;
+    if(focus && focus.ice) html+=`<section class="card adv-ice" aria-label="Icebreaker"><h2>💬 ${isToday?"Today's icebreaker":'Icebreaker for '+esc(shortDate(focus.date))}</h2><p class="adv-ice-text">${esc(focus.ice)}</p></section>`;
+    const tasks=[];
+    if(focus && focus.videoUrl) tasks.push({id:'tv', icon:'📺', title:'Watch '+focus.videoName, sub:"This week's episode", url:videoLink(focus, focus.videoName, focus.videoUrl), btn:'Watch'});
+    if(CONFIG.OUTLOOK_WEB||CONFIG.OUTLOOK_APP) tasks.push({id:'mail', icon:'📧', title:'Check your email', sub:'Opens the Outlook app', url:CONFIG.OUTLOOK_WEB||CONFIG.OUTLOOK_APP, app:CONFIG.OUTLOOK_WEB?CONFIG.OUTLOOK_APP:'', btn:'Open'});
+    if(xb){ const n=Math.round((xb.closes-today)/864e5);
+      tasks.push({id:'xb'+(xb.cycle||''), icon:'✍️', title:'X-Block sign-up'+(xb.cycle?' (cycle '+xb.cycle+')':''), sub:n<=0?'Closes today!':n===1?'Closes tomorrow':'Closes '+shortDate(xb.closes), url:xb.link, btn:'Sign up'}); }
+    const heading=isToday?"Today's Tasks":focus?'Next school day: '+shortDate(focus.date):"Today's Tasks";
+    html+=`<section class="card" id="today" aria-label="${esc(heading)}">
+      <div class="day-head"><h2>${esc(heading)}</h2><span class="progress" id="prog"></span></div>
+      ${tasks.length?`<div class="bar"><span id="barfill"></span></div><ul class="tasks">${checklistItems(tasks)}</ul><p class="yay" id="yay" hidden>🎉 All done. Nice work!</p>`:''}
+    </section>`;
+    html+=`<section class="card adv-anns" aria-label="Announcements"><h2>📣 Announcements</h2>${anns.length ? anns.map(a=>`
+      <div class="pt adv-ann"><div class="name">${esc(a.title||a.details)}</div>${a.ev?`<div class="when">${esc(shortDate(a.ev))}</div>`:''}
+      ${a.title&&a.details?`<div>${esc(a.details.replace(a.link,'').trim())}</div>`:''}
+      ${a.link?`<a class="btn" style="margin-top:8px" href="${esc(a.link)}" target="_blank" rel="noopener">Open</a>`:''}</div>`).join('')
+      : '<p class="t-sub">No announcements right now.</p>'}</section>`;
+    return html;
+  }
+  function comingUpHtml(days, todayIso){
+    const items=upcomingEvents(days, todayIso, 4);
+    const when=x=> x.start===x.end ? shortDate(x.start.date) : x.start.label+' to '+x.end.label;
+    return `<section class="card" aria-label="Coming up"><h2>⏭️ Coming up</h2>${items.length ? items.map(x=>`
+      <div class="pt"><div class="lbl">${x.kind==='deadline'?'Deadline':'School event'}</div><div class="name">${esc(x.text)}</div><div class="when">${esc(when(x))}</div></div>`).join('')
+      : '<p class="t-sub">Nothing coming up on the calendar.</p>'}</section>`;
+  }
+  function monthHtml(days, y, mo, todayIso){
+    const byIso={}; days.forEach(d=>{ byIso[d.iso]=d; });
+    const first=new Date(y, mo, 1), n=new Date(y, mo+1, 0).getDate();
+    let cells=['S','M','T','W','T','F','S'].map(w=>`<div class="mh">${w}</div>`).join('');
+    for(let i=0;i<first.getDay();i++) cells+='<div class="mc empty"></div>';
+    for(let dd=1; dd<=n; dd++){
+      const date=new Date(y, mo, dd), iso=isoOf(date), d=byIso[iso];
+      const tip=d ? [d.event, d.deadline && 'Due: '+d.deadline].filter(Boolean).join(' · ') : '';
+      const ev=d ? (d.event||d.deadline).replace(/^No School:\s*/i,'') : '';
+      cells+=`<button type="button" class="mc ${dayKind(d)}${iso===todayIso?' today':''}${d&&d.deadline?' dl':''}" data-iso="${iso}" aria-label="${esc(longDate(date)+(tip?': '+tip:''))}"><span class="n">${dd}</span>${ev?`<span class="ev">${esc(ev)}</span>`:''}</button>`;
+    }
+    return cells;
+  }
+  function calendarCard(){
+    return `<section class="card cal-card adv-cal" aria-label="Calendar">
+      <div class="cal-head"><button class="btn light" type="button" id="mPrev" aria-label="Previous month">‹</button><h2 id="mTitle"></h2><button class="btn light" type="button" id="mNext" aria-label="Next month">›</button></div>
+      <div class="mgrid" id="mgrid"></div>
+      <p class="mdetail" id="mdetail">Tap a day to see what's happening.</p>
+      <div class="mlegend"><span class="sch">School day</span><span class="off">No school</span><span class="test">Testing / finals</span><span class="dl">Deadline</span></div>
+    </section>`;
+  }
+  function wireCalendar(root, days, todayIso){
+    if(!days.length) return;
+    const lo=days[0].date, hi=days[days.length-1].date;
+    let y=today.getFullYear(), mo=today.getMonth();
+    if(today<lo){ y=lo.getFullYear(); mo=lo.getMonth(); } else if(today>hi){ y=hi.getFullYear(); mo=hi.getMonth(); }
+    const byIso={}; days.forEach(d=>{ byIso[d.iso]=d; });
+    const grid=root.querySelector('#mgrid'), title=root.querySelector('#mTitle'), prev=root.querySelector('#mPrev'), next=root.querySelector('#mNext'), detail=root.querySelector('#mdetail');
+    const draw=()=>{
+      grid.innerHTML=monthHtml(days, y, mo, todayIso); title.textContent=MONTHS[mo]+' '+y;
+      prev.disabled = y*12+mo <= lo.getFullYear()*12+lo.getMonth();
+      next.disabled = y*12+mo >= hi.getFullYear()*12+hi.getMonth();
+    };
+    prev.addEventListener('click',()=>{ mo--; if(mo<0){ mo=11; y--; } draw(); });
+    next.addEventListener('click',()=>{ mo++; if(mo>11){ mo=0; y++; } draw(); });
+    grid.addEventListener('click',e=>{
+      const b=e.target.closest('.mc[data-iso]'); if(!b) return;
+      grid.querySelectorAll('.mc.sel').forEach(x=>x.classList.remove('sel')); b.classList.add('sel');
+      const d=byIso[b.dataset.iso], date=d?d.date:new Date(b.dataset.iso+'T12:00');
+      const bits=d ? [d.weekend?'Weekend':!d.school?'No school':d.type, d.event, d.deadline&&'Deadline: '+d.deadline, d.school&&d.topic&&'Topic: '+d.topic].filter(Boolean) : ['Not on the calendar'];
+      detail.textContent=longDate(date)+' · '+[...new Set(bits)].join(' · ');
+    });
+    draw();
+  }
+  // Check email: try the Outlook app first; if it doesn't open, use Outlook on the web
+  function wireOutlook(root){
+    root.querySelectorAll('a[data-app]').forEach(a=>a.addEventListener('click',e=>{
+      const app=a.dataset.app; if(!app) return;
+      e.preventDefault(); let left=false;
+      const gone=()=>{ left=true; }; document.addEventListener('visibilitychange', gone, {once:true}); window.addEventListener('pagehide', gone, {once:true});
+      location.href=app;
+      setTimeout(()=>{ if(!left && !document.hidden) window.open(a.href, '_blank', 'noopener'); }, 1500);
+    }));
+  }
+  function renderAdvisory(text, extra){
+    const {days}=buildAdvisory(parseCSV(text), CONFIG.FALL_YEAR);
+    const todayDay=days.find(d=>d.iso===todayIso);
+    const isToday=!!(todayDay && todayDay.school);
+    const focus=isToday ? todayDay : (days.find(d=>d.iso>todayIso && d.school)||null);
+    const anns=extra.ann ? activeAnnouncements(parseCSV(extra.ann), today, CONFIG.FALL_YEAR) : [];
+    const xb=extra.xb ? openXBlock(parseCSV(extra.xb), today, CONFIG.FALL_YEAR) : null;
+    content.innerHTML='';
+    if(view==='today'){ content.append(el(`<div>${advisoryMainHtml(focus, isToday, todayDay, xb, anns)}</div>`)); }
+    else {
+      content.append(el(`<div class="layout"><div class="main adv-main">${advisoryMainHtml(focus, isToday, todayDay, xb, anns)}</div>
+        <aside class="side">${comingUpHtml(days, todayIso)}${calendarCard()}</aside></div>`));
+      wireCalendar(content, days, todayIso);
+    }
+    wireTasks(focus ? {iso:focus.iso} : {iso:todayIso});
+    wireOutlook(content);
+  }
+
   async function main(){
     if(!CONFIG.CSV_URL && !CONFIG.SHEET_ID){
       loading();
@@ -513,16 +710,23 @@ function startClassPage(key){
         <p>Check back soon for daily tasks and the calendar.</p></section>`));
       return;
     }
+    const draw = ADVISORY ? renderAdvisory : render;
+    // Advisory also reads its Announcements and X-Block tabs
+    const EXTRA = ADVISORY ? {ann:CONFIG.ANNOUNCEMENTS_CSV, xb:CONFIG.XBLOCK_CSV} : {};
+    const extraKeys=Object.keys(EXTRA).filter(k=>EXTRA[k]);
+    const savedExtra=()=>{ const o={}; extraKeys.forEach(k=>{ o[k]=recall(CACHE_KEY+'-'+k)||''; }); return o; };
     // 1. Saved copy from last time: on screen instantly, even on slow Wi-Fi
     let onScreen=null;
     const saved=recall(CACHE_KEY);
-    if(saved){ try{ render(saved); onScreen=saved; loading(); }catch(e){ console.warn('Saved copy failed to draw', e); content.innerHTML=''; } }
+    if(saved){ try{ const ex=savedExtra(); draw(saved, ex); onScreen=saved+'\u0000'+JSON.stringify(ex); loading(); }catch(e){ console.warn('Saved copy failed to draw', e); content.innerHTML=''; } }
     // 2. Live sheet: redraw only if something changed
-    const live=await loadLive();
+    const [live, ...extras]=await Promise.all([loadLive(), ...extraKeys.map(k=>fetchText(EXTRA[k]).catch(e=>{ console.warn('Could not load', k, e); return null; }))]);
     loading();
     if(live){
       store(CACHE_KEY,live); store(CACHE_KEY+'-at',new Date().toISOString());
-      if(live!==onScreen) render(live);
+      const ex=savedExtra();
+      extraKeys.forEach((k,i)=>{ const t=extras[i]; if(t!=null && !/<html/i.test(t.slice(0,500))){ ex[k]=t; store(CACHE_KEY+'-'+k, t); } });
+      if(live+'\u0000'+JSON.stringify(ex)!==onScreen) draw(live, ex);
     } else if(onScreen){
       const at=recall(CACHE_KEY+'-at'), when=at?new Date(at).toLocaleString():'earlier';
       app.append(el(`<p class="status">Showing the copy saved ${esc(when)}. Refresh to check for updates.</p>`));

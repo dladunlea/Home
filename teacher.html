@@ -197,7 +197,9 @@ async function checkPage(p){
     const url = csv || `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&headers=0&sheet=Student%20View`;
     const res=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});
     const text=await res.text();
-    const days=(text.match(/(?:^|,)"?(?:Mon|Tue|Wed|Thu|Fri) \d{1,2}\/\d{1,2}"?(?=,|$)/gm)||[]).length;
+    const days = cfg.LAYOUT==='advisory'
+      ? engineFor(p).buildAdvisory(parseCSV(text), cfg.FALL_YEAR).days.filter(d=>d.school).length   // Advisory: one row per date
+      : (text.match(/(?:^|,)"?(?:Mon|Tue|Wed|Thu|Fri) \d{1,2}\/\d{1,2}"?(?=,|$)/gm)||[]).length;
     if(!res.ok || days<5) throw new Error('no calendar rows');
     st.textContent='live ✓'; st.className='st ok';
     info.textContent=`Sheet is published and loading (${days} calendar days).`;
@@ -226,6 +228,7 @@ function parseCSV(text){
 const colLetter=i=>{ let s=''; i++; while(i>0){ const m=(i-1)%26; s=String.fromCharCode(65+m)+s; i=Math.floor((i-1)/26); } return s; };
 function showShift(p, text){
   const box=document.getElementById('sh-'+p.key); if(!box) return;
+  if(classConfig(p.key).LAYOUT==='advisory'){ box.innerHTML=''; return; }   // Advisory doesn't get ahead or behind
   const rows=parseCSV(text);
   const h=rows.findIndex(r=>(r[0]||'').toLowerCase()==='week' && (r[1]||'').toLowerCase()==='date');
   const col=h<0 ? -1 : rows[h].findIndex(c=>c.toLowerCase()==='shift');
@@ -247,10 +250,28 @@ function engineFor(p){
   return p.engine;
 }
 const linkify=t=>esc(t).replace(/https?:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
+// Advisory sheet: one row per date, so the notes are on that date's row (or the next school day's)
+function advisoryNotes(p, E, box, dateIso){
+  const rows=E.parseCSV(p.data.text), want=dateIso||iso;
+  const h=rows.findIndex(r=>r.some(c=>c.toLowerCase()==='date') && r.some(c=>c.toLowerCase()==='day type'));
+  const col=h<0?-1:rows[h].findIndex(c=>c.toLowerCase()==='lesson notes');
+  if(col<0){ box.innerHTML=`<p class="sub">No Lesson Notes column on this sheet yet.</p>`; return; }
+  const dateCol=rows[h].findIndex(c=>c.toLowerCase()==='date');
+  const day=E.buildAdvisory(rows, E.CONFIG.FALL_YEAR).days.find(d=>d.iso>=want && d.school); if(!day){ box.innerHTML=''; return; }
+  const r=rows.findIndex((row,i)=>i>h && (()=>{ const d=E.parseDateCell(row[dateCol], E.CONFIG.FALL_YEAR); return d && E.isoOf(d)===day.iso; })());
+  const notes=r<0?'':(rows[r][col]||'').trim();
+  const nc=NOTES_CELL[p.key], base=(SHEETS[p.key]||'').replace(/\/edit.*$/,'');
+  const edit = nc && base && r>=0 ? `${base}/edit#gid=${nc.gid}&range=${nc.col}${r+1}` : '';
+  box.innerHTML=`<div class="notes"><div class="lbl">📓 Lesson notes</div>
+    <div class="day">${esc(day.label)}${day.topic?' · '+esc(day.topic):''}</div>
+    ${notes?`<p class="body">${linkify(notes)}</p>`:'<p class="body empty">No notes for this day yet.</p>'}
+    ${edit?`<a class="btn light" href="${esc(edit)}" target="_blank" rel="noopener">Edit notes</a>`:''}</div>`;
+}
 function showNotes(p, dateIso){
   const box=document.getElementById('nt-'+p.key); if(!box) return;
   try{
     const E=engineFor(p); if(!E){ box.innerHTML=''; return; }
+    if(E.CONFIG.LAYOUT==='advisory') return advisoryNotes(p, E, box, dateIso);
     const rows=E.parseCSV(p.data.text);
     const h=rows.findIndex(r=>(r[0]||'').toLowerCase()==='week' && (r[1]||'').toLowerCase()==='date');
     const col=h<0?-1:rows[h].findIndex(c=>c.toLowerCase()==='lesson notes');

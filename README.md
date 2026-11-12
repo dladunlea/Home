@@ -61,3 +61,11 @@ A picked day shows the lesson written on that row (the Shift only applies to tod
 ## Teacher dashboard
 `teacher.html` isn't linked anywhere for students. It shows whether each class's sheet is loading, with Edit sheet, Open page and Preview-a-day buttons.
 Preview any page on a given day by adding `?date=2026-11-18` to its address.
+
+## Advisory
+Advisory uses its own layout (`LAYOUT: 'advisory'` in classes.js) and reads three published tabs of the Advisory sheet: **Student View** (`CSV_URL`), **Announcements** (`ANNOUNCEMENTS_CSV`) and **X-Block** (`XBLOCK_CSV`). Everything on the page comes live from the sheet except the Outlook links, which are in classes.js.
+- **Student View**: one row per date, weekends included (`Date, Day, Day Type, Topic of the Week, School Event, Deadline, Icebreaker, Video, Lesson Notes`). Day Type sets the calendar color: School Day, Finals, Minimum Day, No School, Weekend. School events like PSAT, CAASPP and testing show blue.
+- **Page, top to bottom**: Topic of the Week, today's icebreaker in big text, the checklist (DLA TV from the Video column, Check email, X-Block sign-up), Announcements, then Coming up and a month calendar on the side. On a day with no school it shows the next school day's icebreaker and checklist.
+- **Announcements**: a row shows from **Show Starting** (or a week before **Event Date** if that's blank) through **Hide After** (or the Event Date if that's blank). A row with no dates shows until you delete it. Put a link in **Link** for an Open button.
+- **X-Block**: the sign-up button appears only from **Opens** through **Closes**, and needs a **Sign-up Link**.
+- **Check email** tries the Outlook app first and opens Outlook on the web if the app doesn't open.

@@ -54,10 +54,15 @@ window.CLASSES = [
   {
     key: 'advisory', file: 'advisory.html', icon: '🧑‍🏫', name: 'Advisory',
     TITLE: 'Advisory',
-    CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ITiZXVKseWfm4-H42OjtRayinBfM2o6hb79NikRvEG5DO8U-GIlEEOmb05G4ODT5CUmawL8a7iBT/pub?gid=1&single=true&output=csv',
-    // An "Announcement" column on the sheet shows as a banner above the checklist
-    // (add an "Announcement Link" column, or paste a link into the announcement, for an Open button)
-    LABELS: { task: "Today's task", practicePrefix: 'Textbook: ' },
+    LAYOUT: 'advisory',   // the Advisory layout: icebreaker, checklist, announcements, month calendar
+    // Published CSV links for the Advisory sheet's tabs (Student View, Announcements, X-Block)
+    CSV_URL:          'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ITiZXVKseWfm4-H42OjtRayinBfM2o6hb79NikRvEG5DO8U-GIlEEOmb05G4ODT5CUmawL8a7iBT/pub?gid=1&single=true&output=csv',
+    ANNOUNCEMENTS_CSV:'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ITiZXVKseWfm4-H42OjtRayinBfM2o6hb79NikRvEG5DO8U-GIlEEOmb05G4ODT5CUmawL8a7iBT/pub?gid=2&single=true&output=csv',
+    XBLOCK_CSV:       'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ITiZXVKseWfm4-H42OjtRayinBfM2o6hb79NikRvEG5DO8U-GIlEEOmb05G4ODT5CUmawL8a7iBT/pub?gid=3&single=true&output=csv',
+    // Check email button: tries the Outlook app on the iPad, and opens Outlook on the web if the app doesn't open
+    OUTLOOK_APP: 'ms-outlook://',
+    OUTLOOK_WEB: 'https://outlook.office.com/mail/',
+    // DLA TV comes from the sheet's Video column, so it stays live
   },
   {
     key: 'music', file: 'music.html', icon: '🎵', name: 'Music',
