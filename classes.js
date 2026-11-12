@@ -14,6 +14,9 @@
      SIDE: 'honors'             - side box shows honors tasks instead of the Study box
      CARRY_TASK: true           - a day with no Essential Task shows the previous day's
      FALL_YEAR                  - the year the school year starts (dates from July on are this year)
+     HIDDEN: true               - hides the class's button on the Home page and in the top menu.
+                                  The page still works at its address, and the teacher dashboard still shows it.
+                                  Delete the line (or set it to false) to bring the button back.
 */
 window.CLASSES = [
   {
@@ -31,6 +34,7 @@ window.CLASSES = [
   },
   {
     key: 'math3', file: 'math3.html', icon: '📐', name: 'Math 3',
+    HIDDEN: true,   // button hidden for now; delete this line to show it again
     TITLE: 'Math 3',
     CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRrXCOIUr8fKl9qOtzrDlMKy-yx0mZeZZzolZUYFWpBNIdQMmRuFzKvTQw_VTGNUNaRU0_dStMHcQ5p/pub?gid=1341448792&single=true&output=csv',
     WARMUP_APP: 'https://dladunlea.github.io/Math3_Warmup/',

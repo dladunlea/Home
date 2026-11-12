@@ -132,5 +132,10 @@
   </div>
   <footer>Made with ❤️ for our class.</footer>
 </div>
+<script src="classes.js"></script>
+<script>
+/* Hide the button for any class marked HIDDEN: true in classes.js */
+try{ (window.CLASSES||[]).filter(c=>c.HIDDEN).forEach(c=>document.querySelectorAll('a[href="'+c.file+'"]').forEach(a=>a.remove())); }catch(e){}
+</script>
 </body>
 </html>

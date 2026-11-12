@@ -525,7 +525,7 @@ function startClassPage(key){
   document.title=CONFIG.TITLE;
   const here=location.pathname.split('/').pop()||'index.html';
   hdr.insertAdjacentElement('afterend', el(`<nav class="top-nav" aria-label="Classes"><a href="index.html">🏫 Home</a>${
-    CLASSES.map(c=>c.file===here
+    CLASSES.filter(c=>!c.HIDDEN || c.file===here).map(c=>c.file===here
       ? `<a href="${c.file}" class="on" aria-current="page">${c.icon} <span class="short">${esc(c.name)}</span><span class="welcome">Welcome to ${esc(CONFIG.TITLE)} with ${esc(CONFIG.SUBTITLE)}</span></a>`
       : `<a href="${c.file}">${c.icon} ${esc(c.name)}</a>`).join('')}</nav>`));
   document.body.classList.add('has-nav');
