@@ -135,6 +135,8 @@
   <p class="note">📅 <b>Ahead or behind?</b> Tap <b>Change shift</b> and type a number in the Shift cell: <b>-1</b> = one class day behind, <b>1</b> = one ahead, <b>0</b> = on the plan. Today's checklist, topic and unit card move to that lesson. The date, warm-up, calendar, tests and due dates stay put. Set it back to 0 once you've caught up.</p>
   <div class="grid" id="grid"></div>
 </div>
+<script src="classes.js"></script>
+<script src="engine.js"></script>
 <script>
 /* Edit links to each class's Google Sheet. Fill these in as you make the sheets. */
 const SHEETS = {
@@ -160,13 +162,7 @@ const NOTES_CELL = {
   advisory: null,
   music:    null,
 };
-const PAGES = [
-  { key:'math2',    file:'math2.html',    icon:'➗', name:'Math 2' },
-  { key:'math3',    file:'math3.html',    icon:'📐', name:'Math 3' },
-  { key:'physics',  file:'physics.html',  icon:'🔬', name:'Physics' },
-  { key:'advisory', file:'advisory.html', icon:'🧑‍🏫', name:'Advisory' },
-  { key:'music',    file:'music.html',    icon:'🎵', name:'Music' },
-];
+const PAGES = window.CLASSES.map(c=>({key:c.key, file:c.file, icon:c.icon, name:c.name}));   // the class list lives in classes.js
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today=new Date(); const iso=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
 const grid=document.getElementById('grid');
@@ -195,10 +191,9 @@ PAGES.forEach(p=>{
 async function checkPage(p){
   const st=document.getElementById('st-'+p.key), info=document.getElementById('info-'+p.key);
   try{
-    const html=await (await fetch(p.file,{cache:'no-store'})).text();
-    const csv=(html.match(/CSV_URL:\s*'([^']*)'/)||[])[1]||'';
-    const id=(html.match(/SHEET_ID:\s*'([^']*)'/)||[])[1]||'';
-    if(!csv && !id){ st.textContent='coming soon'; info.textContent='No sheet linked yet. Add its CSV link to '+p.file+'.'; return; }
+    const cfg=classConfig(p.key);
+    const csv=cfg.CSV_URL, id=cfg.SHEET_ID;
+    if(!csv && !id){ st.textContent='coming soon'; info.textContent='No sheet linked yet. Add its CSV link to classes.js.'; return; }
     const url = csv || `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&headers=0&sheet=Student%20View`;
     const res=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});
     const text=await res.text();
@@ -207,7 +202,7 @@ async function checkPage(p){
     st.textContent='live ✓'; st.className='st ok';
     info.textContent=`Sheet is published and loading (${days} calendar days).`;
     showShift(p, text);
-    p.data={html, text}; showNotes(p, document.getElementById('d-'+p.key).value||iso);
+    p.data={text}; showNotes(p, document.getElementById('d-'+p.key).value||iso);
   }catch(e){
     st.textContent='not loading'; st.className='st bad';
     info.textContent='The published sheet didn\'t load. Check File → Share → Publish to web.';
@@ -248,14 +243,7 @@ function showShift(p, text){
 
 /* ---------- Lesson notes: runs the class page's own engine so the day (and Shift) match what students see ---------- */
 function engineFor(p){
-  if(p.engine) return p.engine;
-  const cfg=(p.data.html.match(/window\.CLASS_CONFIG = (\{[\s\S]*?\n\});/)||[])[1];
-  const logic=(p.data.html.match(/\/\*LOGIC-START\*\/([\s\S]*?)\/\*LOGIC-END\*\//)||[])[1];
-  if(!cfg||!logic) return null;
-  p.engine=new Function(`const window={CLASS_CONFIG:${cfg}};
-    const CONFIG=Object.assign({APPS:[],WARMUP_APP:'',CHECKIN_FORM:''},window.CLASS_CONFIG);
-    ${logic}
-    return {parseCSV, buildModel, pickDay, showDay, isoOf, DAY_RE, CONFIG};`)();
+  if(!p.engine){ const cfg=classConfig(p.key); p.engine=cfg ? ClassLogic(cfg) : null; }   // same code the class page runs
   return p.engine;
 }
 const linkify=t=>esc(t).replace(/https?:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`);

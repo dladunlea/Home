@@ -39,6 +39,8 @@
     <span class="title" id="title">🎬 Video</span>
   </div>
 </div>
+<script src="classes.js"></script>
+<script src="engine.js"></script>
 <script>
 /* Video page: plays a video inside the class site instead of sending students to YouTube.
    Opened from a class page's Watch button. Two kinds of links:
@@ -63,8 +65,7 @@ async function main(){
 
   let title='';
   if(page){
-    try{ const html=await (await fetch(page,{cache:'no-store'})).text(); title=(html.match(/TITLE:\s*'([^']*)'/)||[])[1]||''; }
-    catch(e){ console.warn('Could not read', page, e); }
+    const cfg=classConfig(page); if(cfg) title=cfg.TITLE;
   }
   if(title) document.getElementById('title').textContent='🎬 '+title+' · Video';
   document.title=(name||'Video')+(title?' · '+title:'');

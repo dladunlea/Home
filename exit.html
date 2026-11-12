@@ -40,6 +40,8 @@
     <span class="title" id="title">🎟️ Exit Ticket</span>
   </div>
 </div>
+<script src="classes.js"></script>
+<script src="engine.js"></script>
 <script>
 /* Exit ticket page: shows the question of the day, with the class's Google Form embedded below it.
    Opened from a class page's Exit ticket button: exit.html?c=physics.html&q=<question>
@@ -63,10 +65,8 @@ async function main(){
   let form=p.get('f')||'', title='';
   if(page){
     try{
-      const html=await (await fetch(page,{cache:'no-store'})).text();
-      title=(html.match(/TITLE:\s*'([^']*)'/)||[])[1]||'';
-      const cf=(html.match(/CHECKIN_FORM:\s*'([^']*)'/)||[])[1]||'';
-      if(cf) form=cf;
+      const cfg=classConfig(page);
+      if(cfg){ title=cfg.TITLE; if(cfg.CHECKIN_FORM) form=cfg.CHECKIN_FORM; }
     }catch(e){ console.warn('Could not read', page, e); }
   }
   if(title){ document.getElementById('title').textContent='🎟️ '+title+' · Exit Ticket'; document.title='Exit Ticket · '+title; }
