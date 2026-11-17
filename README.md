@@ -10,14 +10,22 @@ Class pages: …/Home/index.html, math2.html, math3.html, physics.html, advisory
 - **teacher.html, exit.html, video.html** read classes.js too, so they always agree with the class pages.
 
 To add a class: add an entry to `CLASSES` in classes.js, then copy math2.html to a new file (e.g. `chem.html`) and change `'math2'` (twice: the title and `startClassPage('math2')`) to the new key.
+To hide a class's button (Home page and top menu) without taking its page down, add `HIDDEN: true` to its entry in classes.js. Advisory and Music are hidden right now.
 
 ## How it works
 Each class page reads the **Student View** tab of its own Google Sheet, so editing the sheet updates the page (within about 5 minutes).
 Each page shows the copy it saved last time straight away, then checks the live sheet and redraws only if something changed, so it opens instantly even on slow Wi-Fi.
+Each class sheet has an **Instructions** tab explaining how to add or change every kind of data without breaking the page.
 
-## Turning on a new class (Math 3, Advisory, Music)
+## Sheet layout (Math 2, Math 3, Physics)
+- **Row 1** of every published tab is a warning that students who inspect a page can read it. On the Calendar, A1:B1 is ▶ Jump to today and the warning starts in C1. **Row 2** has the column headings. The page finds the heading row (Week, Date…) wherever it is, so the warning row is skipped.
+- **Published tabs** (and nothing else): Student View, Warmups, Check Points, plus Warmups Schedule for Physics. The Calendar, Instructions, Retake Sections and Physics's Midterm/Final Exam stay private.
+- **Student View** is built from the Calendar with one formula per column (rows 3–301), so inserting or deleting Calendar rows is safe. Its rows line up with the Calendar's, which is how the teacher dashboard's Edit notes button finds the right cell.
+- **Links** are written right in the cell, one per line, as `Name | https://…` (Web Apps and Video columns). There's no App Links tab.
+
+## Turning on a new class
 1. Make the class's Google Sheet with a **Student View** tab. The page finds columns by their header name, so order doesn't matter. Use any of:
-   `Week, Date, Topic, Warm Up, Checkpoint, Practice, Exit Ticket, What, Why, How, Substitute Task, Web App`
+   `Week, Date, Topic, Warm Up, Checkpoint, Practice, Exit Ticket, What, Why, How, Replace Tasks With, Web App`
    (optional per-day links: `WU Link`, `ET Link`; Web App cells look like `App name | https://…`, one per line)
    Other columns the page understands: `Essential Task` + `Essential Task Link`, `Honors` + `Honors Link` (optional item),
    `Task` (Music), `Announcement` + `Announcement Link` (a banner above the checklist, for Advisory).
@@ -26,15 +34,22 @@ Each page shows the copy it saved last time straight away, then checks the live 
    - Unit header rows: unit name in Week, guiding question in Topic, What / Why / How in the last three columns.
    - Day rows: date like `Mon 11/9` in Date. Put `No School` in Topic for days off.
    - Tests: start the Topic with `PT #` (e.g. `PT #2`). Checkpoints go in the Checkpoint column.
+   - Replace Tasks With (the old Substitute Task column): what students do instead of the day's practice, e.g. on a sub day.
 2. File → Share → **Publish to web** → Student View → **CSV**, with "Automatically republish when changes are made" checked.
 3. Open **classes.js**, paste the link into that class's `CSV_URL`, and upload classes.js.
 4. Add the sheet's edit link to `SHEETS` in `teacher.html` so its Edit button shows up.
 
+## Warm-ups
+Each warm-up page (Math2_Warmup, Math3_Warmup, Physics_Warmup) reads the class's published Student View, Warmups and Check Points tabs (and Warmups Schedule for Physics).
+- The Calendar's Warm Up column has **one name per week** (e.g. `WU C3U6.2`, `WU 2.2`), the same every class day that week. The warm-up page works out which day of the week it is from the date, and gives each student a different set each day.
+- Math banks: a question belongs to a unit's bank when its Topic starts with the bank code (e.g. `CP3U6 Circles…` for `WU C3U6.x`).
+- The class page's Start button sends the warm-up name and the date (`?wu=WU%20C3U6.2&date=2026-09-08`), so an old day opens that day's set. The score form records the date.
+
 ## Ahead or behind: the Shift cell
-Each sheet's Student View tab has a **Shift** column (header in row 1, the number right under it).
+Each sheet's Student View tab has a **Shift** column (heading in row 2, the number right under it).
 - `0` = on the plan, `-1` = one class day behind, `2` = two class days ahead.
 - The page then shows that lesson's topic, unit card and checklist (task, practice, web apps, exit ticket), with a small "(planned for …)" note.
-- These stay on the real date: the date, warm-up or checkpoint, substitute task, honors, announcements, the calendar and the Study/Honors box.
+- These stay on the real date: the date, warm-up or checkpoint, Replace Tasks With, honors, announcements, the calendar and the Study/Honors box.
 - The shift counts straight through test and performance task days, so if you push a test back, the test day's checklist moves with it. The calendar and the Study/Honors box still show the test on its original date; change the date in the sheet if the test is moving for good. Set the shift back to `0` once you've caught up.
 - Preview a shift without touching the sheet: add `?shift=-1` to the page address (works with `?date=` too).
 The teacher dashboard shows each class's current shift with a **Change shift** button that opens the sheet right at that cell.
@@ -43,6 +58,7 @@ The teacher dashboard shows each class's current shift with a **Change shift** b
 The Exit ticket button opens `exit.html`: the day's question (from the Exit Ticket column) in big text at the top, with the class's Google Form embedded below it.
 The form is the class's `CHECKIN_FORM` setting in classes.js (or the day's `ET Link` if that's blank). Nothing to set up per day.
 If a form ever won't show inside the page, the "Open the form in a new tab" button under it still works.
+Anything after `[Look for:` in a Calendar exit ticket is your answer key; Student View removes it before publishing.
 
 ## Videos
 Put videos in the Video column of the Calendar tab (right after Web Apps) as `▶ Video: name | https://www.youtube.com/watch?v=…` (one per line); Student View adds them to the Web App column.
@@ -55,7 +71,7 @@ Links in a note become clickable on the dashboard. Line breaks in a note (Ctrl/C
 
 ## Picking a day on the calendar
 Students can tap any class day on the calendar to see that day's unit card and checklist, with a "Back to today" button. The Study box and calendar don't change.
-The warm-up or checkpoint button on that day opens that exact one (the warm-up page gets `?wu=<name>`), and the exit ticket shows that day's question. Each day keeps its own checkmarks.
+The warm-up or checkpoint button on that day opens that exact one (the warm-up page gets `?wu=<name>&date=<day>`), and the exit ticket shows that day's question. Each day keeps its own checkmarks.
 A picked day shows the lesson written on that row (the Shift only applies to today). Link straight to a day with `?day=2026-09-15`.
 
 ## Teacher dashboard
