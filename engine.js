@@ -70,7 +70,7 @@ function classConfig(key) {
     what: ['what'],
     why: ['why'],
     how: ['how'],
-    sub: ['substitute task', 'sub task'],
+    sub: ['replace tasks with', 'substitute task', 'sub task'],
     app: ['web app', 'web apps', 'app', 'apps'],
     task: ['essential task', "today's task", 'task', 'daily task'],
     taskLink: ['essential task link', 'task link'],
@@ -118,7 +118,11 @@ function classConfig(key) {
       days = [];
     let sec = null,
       week = '';
-    for (const r of rows) {
+    // Skip anything above the heading row (e.g. the published-tab warning in row 1)
+    const headAt = rows.findIndex(
+      (r) => (r[0] || '').trim().toLowerCase() === 'week' && (r[1] || '').trim().toLowerCase() === 'date',
+    );
+    for (const r of rows.slice(headAt + 1)) {
       const a = get(r, 'week'),
         b = get(r, 'date');
       if (a.toLowerCase() === 'week' && b.toLowerCase() === 'date') continue; // header row
@@ -286,7 +290,8 @@ function classConfig(key) {
   function warmupUrl(day, title) {
     const u = CONFIG.WARMUP_APP;
     if (!u) return day.wuLink;
-    return title ? u + (u.includes('?') ? '&' : '?') + 'wu=' + encodeURIComponent(title) : u;
+    // the date tells the warm-up page which day of that week's warm-up to give
+    return title ? u + (u.includes('?') ? '&' : '?') + 'wu=' + encodeURIComponent(title) + '&date=' + day.iso : u;
   }
   function tasksFor(day) {
     const t = [],
@@ -938,7 +943,7 @@ function classConfig(key) {
       )
         .map((c) =>
           c.file === here
-            ? `<a href="${c.file}" class="on" aria-current="page">${c.icon} <span class="short">${esc(c.name)}</span><span class="welcome">Welcome to ${esc(CONFIG.TITLE)} with ${esc(CONFIG.SUBTITLE)}</span></a>`
+            ? `<a href="${c.file}" class="on" aria-current="page">${c.icon} <span class="short">${esc(c.name)}</span><span class="welcome">Welcome to ${esc(CONFIG.TITLE)}</span></a>`
             : `<a href="${c.file}">${c.icon} ${esc(c.name)}</a>`,
         )
         .join('')}</nav>`,
