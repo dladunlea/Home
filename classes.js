@@ -34,7 +34,6 @@ window.CLASSES = [
   },
   {
     key: 'math3', file: 'math3.html', icon: '📐', name: 'Math 3',
-    HIDDEN: true,   // button hidden for now; delete this line to show it again
     TITLE: 'Math 3',
     CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRrXCOIUr8fKl9qOtzrDlMKy-yx0mZeZZzolZUYFWpBNIdQMmRuFzKvTQw_VTGNUNaRU0_dStMHcQ5p/pub?gid=1341448792&single=true&output=csv',
     WARMUP_APP: 'https://dladunlea.github.io/Math3_Warmup/',
@@ -57,6 +56,7 @@ window.CLASSES = [
   },
   {
     key: 'advisory', file: 'advisory.html', icon: '🧑‍🏫', name: 'Advisory',
+    HIDDEN: true,   // button hidden for now; delete this line to show it again
     TITLE: 'Advisory',
     LAYOUT: 'advisory',   // the Advisory layout: icebreaker, checklist, announcements, month calendar
     // Published CSV links for the Advisory sheet's tabs (Student View, Announcements, X-Block)
@@ -70,6 +70,7 @@ window.CLASSES = [
   },
   {
     key: 'music', file: 'music.html', icon: '🎵', name: 'Music',
+    HIDDEN: true,   // button hidden for now; delete this line to show it again
     TITLE: 'Music',
     CSV_URL: '',   // paste the sheet's CSV link here when it's ready
     // Put the day's task in a "Task" column on the sheet
