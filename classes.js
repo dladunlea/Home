@@ -35,7 +35,7 @@ window.CLASSES = [
   {
     key: 'math3', file: 'math3.html', icon: '📐', name: 'Math 3',
     TITLE: 'Math 3',
-    CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRrXCOIUr8fKl9qOtzrDlMKy-yx0mZeZZzolZUYFWpBNIdQMmRuFzKvTQw_VTGNUNaRU0_dStMHcQ5p/pub?gid=1341448792&single=true&output=csv',
+    CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTO2yY_9alysCwviNNky1NMj-WE5AepI4jQ8DnubslfUy__7HY_gBjTpaC8kNUUu6ySTANUD5iCy3Il/pub?gid=1341448792&single=true&output=csv',
     WARMUP_APP: 'https://dladunlea.github.io/Math3_Warmup/',
     CHECKIN_FORM: 'https://docs.google.com/forms/d/e/1FAIpQLSdSmpVoPR10jFxmGMBq6fkz9VxTZdis9KwMKugSr9P8MS8MXw/viewform',
     APPS: [
