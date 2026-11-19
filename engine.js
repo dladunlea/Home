@@ -315,7 +315,7 @@ function classConfig(key) {
         icon: isPT ? '📝' : '📌',
         title: isPT ? day.task : L.task,
         sub: isPT ? 'Performance task' : (day.taskCarried ? 'Keep working on: ' : '') + day.task,
-        url: day.taskLink,
+        url: taskPageLink(day),
         btn: 'Open',
       });
     }
@@ -404,6 +404,12 @@ function classConfig(key) {
       });
     if (day.et) t.push({ id: 'et', icon: '🎟️', title: L.exit, sub: day.et, url: exitLink(day), btn: 'Answer' });
     return t;
+  } // Essential Task button: with TASKS_CSV set in classes.js, opens task.html (the task's description, upload form and Essential Tasks box) as of this day
+  function taskPageLink(day) {
+    if (!CONFIG.TASKS_CSV || !CONFIG.file || !day.task) return day.taskLink;
+    const p = new URLSearchParams({ c: CONFIG.file, task: day.task, d: day.iso });
+    if (day.taskLink) p.set('l', day.taskLink);
+    return 'task.html?' + p.toString();
   } // Watch button: opens video.html, which plays a YouTube video inside the class site (other video links open as they are)
   // Single videos (watch?v=, youtu.be, embed, shorts) send v=<id>; playlist links send l=<list id>;
   // a channel link (youtube.com/channel/UC…) sends that channel's uploads list (UU…), which opens on its newest video.
@@ -715,7 +721,7 @@ function classConfig(key) {
     const items = tasks
       .map(
         (t) =>
-          ` <li class="task" data-id="${t.id}"> <label class="t-hit"><input type="checkbox" aria-label="Mark ${esc(t.title)} done"> <div class="t-body"><div class="t-title">${t.icon} ${esc(t.title)}${t.optional ? '<span class="opt">OPTIONAL</span>' : ''}</div> ${t.sub ? `<div class="t-sub">${esc(t.sub)}</div>` : ''}</div></label> ${t.url ? `<a class="btn" href="${esc(t.url)}"${/^(exit|video)\.html/.test(t.url) ? '' : ' target="_blank" rel="noopener"'}>${t.btn || 'Open'}</a>` : ''} </li>`,
+          ` <li class="task" data-id="${t.id}"> <label class="t-hit"><input type="checkbox" aria-label="Mark ${esc(t.title)} done"> <div class="t-body"><div class="t-title">${t.icon} ${esc(t.title)}${t.optional ? '<span class="opt">OPTIONAL</span>' : ''}</div> ${t.sub ? `<div class="t-sub">${esc(t.sub)}</div>` : ''}</div></label> ${t.url ? `<a class="btn" href="${esc(t.url)}"${/^(exit|video|task)\.html/.test(t.url) ? '' : ' target="_blank" rel="noopener"'}>${t.btn || 'Open'}</a>` : ''} </li>`,
       )
       .join('');
     return `<section class="card" id="today" aria-label="${esc(heading)}"> <div class="day-head"><h2>${esc(heading)}</h2><span class="progress" id="prog"></span></div> <p class="day-topic">${esc(longDate(day.date))} · ${esc(day.topic)}${day.lessonFrom ? ` <span class="t-sub">(planned for ${esc(day.lessonFrom.label)})</span>` : ''}</p> ${day.announce ? `<div class="banner">📣 ${esc(day.announce.replace(/https?:\/\/\S+/, '').trim())}${day.announceLink || (day.announce.match(/https?:\/\/\S+/) || [''])[0] ? ` <a class="btn" style="margin-left:8px" href="${esc(day.announceLink || day.announce.match(/https?:\/\/\S+/)[0])}" target="_blank" rel="noopener">Open</a>` : ''}</div>` : ''} ${pt ? `<div class="banner">📝 ${esc(pt[0])} ${isToday ? 'is today. Show your work and do your best!' : day.iso < todayIso ? 'was on this day.' : 'is on this day. Show your work and do your best!'}</div>` : ''} ${tasks.length ? `<div class="bar"><span id="barfill"></span></div><ul class="tasks">${items}</ul><p class="yay" id="yay" hidden>🎉 All done. Nice work!</p>` : '<p class="t-sub">No checklist items for this day.</p>'} </section>`;
