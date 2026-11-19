@@ -7,7 +7,7 @@ Class pages: …/Home/index.html, math2.html, math3.html, physics.html, advisory
 - **classes.js**: every class's settings (sheet link, warm-up app, exit ticket form, study apps, wording) and the top menu. This is the one you'll edit.
 - **engine.js** and **style.css**: the page code and the look, shared by every class page. A fix here fixes every class at once.
 - **math2.html, physics.html, …**: tiny pages that just say which class to show. You shouldn't need to touch them.
-- **teacher.html, exit.html, video.html** read classes.js too, so they always agree with the class pages.
+- **teacher.html, exit.html, video.html, task.html** read classes.js too, so they always agree with the class pages.
 
 To add a class: add an entry to `CLASSES` in classes.js, then copy math2.html to a new file (e.g. `chem.html`) and change `'math2'` (twice: the title and `startClassPage('math2')`) to the new key.
 To hide a class's button (Home page and top menu) without taking its page down, add `HIDDEN: true` to its entry in classes.js. Advisory and Music are hidden right now.
@@ -53,6 +53,18 @@ Each sheet's Student View tab has a **Shift** column (heading in row 2, the numb
 - The shift counts straight through test and performance task days, so if you push a test back, the test day's checklist moves with it. The calendar and the Study/Honors box still show the test on its original date; change the date in the sheet if the test is moving for good. Set the shift back to `0` once you've caught up.
 - Preview a shift without touching the sheet: add `?shift=-1` to the page address (works with `?date=` too).
 The teacher dashboard shows each class's current shift with a **Change shift** button that opens the sheet right at that cell.
+
+## Essential task pages
+With `TASKS_CSV` set for a class in classes.js (Physics has it), every Essential Task button opens `task.html` instead of the old link.
+- The page shows the task's unit, name, assigned and due dates, a "What to do" list, and a **Turn it in** box with the task's Google Form embedded (plus an "Open the form in a new tab" button, like the exit ticket).
+- Beside it, the **Essential Tasks** box works like the Honors box: upcoming tasks (assigned and not yet due), the most recent past task, and earlier tasks from the same unit. Tap Open to switch tasks.
+- The button sends the calendar day (`&d=`), so a task opened from an old day shows everything as of that day, with a note at the top.
+- Everything comes from the sheet's **Tasks** tab (published as CSV): `ID, Task, Unit, Assigned, Due, Description, Form Link`.
+  - **Task** must match the name in the Calendar's Essential Task column (the ID before the colon, like `4a` or `PT4`, also works).
+  - A task that repeats each semester gets a row for each semester; the page picks the one assigned most recently before the day.
+  - **Description**: one bullet per line (Ctrl+Enter for a new line in the cell). A line written `Name | https://…` becomes a link, and `[text](https://…)` makes a link inside a sentence. Don't use Sheets' Insert link: the published tab drops it.
+  - **Form Link**: the task's Google Form. Leave it blank and the page says "Upload coming soon."
+- A task that isn't on the Tasks tab yet still gets a button to its old link (from the Calendar cell).
 
 ## Exit tickets
 The Exit ticket button opens `exit.html`: the day's question (from the Exit Ticket column) in big text at the top, with the class's Google Form embedded below it.
