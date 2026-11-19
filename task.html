@@ -30,6 +30,7 @@
   .pt.here{outline:3px solid #e39b4f;outline-offset:-3px}
   .pt .here-tag{display:inline-block;font-size:.8em;font-weight:800;color:#b5651d}
   .more a.cur{font-weight:800;color:var(--ink);text-decoration:none}
+  .card > .lbl{font-size:.8em;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:14px 0 0 2px}
 </style>
 </head>
 <body>
@@ -44,7 +45,7 @@
 <script src="engine.js"></script>
 <script>
 /* Essential task page: the task's description and its Google Form for turning work in, with an
-   Essential Tasks box beside it (upcoming, past and earlier tasks from the same unit).
+   Essential Tasks box beside it (today's task as a button, then past tasks from the same unit as links).
    Opened from a class page's Essential Task button: task.html?c=physics.html&task=<task name>&d=<day>
      c    = the class page (its TASKS_CSV setting in classes.js is the published Tasks tab)
      task = the task name as it's written on the Calendar (or just its ID, like 4a or PT4)
@@ -125,11 +126,11 @@ function readTasks(text){
     const name=col(r,'task'); if(!name) continue;
     const assigned=logic.parseDateCell(col(r,'assigned','assigned date'),cfg.FALL_YEAR);
     const due=logic.parseDateCell(col(r,'due','due date'),cfg.FALL_YEAR);
-    if(!assigned || !due) continue;
+    if(!assigned) continue;   // the due date is optional
     out.push({ id:(col(r,'id')||idOf(name)).toLowerCase(), name, unit:col(r,'unit'), assigned, due,
       desc:col(r,'description'), form:col(r,'form link','form') });
   }
-  return out.sort((a,b)=>a.due-b.due || a.assigned-b.assigned);
+  return out.sort((a,b)=>a.assigned-b.assigned);
 }
 
 // The row for this task: the one assigned most recently on or before the day, otherwise the next one
@@ -153,37 +154,38 @@ function dueText(t){
   return n<0 ? 'Was due '+shortDate(t.due) : n===0 ? 'Due today!' : n===1 ? 'Due tomorrow' : `Due ${shortDate(t.due)} · ${n} days away`;
 }
 
-// The Essential Tasks box, built like the Honors box on the class page
+// The Essential Tasks box: today's task as a button, then past tasks from this unit as links, newest first
 function tasksBox(tasks, cur){
-  const sameTerm=tasks.filter(t=>term(t.due)===term(asOf));
-  const up=sameTerm.filter(t=>t.assigned<=asOf && t.due>=asOf);
-  const pastAll=sameTerm.filter(t=>t.due<asOf).reverse();
-  const past=pastAll[0];
-  const curUnit=cur ? norm(cur.unit) : '';
-  const older=pastAll.slice(1).filter(t=>curUnit && norm(t.unit)===curUnit);
+  const sameTerm=tasks.filter(t=>term(t.assigned)===term(asOf));
+  // Today's task = the newest one assigned on or before the day (it stays the button until the next one starts)
+  const sofar=sameTerm.filter(t=>t.assigned<=asOf);
+  const newest=sofar.length ? sofar[sofar.length-1].assigned.getTime() : null;
+  const today=sofar.filter(t=>t.assigned.getTime()===newest);
+  const before=sofar.filter(t=>t.assigned.getTime()!==newest).reverse();
+  const unit=norm((today[0]||before[0]||{}).unit);
+  const past=before.filter(t=>!unit || norm(t.unit)===unit);
   const isCur=t=>cur && t===cur;
-  const btn=t=>isCur(t) ? '<span class="here-tag">📍 You\'re on this task</span>' : `<a class="btn" href="${esc(linkFor(t))}">Open</a>`;
   let html=`<section class="card" aria-label="Essential Tasks"><h2>📌 Essential Tasks</h2>`;
-  up.forEach((t,i)=>{
-    html+=`<div class="pt${isCur(t)?' here':''}">${i===0?`<div class="lbl">${up.length>1?'Upcoming essential tasks':'Upcoming essential task'}</div>`:''}<div class="name">${esc(t.name)}</div><div class="when">${esc(dueText(t))}</div>${btn(t)}</div>`;
-  });
-  if(past){
-    html+=`<div class="pt${isCur(past)?' here':''}"><div class="lbl">Past essential task</div><div class="name">${esc(past.name)}</div><div class="when">Was due ${esc(shortDate(past.due))}</div>${btn(past)}`;
-    if(older.length) html+=`<div class="lbl" style="margin-top:12px">Earlier this unit</div><ul class="more">${older.map(t=>`<li>${isCur(t)?`<a class="cur">${esc(t.name)} 📍</a>`:`<a href="${esc(linkFor(t))}">${esc(t.name)}</a>`}</li>`).join('')}</ul>`;
+  if(today.length){
+    html+=`<div class="pt"><div class="lbl">Today's essential task${today.length>1?'s':''}</div>`;
+    html+=today.map(t=>`<div class="name">${esc(t.name)}</div>${isCur(t)?'<span class="here-tag">📍 You\'re on this task</span>':`<a class="btn" href="${esc(linkFor(t))}">Open</a>`}`).join('<div style="height:10px"></div>');
     html+='</div>';
+  } else {
+    html+='<p class="t-sub">No essential tasks yet.</p>';
   }
-  if(!up.length && !past) html+='<p class="t-sub">No essential tasks right now.</p>';
+  if(past.length){
+    html+=`<div class="lbl">Past essential tasks</div><ul class="more">${past.map(t=>`<li>${isCur(t)?`<a class="cur">${esc(t.name)} 📍</a>`:`<a href="${esc(linkFor(t))}">${esc(t.name)}</a>`}</li>`).join('')}</ul>`;
+  }
   return html+'</section>';
 }
 
 function taskCard(t){
   const lines=t.desc.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-  const n=Math.round((t.due-asOf)/DAY);
-  const dueCls=n<0?'due late':'due';
+  const dueCls=t.due && t.due<asOf ? 'due late' : 'due';
   return `<section class="card" aria-label="Task">
     ${t.unit?`<p class="t-unit">${esc(t.unit)}</p>`:''}
     <p class="t-name">${esc(t.name)}</p>
-    <div class="t-dates"><span>Assigned ${esc(shortDate(t.assigned))}</span><span class="${dueCls}">${esc(dueText(t))}</span></div>
+    <div class="t-dates"><span>Assigned ${esc(shortDate(t.assigned))}</span>${t.due?`<span class="${dueCls}">${esc(dueText(t))}</span>`:''}</div>
     <div class="what"><h3>What to do</h3>${lines.length?`<ul>${lines.map(l=>`<li>${lineHtml(l)}</li>`).join('')}</ul>`:'<p class="t-sub" style="margin:0">Mrs. Dunlea will explain this one in class.</p>'}</div>
   </section>`;
 }
