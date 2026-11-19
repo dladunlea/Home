@@ -24,8 +24,6 @@
   .what ul{margin:0;padding-left:20px}
   .what li{margin:6px 0}
   .what a.lnk{font-weight:800}
-  .turnin .form{margin-top:4px;background:#fff;border-radius:10px;border:1px solid var(--line);overflow:hidden}
-  .turnin iframe{display:block;width:100%;height:900px;border:0}
   .help{text-align:center;color:var(--muted);font-size:.9em;margin:12px 0 0}
   .pt.here{outline:3px solid #e39b4f;outline-offset:-3px}
   .pt .here-tag{display:inline-block;font-size:.8em;font-weight:800;color:#b5651d}
@@ -46,7 +44,7 @@
 <script src="classes.js"></script>
 <script src="engine.js"></script>
 <script>
-/* Essential task page: the task's description and its Google Form for turning work in, with an
+/* Essential task page: the task's description and a Turn it in button that opens its Google Form, with an
    Essential Tasks box beside it (today's task as a button, then past tasks from the same unit as links).
    Opened from a class page's Essential Task button: task.html?c=physics.html&task=<task name>&d=<day>
      c    = the class page (its TASKS_CSV setting in classes.js is the published Tasks tab)
@@ -55,11 +53,6 @@
      l    = the task's old link, used only if the task isn't on the Tasks tab yet. */
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const el=html=>{ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; };
-const isForm=u=>/^https:\/\/docs\.google\.com\/forms\//.test(u||'');
-function embedUrl(u){
-  const base=u.split(/[?#]/)[0].replace(/\/(viewform|edit|formResponse)$/,'');
-  return base+'/viewform?embedded=true';
-}
 const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim();
 // "4a: Balance a Dino" -> 4a, "Performance Task 3: Collisions" -> PT3
 function idOf(name){
@@ -202,11 +195,8 @@ function taskCard(t){
 
 function turnInCard(t){
   let inner;
-  if(isForm(t.form)){
-    inner=`<div class="form"><iframe src="${esc(embedUrl(t.form))}" title="Turn in ${esc(t.name)}" loading="eager">Loading…</iframe></div>
-      <p class="help">Form not showing up, or can't sign in? <a class="btn light" style="margin-left:6px" href="${esc(t.form)}" target="_blank" rel="noopener">Open the form in a new tab</a></p>`;
-  } else if(/^https?:\/\//.test(t.form)){
-    inner=`<p class="help" style="margin:0"><a class="btn" href="${esc(t.form)}" target="_blank" rel="noopener">Turn it in</a></p>`;
+  if(/^https?:\/\//.test(t.form)){
+    inner=`<p style="margin:4px 0 0"><a class="btn" href="${esc(t.form)}" target="_blank" rel="noopener">Turn it in</a></p>`;
   } else {
     inner=`<p class="t-sub" style="margin:0">Upload coming soon. Ask Mrs. Dunlea how to turn this one in.</p>`;
   }
