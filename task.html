@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Essential Task</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 0 0}
+  .topbar .title{font-weight:800;color:var(--teal-d);font-size:1.1em}
+  .topbar .btn{padding:10px 18px}
+  .viewing{margin-top:14px}
+  .t-unit{font-size:.85em;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0}
+  .t-name{font-size:1.5em;font-weight:800;line-height:1.25;margin:4px 0 8px;color:var(--ink)}
+  .t-dates{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+  .t-dates span{background:#fff;border:1px solid var(--line);border-radius:99px;padding:3px 12px;font-weight:700;font-size:.92em}
+  .t-dates .due{background:var(--peach);border-color:#e39b4f}
+  .t-dates .late{background:#ffd9d9;border-color:#d66}
+  .what{background:#fff;border-radius:10px;padding:12px 14px}
+  .what h3{margin:0 0 6px;font-size:.8em;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  .what ul{margin:0;padding-left:20px}
+  .what li{margin:6px 0}
+  .what a.lnk{font-weight:800}
+  .turnin .form{margin-top:4px;background:#fff;border-radius:10px;border:1px solid var(--line);overflow:hidden}
+  .turnin iframe{display:block;width:100%;height:900px;border:0}
+  .help{text-align:center;color:var(--muted);font-size:.9em;margin:12px 0 0}
+  .pt.here{outline:3px solid #e39b4f;outline-offset:-3px}
+  .pt .here-tag{display:inline-block;font-size:.8em;font-weight:800;color:#b5651d}
+  .more a.cur{font-weight:800;color:var(--ink);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="topbar">
+    <a class="btn light" id="back" href="index.html">← Back to class</a>
+    <span class="title" id="title">📌 Essential Task</span>
+  </div>
+  <p class="status" id="loading">Loading the task…</p>
+</div>
+<script src="classes.js"></script>
+<script src="engine.js"></script>
+<script>
+/* Essential task page: the task's description and its Google Form for turning work in, with an
+   Essential Tasks box beside it (upcoming, past and earlier tasks from the same unit).
+   Opened from a class page's Essential Task button: task.html?c=physics.html&task=<task name>&d=<day>
+     c    = the class page (its TASKS_CSV setting in classes.js is the published Tasks tab)
+     task = the task name as it's written on the Calendar (or just its ID, like 4a or PT4)
+     d    = the calendar day the button was on. The page shows everything as of that day.
+     l    = the task's old link, used only if the task isn't on the Tasks tab yet. */
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const el=html=>{ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; };
+const isForm=u=>/^https:\/\/docs\.google\.com\/forms\//.test(u||'');
+function embedUrl(u){
+  const base=u.split(/[?#]/)[0].replace(/\/(viewform|edit|formResponse)$/,'');
+  return base+'/viewform?embedded=true';
+}
+const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim();
+// "4a: Balance a Dino" -> 4a, "Performance Task 3: Collisions" -> PT3
+function idOf(name){
+  const pt=String(name||'').match(/^performance task\s*(\d+)/i);
+  if(pt) return 'pt'+pt[1];
+  const m=String(name||'').match(/^\s*([0-9]+[a-z]?h?)\s*:/i);
+  return m?m[1].toLowerCase():'';
+}
+const DAY=864e5;
+const longDate=d=>d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+const shortDate=d=>d.toLocaleDateString('en-US',{weekday:'short'})+' '+(d.getMonth()+1)+'/'+d.getDate();
+const term=d=>d.getFullYear()+(d.getMonth()<6?'-spring':'-fall');   // a semester class repeats its tasks
+
+// One description line: "Name | https://…" becomes a link; [text](https://…) and bare links work inside a sentence
+function lineHtml(line){
+  const whole=line.match(/^(.*?)\s*\|\s*(https?:\/\/\S+)\s*$/);
+  if(whole) return `<a class="lnk" href="${esc(whole[2])}" target="_blank" rel="noopener">${esc(whole[1]||whole[2])} ↗</a>`;
+  let out='', last=0;
+  const re=/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<]+[^\s<.,;:)!?])/g;
+  let m;
+  while((m=re.exec(line))){
+    out+=esc(line.slice(last,m.index));
+    const url=m[2]||m[3], txt=m[1]||m[3];
+    out+=`<a href="${esc(url)}" target="_blank" rel="noopener">${esc(txt)}</a>`;
+    last=re.lastIndex;
+  }
+  return out+esc(line.slice(last));
+}
+
+async function fetchText(url){
+  const ctl=new AbortController(), timer=setTimeout(()=>ctl.abort(),8000);
+  try{
+    const res=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store',signal:ctl.signal});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    return await res.text();
+  }finally{ clearTimeout(timer); }
+}
+const recall=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
+const store=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
+
+const p=new URLSearchParams(location.search);
+const page=/^[\w-]+\.html$/.test(p.get('c')||'') ? p.get('c') : '';
+const want=(p.get('task')||'').trim();
+const oldLink=/^https?:\/\//.test(p.get('l')||'') ? p.get('l') : '';
+const dParam=/^\d{4}-\d{2}-\d{2}$/.test(p.get('d')||'') ? p.get('d') : '';
+const realToday=new Date(); realToday.setHours(0,0,0,0);
+let asOf=dParam ? new Date(dParam+'T00:00') : new Date(realToday);
+if(isNaN(asOf)) asOf=new Date(realToday);
+asOf.setHours(0,0,0,0);
+const isNow=asOf.getTime()===realToday.getTime();
+const cfg=page ? classConfig(page) : null;
+const logic=cfg ? ClassLogic(cfg) : null;
+
+if(page) document.getElementById('back').href=page+(dParam && !isNow ? '?day='+dParam : '');
+if(cfg){ document.getElementById('title').textContent='📌 '+cfg.TITLE+' · Essential Task'; document.title='Essential Task · '+cfg.TITLE; }
+
+// Tasks tab -> [{id, name, unit, assigned, due, desc, form}]
+function readTasks(text){
+  const rows=logic.parseCSV(text);
+  const at=rows.findIndex(r=>r.some(c=>norm(c)==='id') && r.some(c=>norm(c)==='task'));
+  if(at<0) return [];
+  const h={}; rows[at].forEach((c,j)=>{ const k=norm(c); if(k && !(k in h)) h[k]=j; });
+  const col=(r,...names)=>{ for(const n of names) if(n in h) return (r[h[n]]||'').trim(); return ''; };
+  const out=[];
+  for(const r of rows.slice(at+1)){
+    const name=col(r,'task'); if(!name) continue;
+    const assigned=logic.parseDateCell(col(r,'assigned','assigned date'),cfg.FALL_YEAR);
+    const due=logic.parseDateCell(col(r,'due','due date'),cfg.FALL_YEAR);
+    if(!assigned || !due) continue;
+    out.push({ id:(col(r,'id')||idOf(name)).toLowerCase(), name, unit:col(r,'unit'), assigned, due,
+      desc:col(r,'description'), form:col(r,'form link','form') });
+  }
+  return out.sort((a,b)=>a.due-b.due || a.assigned-b.assigned);
+}
+
+// The row for this task: the one assigned most recently on or before the day, otherwise the next one
+function findTask(tasks){
+  const n=norm(want), id=idOf(want)||n;
+  let hits=tasks.filter(t=>norm(t.name)===n);
+  if(!hits.length) hits=tasks.filter(t=>t.id===id);
+  if(!hits.length) return null;
+  const before=hits.filter(t=>t.assigned<=asOf).sort((a,b)=>b.assigned-a.assigned);
+  return before[0] || hits.sort((a,b)=>a.assigned-b.assigned)[0];
+}
+
+function linkFor(t){
+  const q=new URLSearchParams({c:page, task:t.name});
+  if(dParam) q.set('d',dParam);
+  return 'task.html?'+q.toString();
+}
+
+function dueText(t){
+  const n=Math.round((t.due-asOf)/DAY);
+  return n<0 ? 'Was due '+shortDate(t.due) : n===0 ? 'Due today!' : n===1 ? 'Due tomorrow' : `Due ${shortDate(t.due)} · ${n} days away`;
+}
+
+// The Essential Tasks box, built like the Honors box on the class page
+function tasksBox(tasks, cur){
+  const sameTerm=tasks.filter(t=>term(t.due)===term(asOf));
+  const up=sameTerm.filter(t=>t.assigned<=asOf && t.due>=asOf);
+  const pastAll=sameTerm.filter(t=>t.due<asOf).reverse();
+  const past=pastAll[0];
+  const curUnit=cur ? norm(cur.unit) : '';
+  const older=pastAll.slice(1).filter(t=>curUnit && norm(t.unit)===curUnit);
+  const isCur=t=>cur && t===cur;
+  const btn=t=>isCur(t) ? '<span class="here-tag">📍 You\'re on this task</span>' : `<a class="btn" href="${esc(linkFor(t))}">Open</a>`;
+  let html=`<section class="card" aria-label="Essential Tasks"><h2>📌 Essential Tasks</h2>`;
+  up.forEach((t,i)=>{
+    html+=`<div class="pt${isCur(t)?' here':''}">${i===0?`<div class="lbl">${up.length>1?'Upcoming essential tasks':'Upcoming essential task'}</div>`:''}<div class="name">${esc(t.name)}</div><div class="when">${esc(dueText(t))}</div>${btn(t)}</div>`;
+  });
+  if(past){
+    html+=`<div class="pt${isCur(past)?' here':''}"><div class="lbl">Past essential task</div><div class="name">${esc(past.name)}</div><div class="when">Was due ${esc(shortDate(past.due))}</div>${btn(past)}`;
+    if(older.length) html+=`<div class="lbl" style="margin-top:12px">Earlier this unit</div><ul class="more">${older.map(t=>`<li>${isCur(t)?`<a class="cur">${esc(t.name)} 📍</a>`:`<a href="${esc(linkFor(t))}">${esc(t.name)}</a>`}</li>`).join('')}</ul>`;
+    html+='</div>';
+  }
+  if(!up.length && !past) html+='<p class="t-sub">No essential tasks right now.</p>';
+  return html+'</section>';
+}
+
+function taskCard(t){
+  const lines=t.desc.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  const n=Math.round((t.due-asOf)/DAY);
+  const dueCls=n<0?'due late':'due';
+  return `<section class="card" aria-label="Task">
+    ${t.unit?`<p class="t-unit">${esc(t.unit)}</p>`:''}
+    <p class="t-name">${esc(t.name)}</p>
+    <div class="t-dates"><span>Assigned ${esc(shortDate(t.assigned))}</span><span class="${dueCls}">${esc(dueText(t))}</span></div>
+    <div class="what"><h3>What to do</h3>${lines.length?`<ul>${lines.map(l=>`<li>${lineHtml(l)}</li>`).join('')}</ul>`:'<p class="t-sub" style="margin:0">Mrs. Dunlea will explain this one in class.</p>'}</div>
+  </section>`;
+}
+
+function turnInCard(t){
+  let inner;
+  if(isForm(t.form)){
+    inner=`<div class="form"><iframe src="${esc(embedUrl(t.form))}" title="Turn in ${esc(t.name)}" loading="eager">Loading…</iframe></div>
+      <p class="help">Form not showing up, or can't sign in? <a class="btn light" style="margin-left:6px" href="${esc(t.form)}" target="_blank" rel="noopener">Open the form in a new tab</a></p>`;
+  } else if(/^https?:\/\//.test(t.form)){
+    inner=`<p class="help" style="margin:0"><a class="btn" href="${esc(t.form)}" target="_blank" rel="noopener">Turn it in</a></p>`;
+  } else {
+    inner=`<p class="t-sub" style="margin:0">Upload coming soon. Ask Mrs. Dunlea how to turn this one in.</p>`;
+  }
+  return `<section class="card turnin" aria-label="Turn it in"><h2>📤 Turn it in</h2>${inner}</section>`;
+}
+
+let lastText=null;
+function render(text){
+  if(text===lastText) return;
+  lastText=text;
+  const app=document.getElementById('app');
+  app.querySelectorAll('.viewing,.layout,.err').forEach(n=>n.remove());
+  const l=document.getElementById('loading'); if(l) l.remove();
+  const tasks=readTasks(text);
+  const t=findTask(tasks);
+  if(!isNow){
+    const u=new URL(location.href); u.searchParams.delete('d');
+    app.append(el(`<div class="viewing"><span>📅 Showing this as of ${esc(longDate(asOf))}</span><a class="btn light" href="${esc(u.pathname.split('/').pop()+u.search)}">See it as of today</a></div>`));
+  }
+  if(!t){
+    app.append(el(`<div class="err"><b>${want?esc(want)+' isn\'t on the task list yet.':'No task was picked.'}</b>
+      ${oldLink?` <a class="btn" style="margin-left:6px" href="${esc(oldLink)}" target="_blank" rel="noopener">Open the assignment</a>`:' Ask Mrs. Dunlea.'}</div>`));
+    if(tasks.length){ const lay=el('<div class="layout"><div class="main"></div><aside class="side"></aside></div>'); lay.querySelector('.side').append(el(tasksBox(tasks,null))); app.append(lay); }
+    return;
+  }
+  document.title=t.name+(cfg?' · '+cfg.TITLE:'');
+  const lay=el('<div class="layout"><div class="main"></div><aside class="side"></aside></div>');
+  lay.querySelector('.main').append(el(taskCard(t)), el(turnInCard(t)));
+  lay.querySelector('.side').append(el(tasksBox(tasks,t)));
+  app.append(lay);
+}
+
+async function main(){
+  const app=document.getElementById('app');
+  if(!cfg || !cfg.TASKS_CSV){
+    const l=document.getElementById('loading'); if(l) l.remove();
+    app.append(el(`<div class="err"><b>This class doesn't have task pages turned on.</b>${oldLink?` <a class="btn" style="margin-left:6px" href="${esc(oldLink)}" target="_blank" rel="noopener">Open the assignment</a>`:''}</div>`));
+    return;
+  }
+  // Show the saved copy right away, then swap in the live tab if it changed
+  const KEY='taskpage-'+cfg.KEY+'-csv';
+  const saved=recall(KEY);
+  if(saved) render(saved);
+  try{
+    const live=await fetchText(cfg.TASKS_CSV);
+    if(live && !/<html/i.test(live.slice(0,500)) && readTasks(live).length){ store(KEY,live); render(live); }
+    else if(!saved) throw new Error('empty');
+  }catch(e){
+    console.warn('Could not load the Tasks tab',e);
+    if(!saved){
+      const l=document.getElementById('loading'); if(l) l.remove();
+      app.append(el(`<div class="err"><b>The task list didn't load.</b> Check your Wi-Fi and refresh.${oldLink?` <a class="btn" style="margin-left:6px" href="${esc(oldLink)}" target="_blank" rel="noopener">Open the assignment</a>`:''}</div>`));
+    }
+  }
+}
+main();
+</script>
+</body>
+</html>
