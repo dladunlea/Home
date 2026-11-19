@@ -30,6 +30,8 @@
   .pt.here{outline:3px solid #e39b4f;outline-offset:-3px}
   .pt .here-tag{display:inline-block;font-size:.8em;font-weight:800;color:#b5651d}
   .more a.cur{font-weight:800;color:var(--ink);text-decoration:none}
+  .up-pt{margin:0 0 12px 2px}
+  .up-pt a.cur{font-weight:800;color:var(--ink);text-decoration:none}
   .card > .lbl{font-size:.8em;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:14px 0 0 2px}
 </style>
 </head>
@@ -165,7 +167,15 @@ function tasksBox(tasks, cur){
   const unit=norm((today[0]||before[0]||{}).unit);
   const past=before.filter(t=>!unit || norm(t.unit)===unit);
   const isCur=t=>cur && t===cur;
+  // Upcoming Performance Task: the soonest one not yet due (if it has a due date),
+  // otherwise this unit's Performance Task, otherwise the next one to be assigned
+  const isPT=t=>/^pt\d/i.test(t.id) || /^performance task/i.test(t.name);
+  const pts=sameTerm.filter(isPT);
+  const pt=pts.filter(t=>t.due && t.due>=asOf).sort((a,b)=>a.due-b.due)[0]
+        || pts.filter(t=>!t.due && unit && norm(t.unit)===unit)[0]
+        || pts.filter(t=>!t.due && t.assigned>asOf)[0];
   let html=`<section class="card" aria-label="Essential Tasks"><h2>📌 Essential Tasks</h2>`;
+  if(pt) html+=`<p class="up-pt"><b>Upcoming Performance Task:</b> ${isCur(pt)?`<a class="cur">${esc(pt.name)} 📍</a>`:`<a href="${esc(linkFor(pt))}">${esc(pt.name)}</a>`}</p>`;
   if(today.length){
     html+=`<div class="pt"><div class="lbl">Today's essential task${today.length>1?'s':''}</div>`;
     html+=today.map(t=>`<div class="name">${esc(t.name)}</div>${isCur(t)?'<span class="here-tag">📍 You\'re on this task</span>':`<a class="btn" href="${esc(linkFor(t))}">Open</a>`}`).join('<div style="height:10px"></div>');
