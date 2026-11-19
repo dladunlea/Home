@@ -56,7 +56,7 @@ The teacher dashboard shows each class's current shift with a **Change shift** b
 
 ## Essential task pages
 With `TASKS_CSV` set for a class in classes.js (Physics has it), every Essential Task button opens `task.html` instead of the old link.
-- The page shows the task's unit, name, assigned and due dates, a "What to do" list, and a **Turn it in** box with the task's Google Form embedded (plus an "Open the form in a new tab" button, like the exit ticket).
+- The page shows the task's unit, name, assigned and due dates, a "What to do" list, and a **Turn it in** box with a button that opens the task's Google Form in a new tab.
 - Beside it, the **Essential Tasks** box shows the task assigned that day as a button, then past tasks from the same unit as links, newest first. Due dates are optional; a task shows up once it has an Assigned date.
 - The button sends the calendar day (`&d=`), so a task opened from an old day shows everything as of that day, with a note at the top.
 - Everything comes from the sheet's **Tasks** tab (published as CSV): `ID, Task, Unit, Assigned, Due, Description, Form Link`.
