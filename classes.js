@@ -14,6 +14,8 @@
      SIDE: 'honors'             - side box shows honors tasks instead of the Study box
      CARRY_TASK: true           - a day with no Essential Task shows the previous day's
      FALL_YEAR                  - the year the school year starts (dates from July on are this year)
+     TASKS_CSV                  - the "Publish to web" CSV link for the sheet's Tasks tab. When it's set, each Essential Task
+                                  button opens task.html: the task's description, its upload form and an Essential Tasks box.
      HIDDEN: true               - hides the class's button on the Home page and in the top menu.
                                   The page still works at its address, and the teacher dashboard still shows it.
                                   Delete the line (or set it to false) to bring the button back.
@@ -49,6 +51,7 @@ window.CLASSES = [
     CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQQLUiiW6Cxw6Xs0aGfVo6CDQ8c7iJ_mTaGrmLVzJobrkJRE6l_L0NnAMH_CxGLjAEo5Bn6puXLlqEi/pub?gid=1341448792&single=true&output=csv',
     WARMUP_APP: 'https://dladunlea.github.io/Physics_Warmup/',
     CHECKIN_FORM: 'https://docs.google.com/forms/d/e/1FAIpQLSduj7sW8lRFVLmec-krwWM9lquGiy2xbBv24jTihz0s9otoIQ/viewform',
+    TASKS_CSV: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQQLUiiW6Cxw6Xs0aGfVo6CDQ8c7iJ_mTaGrmLVzJobrkJRE6l_L0NnAMH_CxGLjAEo5Bn6puXLlqEi/pub?gid=444000222&single=true&output=csv',
     APPS: [],   // e.g. { match: /Topic 2\b/, name: 'Kinematics Review', url: 'https://...' }
     LABELS: { task: 'Essential Task', honors: 'Honors', practicePrefix: 'Textbook: ' },
     SIDE: 'honors',
